@@ -37,6 +37,15 @@ export const metadata: Metadata = {
     description: siteConfig.description,
     images: [siteConfig.ogImage],
   },
+  icons: {
+    icon: [
+      { url: "/favicon.ico" },
+      { url: "/icon.png", type: "image/png" },
+    ],
+    apple: [
+      { url: "/apple-icon.png", type: "image/png" },
+    ],
+  },
 };
 
 export default function RootLayout({
