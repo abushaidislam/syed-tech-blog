@@ -5,6 +5,7 @@ import { SyedBlogLogo } from "@/components/layout/brand";
 import { PostTOC } from "./post-toc";
 import { PostSidebarCTA } from "./post-cta";
 import { BlogBottomCTA } from "./blog-bottom-cta";
+import { SkyAnimation } from "./sky-animation";
 
 interface PostLayoutProps {
   post: BlogPost;
@@ -33,11 +34,11 @@ export function PostLayout({ post, relatedPosts, mdxContent }: PostLayoutProps) 
     <div>
       {/* Top Hero Section */}
       <div className="grid-section relative overflow-clip border-b border-grid-border px-4">
-        <div className="relative z-0 mx-auto max-w-grid-width border-x border-grid-border px-4 pb-12 pt-16 sm:px-12">
+        <div className="relative z-0 mx-auto flex max-w-grid-width flex-col justify-between gap-8 border-x border-grid-border px-4 pb-12 pt-16 sm:px-12 lg:flex-row lg:items-center">
           {/* Subtle grid lines & mask */}
           <div className="pointer-events-none absolute inset-0 border-x border-grid-border [mask-image:linear-gradient(transparent,black)]" />
 
-          <div className="relative max-w-screen-sm">
+          <div className="relative z-10 max-w-screen-sm">
             <div className="flex items-center space-x-4">
               <Link
                 href={`/blog/category/${post.category.slug}`}
@@ -58,6 +59,11 @@ export function PostLayout({ post, relatedPosts, mdxContent }: PostLayoutProps) 
             <p className="mt-4 text-left text-base text-neutral-500 sm:text-lg">
               {decodeEntities(post.summary)}
             </p>
+          </div>
+
+          {/* Right Side Sky Animation (as marked in reference) */}
+          <div className="relative z-0 flex items-center justify-center lg:w-[460px] xl:w-[520px] shrink-0">
+            <SkyAnimation />
           </div>
         </div>
       </div>
