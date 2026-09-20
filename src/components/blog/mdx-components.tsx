@@ -44,7 +44,7 @@ export function Quote({
   return (
     <div className="not-prose my-6 flex flex-col gap-6 rounded-xl border border-neutral-300 bg-white py-8 pl-8 pr-6 shadow-[0px_1px_2px_-1px_rgba(0,0,0,0.08),0px_2px_8px_0px_rgba(0,0,0,0.06)]">
       <div className="font-rowan text-2xl font-light leading-[1.45] tracking-tight text-neutral-800 [text-indent:-0.45em] before:content-['“'] after:content-['”'] [&_a]:text-neutral-800 [&_a]:decoration-1 [&_a]:underline [&_a]:underline-offset-4 [&_p]:my-0 [&_p]:inline">
-        <p>{children}</p>
+        {children}
       </div>
       {(author || avatar) && (
         <div className="flex items-center gap-3">
@@ -60,10 +60,10 @@ export function Quote({
           )}
           <div className="flex items-center gap-1.5 text-xs tracking-[-0.02em]">
             {author && (
-              <p className="font-semibold text-neutral-600">{author}</p>
+              <span className="font-semibold text-neutral-600">{author}</span>
             )}
             {role && (
-              <p className="font-medium text-neutral-500">• {role}</p>
+              <span className="font-medium text-neutral-500">• {role}</span>
             )}
           </div>
         </div>

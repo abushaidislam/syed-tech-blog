@@ -1,8 +1,10 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
+import { useState } from "react";
 import type { BlogPostMeta } from "@/types/blog";
-
 import { SyedBlogLogo } from "@/components/layout/brand";
 
 interface BlogCardProps {
@@ -21,11 +23,35 @@ function decodeEntities(text: string) {
 }
 
 export function BlogCard({ post, priority = false }: BlogCardProps) {
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [isHovered, setIsHovered] = useState(false);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    setMousePosition({
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top,
+    });
+  };
+
   return (
     <Link
       href={`/blog/${post.slug}`}
-      className="group relative flex h-full flex-col justify-between transition-colors duration-200 hover:bg-neutral-50/80"
+      onMouseMove={handleMouseMove}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      className="group relative flex h-full flex-col justify-between overflow-hidden transition-all duration-300 hover:bg-neutral-50/70"
     >
+      {/* Dub-style cursor spotlight effect */}
+      {isHovered && (
+        <div
+          className="pointer-events-none absolute -inset-px opacity-100 transition-opacity duration-300"
+          style={{
+            background: `radial-gradient(350px circle at ${mousePosition.x}px ${mousePosition.y}px, rgba(0, 0, 0, 0.045), transparent 80%)`,
+          }}
+        />
+      )}
+
       <div>
         <div className="relative aspect-[1200/630] w-full overflow-hidden bg-neutral-100">
           {post.image ? (
@@ -50,7 +76,7 @@ export function BlogCard({ post, priority = false }: BlogCardProps) {
           <div className="pointer-events-none absolute inset-0 ring-1 ring-inset ring-black/[0.04]" />
         </div>
 
-        <div className="p-6 pb-2">
+        <div className="relative p-6 pb-2">
           <div className="flex items-start justify-between gap-3">
             <h2 className="line-clamp-2 font-display text-lg font-bold tracking-tight text-neutral-900 transition-colors duration-150 group-hover:text-black">
               {decodeEntities(post.title)}
@@ -63,7 +89,7 @@ export function BlogCard({ post, priority = false }: BlogCardProps) {
         </div>
       </div>
 
-      <div className="p-6 pt-4 flex items-center justify-between">
+      <div className="relative p-6 pt-4 flex items-center justify-between">
         <div className="flex items-center space-x-2">
           {post.authors && post.authors.length > 0 && (
             <div className="flex items-center -space-x-2">

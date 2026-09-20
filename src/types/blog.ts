@@ -2,6 +2,14 @@ export interface BlogAuthor {
   name: string;
   image: string;
   title?: string;
+  bio?: string;
+  quote?: string;
+  company?: string;
+  companyLogo?: string;
+  storyUrl?: string;
+  twitter?: string;
+  github?: string;
+  linkedin?: string;
 }
 
 export interface BlogCategory {

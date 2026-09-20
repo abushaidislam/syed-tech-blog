@@ -6,6 +6,7 @@ import { PostTOC } from "./post-toc";
 import { PostSidebarCTA } from "./post-cta";
 import { BlogBottomCTA } from "./blog-bottom-cta";
 import { SkyAnimation } from "./sky-animation";
+import { AuthorSpotlight } from "./author-spotlight";
 
 interface PostLayoutProps {
   post: BlogPost;
@@ -97,13 +98,16 @@ export function PostLayout({ post, relatedPosts, mdxContent }: PostLayoutProps) 
                   )}
                 </div>
 
-                <article className="prose prose-neutral max-w-none px-5 py-10 transition-all prose-headings:relative prose-headings:scroll-mt-20 prose-headings:font-display prose-a:font-medium prose-a:text-neutral-600 prose-a:underline-offset-4 hover:prose-a:text-black sm:px-12">
+                <article className="prose prose-neutral max-w-none px-5 pt-10 pb-6 transition-all prose-headings:relative prose-headings:scroll-mt-20 prose-headings:font-display prose-a:font-medium prose-a:text-neutral-600 prose-a:underline-offset-4 hover:prose-a:text-black sm:px-12">
                   {mdxContent ? (
                     mdxContent
                   ) : post.articleHtml ? (
                     <div dangerouslySetInnerHTML={{ __html: post.articleHtml }} />
                   ) : null}
                 </article>
+
+                {/* Author Note & Spotlight Component */}
+                <AuthorSpotlight author={primaryAuthor} />
               </div>
 
               {/* Related Posts "Read more" */}
