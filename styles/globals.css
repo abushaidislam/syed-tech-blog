@@ -1,3 +1,5 @@
+@import url("https://api.fontshare.com/v2/css?f[]=rowan@300,400&display=swap");
+
 :root,
 .light {
   --bg-default: 255 255 255;
@@ -60,8 +62,6 @@
   --content-warning: 253 224 71;
   --content-error: 252 165 165;
 }
-
-@import url("https://api.fontshare.com/v2/css?f[]=rowan@300,400&display=swap");
 
 @tailwind base;
 @tailwind components;
