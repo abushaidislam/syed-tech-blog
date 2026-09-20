@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { BlogPost, BlogPostMeta } from "@/types/blog";
+import { SyedBlogLogo } from "@/components/layout/brand";
 import { PostTOC } from "./post-toc";
 import { PostSidebarCTA } from "./post-cta";
 import { BlogBottomCTA } from "./blog-bottom-cta";
@@ -69,14 +70,25 @@ export function PostLayout({ post, relatedPosts, mdxContent }: PostLayoutProps) 
             <div className="relative col-span-1 border-grid-border md:col-span-2">
               <div className="bg-white">
                 <div className="relative aspect-[1200/630] w-full overflow-hidden bg-neutral-100">
-                  <Image
-                    src={post.image}
-                    alt={post.title}
-                    width={1200}
-                    height={630}
-                    priority
-                    className="aspect-[1200/630] size-full object-cover"
-                  />
+                  {post.image ? (
+                    <Image
+                      src={post.image}
+                      alt={post.title}
+                      width={1200}
+                      height={630}
+                      priority
+                      className="aspect-[1200/630] size-full object-cover"
+                    />
+                  ) : (
+                    <div className="flex size-full flex-col items-center justify-center bg-gradient-to-br from-neutral-50 via-neutral-100 to-neutral-200/60 p-12 text-center select-none">
+                      <div className="flex size-16 items-center justify-center rounded-2xl border border-neutral-200 bg-white/90 shadow-sm backdrop-blur">
+                        <SyedBlogLogo className="size-8 text-neutral-900" />
+                      </div>
+                      <span className="mt-3 text-xs font-semibold uppercase tracking-widest text-neutral-400">
+                        {post.category?.name || "Article"}
+                      </span>
+                    </div>
+                  )}
                 </div>
 
                 <article className="prose prose-neutral max-w-none px-5 py-10 transition-all prose-headings:relative prose-headings:scroll-mt-20 prose-headings:font-display prose-a:font-medium prose-a:text-neutral-600 prose-a:underline-offset-4 hover:prose-a:text-black sm:px-12">
@@ -102,13 +114,19 @@ export function PostLayout({ post, relatedPosts, mdxContent }: PostLayoutProps) 
                           className="group flex flex-col items-start gap-4 sm:flex-row"
                         >
                           <div className="relative aspect-video w-full shrink-0 overflow-hidden rounded-lg border border-neutral-200 bg-neutral-100 sm:w-[200px]">
-                            <Image
-                              src={related.image}
-                              alt={related.title}
-                              width={200}
-                              height={112}
-                              className="size-full object-cover"
-                            />
+                            {related.image ? (
+                              <Image
+                                src={related.image}
+                                alt={related.title}
+                                width={200}
+                                height={112}
+                                className="size-full object-cover"
+                              />
+                            ) : (
+                              <div className="flex size-full items-center justify-center bg-gradient-to-br from-neutral-50 to-neutral-100">
+                                <SyedBlogLogo className="size-5 text-neutral-400" />
+                              </div>
+                            )}
                           </div>
                           <div className="flex flex-col space-y-1.5">
                             <p className="line-clamp-1 font-display font-medium text-neutral-800 underline-offset-4 group-hover:underline">

@@ -14,7 +14,7 @@ export interface BlogPostMeta {
   slug: string;
   title: string;
   summary: string;
-  image: string;
+  image?: string;
   dateIso: string;
   dateFormatted: string;
   category: BlogCategory;

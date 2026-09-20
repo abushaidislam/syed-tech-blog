@@ -3,6 +3,8 @@ import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import type { BlogPostMeta } from "@/types/blog";
 
+import { SyedBlogLogo } from "@/components/layout/brand";
+
 interface BlogCardProps {
   post: BlogPostMeta;
   priority?: boolean;
@@ -26,14 +28,25 @@ export function BlogCard({ post, priority = false }: BlogCardProps) {
     >
       <div>
         <div className="relative aspect-[1200/630] w-full overflow-hidden bg-neutral-100">
-          <Image
-            src={post.image}
-            alt={decodeEntities(post.title)}
-            width={1200}
-            height={630}
-            priority={priority}
-            className="aspect-[1200/630] w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03]"
-          />
+          {post.image ? (
+            <Image
+              src={post.image}
+              alt={decodeEntities(post.title)}
+              width={1200}
+              height={630}
+              priority={priority}
+              className="aspect-[1200/630] w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03]"
+            />
+          ) : (
+            <div className="flex size-full flex-col items-center justify-center bg-gradient-to-br from-neutral-50 via-neutral-100 to-neutral-200/60 p-6 text-center select-none">
+              <div className="flex size-12 items-center justify-center rounded-2xl border border-neutral-200 bg-white/90 shadow-sm backdrop-blur transition-transform duration-300 group-hover:scale-110">
+                <SyedBlogLogo className="size-6 text-neutral-900" />
+              </div>
+              <span className="mt-3 text-[11px] font-semibold uppercase tracking-widest text-neutral-400">
+                {post.category?.name || "Article"}
+              </span>
+            </div>
+          )}
           <div className="pointer-events-none absolute inset-0 ring-1 ring-inset ring-black/[0.04]" />
         </div>
 
