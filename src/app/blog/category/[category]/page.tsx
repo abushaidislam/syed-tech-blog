@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { BlogHeader } from "@/ui/blog/blog-header";
-import { BlogGrid } from "@/ui/blog/blog-grid";
-import { BlogBottomCTA } from "@/ui/blog/blog-bottom-cta";
+import { BlogHeader } from "@/components/blog/blog-header";
+import { BlogGrid } from "@/components/blog/blog-grid";
+import { BlogBottomCTA } from "@/components/blog/blog-bottom-cta";
 import {
   BLOG_CATEGORIES,
   getCategoryBySlug,

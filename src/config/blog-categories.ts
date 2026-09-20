@@ -1,4 +1,4 @@
-import type { BlogCategory } from "./blog-types";
+import type { BlogCategory } from "@/types/blog";
 
 export const BLOG_CATEGORIES: BlogCategory[] = [
   {

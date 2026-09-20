@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, type Variants } from "motion/react";
-import type { BlogPostMeta } from "./blog-types";
+import type { BlogPostMeta } from "@/types/blog";
 import { BlogCard } from "./blog-card";
 
 interface BlogGridProps {

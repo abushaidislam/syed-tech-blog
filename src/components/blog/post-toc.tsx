@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { AlignLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
-import type { BlogPostHeading } from "./blog-types";
+import type { BlogPostHeading } from "@/types/blog";
 
 interface PostTOCProps {
   headings: BlogPostHeading[];

@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
-import type { BlogPostMeta } from "./blog-types";
+import type { BlogPostMeta } from "@/types/blog";
 
 interface BlogCardProps {
   post: BlogPostMeta;

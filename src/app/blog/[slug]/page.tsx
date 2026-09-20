@@ -7,8 +7,8 @@ import {
   getRelatedPosts,
   frontmatterToBlogPostMeta,
 } from "@/lib/blog";
-import { PostLayout } from "@/ui/blog/post-layout";
-import { blogMdxComponents } from "@/ui/blog/mdx-components";
+import { PostLayout } from "@/components/blog/post-layout";
+import { blogMdxComponents } from "@/components/blog/mdx-components";
 import remarkGfm from "remark-gfm";
 
 export function generateStaticParams() {

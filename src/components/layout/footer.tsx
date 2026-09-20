@@ -1,12 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
 import { SyedBlogWordmark } from "./brand";
 import { cn } from "@/lib/utils";
 import {
   ArrowUpRight,
-  ChevronDown,
   Github,
   Linkedin,
   Twitter,
@@ -239,7 +237,7 @@ export function Footer() {
             </div>
           </div>
 
-          {/* Bottom Row: Status Badge, SOC2 Badge, Copyright matching Dub 1:1 */}
+          {/* Bottom Row: Status Badge, SOC2 Badge, Copyright */}
           <div className="mt-14 grid grid-cols-1 items-center gap-6 border-t border-neutral-200/80 pt-8 sm:grid-cols-3">
             <div>
               <LiveStatusBadge />

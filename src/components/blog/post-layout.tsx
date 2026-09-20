@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import type { BlogPost, BlogPostMeta } from "./blog-types";
+import type { BlogPost, BlogPostMeta } from "@/types/blog";
 import { PostTOC } from "./post-toc";
 import { PostSidebarCTA } from "./post-cta";
 import { BlogBottomCTA } from "./blog-bottom-cta";

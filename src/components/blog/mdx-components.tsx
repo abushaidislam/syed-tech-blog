@@ -7,7 +7,7 @@ import {
   HelpCircle,
   ArrowUpRight,
 } from "lucide-react";
-import { slugify } from "@/lib/blog-utils";
+import { slugify } from "@/lib/utils";
 import { CodeBlock, HeadingAnchor } from "./mdx-client-components";
 
 /**

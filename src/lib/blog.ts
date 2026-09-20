@@ -6,9 +6,9 @@ import type {
   BlogCategory,
   BlogPostHeading,
   BlogAuthor,
-} from "@/ui/blog/blog-types";
-import { BLOG_CATEGORIES } from "@/ui/blog/blog-categories";
-import { slugify } from "./blog-utils";
+} from "@/types/blog";
+import { BLOG_CATEGORIES } from "@/config/blog-categories";
+import { slugify } from "./utils";
 
 export { BLOG_CATEGORIES, slugify };
 

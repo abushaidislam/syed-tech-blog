@@ -2,24 +2,38 @@ import { geistMono, inter, satoshi } from "@/styles/fonts";
 import "@/styles/globals.css";
 import { cn } from "@/lib/utils";
 import type { Metadata } from "next";
-import { Nav } from "@/ui/nav";
-import { Footer } from "@/ui/footer";
+import { Nav } from "@/components/layout/nav";
+import { Footer } from "@/components/layout/footer";
+import { siteConfig } from "@/config/site";
 
 export const metadata: Metadata = {
-  title: "Syed Blog | High-Performance Tech & Software Insights",
-  description:
-    "Stay informed with the latest updates, engineering insights, and tech tutorials from Syed Blog.",
+  metadataBase: new URL(siteConfig.url),
+  title: {
+    default: siteConfig.name,
+    template: `%s | ${siteConfig.name}`,
+  },
+  description: siteConfig.description,
   openGraph: {
-    title: "Syed Blog | High-Performance Tech & Software Insights",
-    description:
-      "Stay informed with the latest updates, engineering insights, and tech tutorials from Syed Blog.",
+    title: siteConfig.name,
+    description: siteConfig.description,
+    url: siteConfig.url,
+    siteName: siteConfig.name,
+    images: [
+      {
+        url: siteConfig.ogImage,
+        width: 1200,
+        height: 630,
+        alt: siteConfig.name,
+      },
+    ],
+    locale: "en_US",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Syed Blog | High-Performance Tech & Software Insights",
-    description:
-      "Stay informed with the latest updates, engineering insights, and tech tutorials from Syed Blog.",
+    title: siteConfig.name,
+    description: siteConfig.description,
+    images: [siteConfig.ogImage],
   },
 };
 

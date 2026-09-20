@@ -5,7 +5,7 @@ import { List } from "lucide-react";
 import { useState } from "react";
 import { motion, AnimatePresence, LayoutGroup } from "motion/react";
 import { cn } from "@/lib/utils";
-import { BLOG_CATEGORIES } from "./blog-categories";
+import { BLOG_CATEGORIES } from "@/config/blog-categories";
 
 interface BlogHeaderProps {
   title?: string;
