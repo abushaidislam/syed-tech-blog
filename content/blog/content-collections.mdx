@@ -1,0 +1,304 @@
+---
+slug: "content-collections"
+title: "Migrating from Contentlayer to Content Collections"
+summary: "We recently migrated our content framework from Contentlayer to Content Collections. Here&#x27;s why and how we did it."
+image: "https://assets.dub.co/cms/content-collections-2.jpg"
+dateIso: "2024-07-05T00:00:00.000Z"
+dateFormatted: "July 5, 2024"
+category: "engineering"
+categoryName: "Engineering"
+authors:
+  - name: "Steven Tey"
+    image: "https://assets.dub.co/author/steventey.jpg"
+    title: "Core Engineering"
+---
+
+[Contentlayer](https://contentlayer.dev) is a popular content SDK that transforms your Markdown & MDX content into type-safe JSON data that you can easily import into your React applications.
+
+However, ever since their main sponsor, Stackbit, was acquired by Netlify, Contentlayer has been [effectively unmaintained](https://github.com/contentlayerdev/contentlayer/issues/429). Couple that with issues like [Next.js App Router incompatibility](https://github.com/contentlayerdev/contentlayer/issues/506), and it was clear that a drop-in replacement was needed.
+
+Enter [Content Collections](https://content-collections.dev).
+
+## What is Content Collections?
+
+[Content Collections](https://content-collections.dev) is a Contentlayer-inspired content framework [created by Sebastian Sdorra](https://sdorra.dev/posts/2024-01-15-content-collections). Frustrated by the lack of flexibility in Contentlayer's schema definition (e.g. you can't define an `email` or `url` type for a given field), Sebastian decided to create a drop-in replacement for Contentlayer that addresses these limitations.
+
+## Why Content Collections?
+
+Here are several reasons why Content Collections is the best drop-in successor to Contentlayer:
+
+### 1. Zod-powered Schema Validation
+
+If you're already [using Zod](/blog/zod-api-validation) for schema validation, Content Collections will feel like second nature to you. To define a collection schema, you can easily use the `schema` attribute, which comes with a Zod parameter `z`:
+
+ content-collections.ts 
+
+```
+ import { defineCollection, defineConfig } from "@content-collections/core" ; 
+
+ const BlogPost = defineCollection ({ 
+ name: "BlogPost" , 
+ directory: "content/blog" , 
+ include: "*.mdx" , 
+ schema : ( z ) => ({ 
+ title: z. string (), 
+ categories: z 
+ . array (z. enum ([ "company" , "engineering" , "education" , "customers" ])) 
+ . default ([ "company" ]), 
+ publishedAt: z. string (). datetime (), 
+ featured: z. boolean (). default ( false ), 
+ }), 
+ }); 
+
+ export default defineConfig ({ 
+ collections: [BlogPost], 
+ }); 
+```
+
+### 2. Native Fumadocs integration
+
+ The creator of [Fumadocs](https://fumadocs.vercel.app) – an increasingly popular open-source documentation framework [used by projects](https://fumadocs.vercel.app/showcase) like [Million](https://million.dev/) and [Turborepo](/blog/turborepo-migration) – recently added [native support for Content Collections](https://fumadocs.vercel.app/docs/headless/content-collections).
+
+Interestingly, [support for Contentlayer](https://fumadocs.vercel.app/docs/headless/contentlayer) has also been deprecated.
+
+### 3. Compatible with Next.js App Router
+
+Content Collections is compatible with [Next.js App Router](https://nextjs.org/docs/app) and [React Server Components (RSC)](https://nextjs.org/docs/app/building-your-application/rendering/server-components).
+
+For example, to render the GitHub repository cards in this blog post, you can create a server component that fetches the latest stats for the repository and renders a React component:
+
+ components/github-repo.tsx lib/github.ts 
+
+```
+ import { getRepo } from "@/lib/github" ; 
+ import { Suspense } from "react" ; 
+
+ export function GithubRepo ({ url } : { url : string }) { 
+ return ( 
+ Suspense fallback = { div >Loading... div >}> 
+ GithubRepoRSC url = {url} /> 
+ Suspense > 
+ ); 
+ } 
+
+ async function GithubRepoRSC ({ url } : { url : string }) { 
+ const { description , stars , forks } = await getRepo (url); 
+ return ( 
+ div className = "not-prose grid gap-4" > 
+ h3 >{description} h3 > 
+ p >{stars} stars p > 
+ p >{forks} forks p > 
+ div > 
+ ); 
+ } 
+```
+
+ Then, include it in your MDX content:
+
+ components/mdx 
+
+```
+ import { useMDXComponent } from "@content-collections/mdx/react" ; 
+ import { GithubRepo } from "./github-repo" ; 
+
+ export function MDX ({ code , className } : { code : string ; className ?: string }) { 
+ const Component = useMDXComponent (code); 
+
+ return ( 
+ article > 
+ Component 
+ components = {{ 
+ GithubRepo, 
+ }} 
+ /> 
+ article > 
+ ); 
+ } 
+```
+
+### 4. Actively maintained by an incredible developer
+
+ Content Collections is actively maintained by [Sebastian Sdorra](https://github.com/sdorra). If you've enjoyed using Content Collections, we highly recommend [sponsoring Sebastian](https://github.com/sponsors/sdorra) to help him maintain this project.
+
+## How to migrate from Contentlayer to Content Collections?
+
+Since Content Collections is a drop-in replacement for Contentlayer, migrating from Contentlayer to Content Collections is fairly straightforward.
+
+ [1
+
+## Installation](#installation) 
+
+First, install the required Content Collections packages.
+
+If you're using Next.js, you'll also need to install `@content-collections/next` as well as `@content-collections/mdx` for MDX support.
+
+ npm pnpm yarn bun 
+
+```
+ pnpm add --save-dev @content-collections/core @content-collections/mdx @content-collections/next 
+```
+
+ [2
+
+## Update tsconfig.json](#update-tsconfigjson) Then, adjust your `tsconfig.json` file:
+
+ tsconfig.json 
+
+```
+ { 
+ "compilerOptions" : { 
+ // ... 
+ "paths" : { 
+ "@/*" : [ "./*" ], 
+ "contentlayer/generated" : [ "./.contentlayer/generated" ], 
+ "content-collections" : [ "./.content-collections/generated" ] 
+ } 
+ } 
+ } 
+```
+
+ [3
+
+## Update your next.config.js](#update-your-nextconfigjs) Next, update your `next.config.js` file:
+
+ next.config.js 
+
+```
+ // import { withContentlayer } from "next-contentlayer"; 
+ import { withContentCollections } from "@content-collections/next" ; 
+
+ // export default withContentlayer(nextConfig); 
+ export default withContentCollections (nextConfig); 
+```
+
+ [4
+
+## Create content-collections.ts file](#create-content-collectionsts-file) Next, add a `content-collections.ts` file at the root of your project. As you can see, the main difference is the usage of [Zod](https://zod.dev) for schema validation.
+
+ contentlayer.config.ts content-collections.ts 
+
+```
+ import { defineCollection, defineConfig } from "@content-collections/core" ; 
+
+ const BlogPost = defineCollection ({ 
+ name: "BlogPost" , 
+ directory: "content/blog" , 
+ include: "*.mdx" , 
+ schema : ( z ) => ({ 
+ title: z. string (), 
+ categories: z 
+ . array (z. enum ([ "company" , "engineering" , "education" , "customers" ])) 
+ . default ([ "company" ]), 
+ }), 
+ }); 
+
+ export default defineConfig ({ 
+ collections: [BlogPost], 
+ }); 
+```
+
+ If you're using any Remark or Rehype plugins, you'll need to update them accordingly as well. Since Content Collections [does not compile or parse the content by default](https://sdorra.dev/posts/2024-01-15-content-collections#content), you'll need to use the `transform` option to pass the plugins to the compiler:
+
+ contentlayer.config.ts content-collections.ts 
+
+```
+ import { defineCollection, defineConfig } from "@content-collections/core" ; 
+ import { compileMDX } from "@content-collections/mdx" ; 
+ import { rehypeCode, remarkGfm } from "fumadocs-core/mdx-plugins" ; 
+
+ async function transformMDX ( document ) { 
+ const body = await compileMDX (context, document, { 
+ ... options, 
+ remarkPlugins: [remarkGfm], 
+ rehypePlugins: [[rehypeCode]], 
+ }); 
+ return { 
+ ... document, 
+ body, 
+ }; 
+ } 
+
+ const BlogPost = defineCollection ({ 
+ name: "BlogPost" , 
+ directory: "content/blog" , 
+ include: "*.mdx" , 
+ schema : ( z ) => ({ 
+ title: z. string (), 
+ categories: z 
+ . array (z. enum ([ "company" , "engineering" , "education" , "customers" ])) 
+ . default ([ "company" ]), 
+ }), 
+ transform: transformMDX, 
+ }); 
+
+ export default defineConfig ({ 
+ collections: [BlogPost], 
+ }); 
+
+```
+
+<Callout type="tip">
+The reason why Content Collections does not parse or compile the content by default is for flexibility - you can essentially bring your own Markdown formatter/library and use it with Content Collections.
+</Callout>
+
+ [5
+
+## Update content imports](#update-content-imports) Finally, update your imports to use the new `content-collections` source. This can be as simple as doing a `CMD+SHIFT+F` and replacing `contentlayer/generated` with `content-collections`.
+
+ blog/page.tsx 
+
+```
+ // import { allBlogPosts } from "contentlayer/generated"; 
+ import { allBlogPosts } from "content-collections" ; 
+
+ export default function Blog () { 
+ const posts = allBlogPosts (); 
+ return ( 
+ div > 
+ {posts. map (( post ) => ( 
+ BlogPost post = {post} /> 
+ ))} 
+ div > 
+ ); 
+ } 
+```
+
+ You might also need to update your MDX component's `code` attribute as well:
+
+ blog/[slug]/page.tsx 
+
+```
+ import { MDX } from "@/components/mdx" ; 
+
+ export default function BlogPost ({ params } : { params : { slug : string } }) { 
+ const posts = allBlogPosts (); 
+ const post = posts. find (( post ) => post.slug === params.slug); 
+ return ( 
+ MDX 
+ // code={data.body.code} 
+ code = {data.body} 
+ /> 
+ ); 
+ } 
+```
+
+ [6
+
+## Remove Contentlayer dependencies & files](#remove-contentlayer-dependencies--files) Finally, remove any Contentlayer dependencies and files from your project.
+
+ npm pnpm yarn bun 
+
+```
+ pnpm remove contentlayer next-contentlayer 
+ rm -rf .contentlayer contentlayer.config.ts 
+```
+
+ And voilà! You've successfully migrated your project from Contentlayer to Content Collections.
+
+## Scale your content pipeline with Content Collections
+
+We're very excited about what this migration to Content Collections unlocks for Dub. Not only does it give us a much better developer experience with its Zod schema validation, but it also allows us to ensure our content pipeline is more robust and reliable in the long run.
+
+As always, our codebase is fully open-source, so feel free to check it out and learn more about the latest tech we're using at [Dub](/):
+
+And if you're looking for an actively maintained, modern alternative to Contentlayer, we highly recommend giving Content Collections a try.

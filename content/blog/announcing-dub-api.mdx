@@ -1,0 +1,79 @@
+---
+slug: "announcing-dub-api"
+title: "Announcing the Dub API General Availability (GA)"
+summary: "We&#x27;re excited to announce that the Dub API is now generally available, with native SDKs in the languages you love."
+image: "https://assets.dub.co/cms/dub-api-2.jpg"
+dateIso: "2024-07-09T00:00:00.000Z"
+dateFormatted: "July 9, 2024"
+category: "engineering"
+categoryName: "Engineering"
+authors:
+  - name: "Kiran Krishnan"
+    image: "https://assets.dub.co/author/tokirankrishnan.jpg"
+    title: "Core Engineering"
+  - name: "Steven Tey"
+    image: "https://assets.dub.co/author/steventey.jpg"
+    title: "Core Engineering"
+---
+
+Ever since we soft launched [our API](/docs/api-reference/introduction) a few months ago, we've been working hard to improve its stability & developer experience. Some of the improvements include:
+
+1. **Workspace API keys**: We simplified our API DX by moving keys to the workspace-level.
+2. **Restricted scopes**: You can now set fine-grained permission scopes for your API keys.
+3. **Machine users**: You can also create machine users to associate API keys with.
+
+Our API infrastructure has been production-ready for months now, but we chose to keep the "beta" label as we iterated our API syntax and functionality.
+
+ 10M+
+
+links created/mo
+
+ 300M+
+
+events tracked/mo
+
+In fact, companies like [Raycast](/customers/raycast), [Opensauced](/customers/opensauced), [Midday](/customers/midday), and [Whop](http://whop.com/) have already been leveraging our API in production to shorten links programmatically. Some of our most active API users are currently generating over *thousands* of links per day.
+
+Today, we're confident in our ability to support any production-level link management use case. Whether you're running a SMS campaign with *millions* of short links or an ad campaign with *billions* of clicks, we've got you covered.
+
+<Quote author="Thomas Paul Mann" role="CEO & Co-Founder" avatar="https://assets.dub.co/customers/raycast-thomas.jpeg">
+Dub's link infrastructure & analytics has helped us gain valuable insights into the link-sharing use case of Ray.so. And all of it with just a few lines of code.
+</Quote>
+
+## Native SDKs in 4 languages
+
+With the GA launch, we're also excited to unveil native SDKs in 4 different languages:
+
+ [Pythonpip install dub](/sdks/python)[Gogo get github.com/dub...](/sdks/go)[Rubygem install dub](/sdks/ruby)[PHPcomposer require dub/dub-php](/sdks/php) 
+ This makes it much easier for developers to integrate Dub's link infrastructure into their applications, without needing to reach for different fetch libraries in their respective environments.
+
+We've also created [quickstart guides](/docs/quickstart/typescript) for each of these languages, as well as [code examples](https://github.com/dubinc/examples) to get you started. For example, here's how you can create a link in TypeScript, Python, Ruby, and Go:
+
+ TypeScript Python Ruby Go 
+
+```
+ import { Dub } from "dub" 
+
+ const dub = new Dub ({ token: "DUB_API_KEY" }) 
+
+ const { shortLink } = await dub.links. create ({ url: "https://dub.co" }) 
+```
+
+## Example applications
+
+ To show you the potential of Dub, we've also created a collection of [open-source examples](/docs/examples).
+
+For example, we recently built [OSS Gallery](https://oss.gallery), which shows how you can generate short links on the fly and display real-time click analytics for those links directly inside your application:
+
+[Raycast](/customers/raycast) also recently open-sourced [Ray.so](https://ray.so), where they use Dub to generate short links for easy sharing & analytics:
+
+## What's next?
+
+We're incredibly excited for you to try out the new [Dub API](/docs/api-reference/introduction) and [SDKs](/docs/sdks/overview).
+
+This is just the beginning. Here are some of the features we're working on next:
+
+- **OAuth Flow**: We're currently working on an OAuth flow for you to easily build integrations with Dub – instead of manually creating API keys and entering them into your application, users can "Sign in with Dub" in 1-click.
+- **Integrations Marketplace**: Once you've built your integration, you can submit it to the Dub Integrations Marketplace to share it with the Dub community.
+
+We're looking forward to hearing your feedback – feel free to [reach out to us](/contact/support) or [tweet at us](https://twitter.com/dubdotco)!
