@@ -67,7 +67,12 @@ export function PostTOC({ headings }: PostTOCProps) {
                   e.preventDefault();
                   const target = document.getElementById(heading.id);
                   if (target) {
-                    target.scrollIntoView({ behavior: "smooth" });
+                    const lenis = (window as unknown as { lenis?: { scrollTo: (target: HTMLElement, options?: { offset?: number }) => void } }).lenis;
+                    if (lenis) {
+                      lenis.scrollTo(target, { offset: -80 });
+                    } else {
+                      target.scrollIntoView({ behavior: "smooth" });
+                    }
                     window.history.pushState(null, "", `#${heading.id}`);
                   }
                 }}
