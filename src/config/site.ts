@@ -6,7 +6,7 @@ export const siteConfig = {
   ogImage: "https://assets.dub.co/og/partners.jpg",
   author: {
     name: "Syed",
-    image: "https://assets.dub.co/author/steventey.jpg",
+    image: "/images/author-avatar.png",
     title: "Engineering & Architecture",
   },
   links: {

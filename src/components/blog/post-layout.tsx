@@ -25,7 +25,7 @@ function decodeEntities(text: string) {
 export function PostLayout({ post, relatedPosts, mdxContent }: PostLayoutProps) {
   const primaryAuthor = post.authors[0] || {
     name: "Syed",
-    image: "https://assets.dub.co/author/steventey.jpg",
+    image: "/images/author-avatar.png",
     title: "Engineering & Architecture",
   };
 
