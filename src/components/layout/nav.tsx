@@ -1,15 +1,35 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { SyedBlogWordmark } from "./brand";
 import { Menu, X } from "lucide-react";
+import { ScrollProgress } from "./scroll-progress";
+import { cn } from "@/lib/utils";
 
 export function Nav() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 15);
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-grid-border/80 bg-white/80 backdrop-blur-md transition-all">
+    <header
+      className={cn(
+        "sticky top-0 z-50 w-full transition-all duration-300",
+        isScrolled
+          ? "border-b border-grid-border bg-white/85 backdrop-blur-xl shadow-[0_4px_20px_-2px_rgba(0,0,0,0.06)]"
+          : "border-b border-grid-border/80 bg-white/70 backdrop-blur-md shadow-none",
+      )}
+    >
+      <ScrollProgress />
       <div className="mx-auto flex h-14 max-w-grid-width items-center justify-between px-4 sm:px-8">
         <div className="flex items-center gap-8">
           <Link href="/blog" className="flex items-center gap-2">

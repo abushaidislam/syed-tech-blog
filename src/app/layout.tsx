@@ -4,6 +4,8 @@ import { cn } from "@/lib/utils";
 import type { Metadata } from "next";
 import { Nav } from "@/components/layout/nav";
 import { Footer } from "@/components/layout/footer";
+import { SmoothScrollProvider } from "@/components/layout/smooth-scroll-provider";
+import { BackToTop } from "@/components/layout/back-to-top";
 import { siteConfig } from "@/config/site";
 
 export const metadata: Metadata = {
@@ -49,13 +51,15 @@ export default function RootLayout({
         satoshi.variable,
         inter.variable,
         geistMono.variable,
-        "scroll-smooth",
       )}
     >
       <body className="font-default text-neutral-900 antialiased selection:bg-neutral-900 selection:text-white min-h-screen flex flex-col justify-between bg-white">
-        <Nav />
-        <div className="grow">{children}</div>
-        <Footer />
+        <SmoothScrollProvider>
+          <Nav />
+          <div className="grow">{children}</div>
+          <Footer />
+          <BackToTop />
+        </SmoothScrollProvider>
       </body>
     </html>
   );
