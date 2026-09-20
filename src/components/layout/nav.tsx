@@ -4,7 +4,6 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { SyedBlogWordmark } from "./brand";
 import { Menu, X } from "lucide-react";
-import { ScrollProgress } from "./scroll-progress";
 import { cn } from "@/lib/utils";
 
 export function Nav() {
@@ -29,7 +28,6 @@ export function Nav() {
           : "border-b border-grid-border/80 bg-white/70 backdrop-blur-md shadow-none",
       )}
     >
-      <ScrollProgress />
       <div className="mx-auto flex h-14 max-w-grid-width items-center justify-between px-4 sm:px-8">
         <div className="flex items-center gap-8">
           <Link href="/blog" className="flex items-center gap-2">
