@@ -63,9 +63,10 @@
   --content-error: 252 165 165;
 }
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+@config "../../tailwind.config.ts";
+@plugin "@tailwindcss/typography";
+@plugin "@tailwindcss/forms";
 
 /* Universal Sleek Scrollbars matching Dub UX */
 * {
