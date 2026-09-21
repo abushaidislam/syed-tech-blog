@@ -52,7 +52,7 @@ export function AuthorSpotlight({ author, className = "" }: AuthorSpotlightProps
             alt={profile.name}
             width={80}
             height={80}
-            unoptimized
+            sizes="(max-width: 640px) 64px, 80px"
             className="size-full object-cover"
           />
         </div>

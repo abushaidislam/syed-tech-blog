@@ -84,6 +84,7 @@ export function PostLayout({ post, relatedPosts, mdxContent }: PostLayoutProps) 
                       width={1200}
                       height={630}
                       priority
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 70vw, 800px"
                       className="aspect-[1200/630] size-full object-cover"
                     />
                   ) : (
@@ -130,6 +131,7 @@ export function PostLayout({ post, relatedPosts, mdxContent }: PostLayoutProps) 
                                 alt={related.title}
                                 width={200}
                                 height={112}
+                                sizes="(max-width: 640px) 100vw, 200px"
                                 className="size-full object-cover"
                               />
                             ) : (

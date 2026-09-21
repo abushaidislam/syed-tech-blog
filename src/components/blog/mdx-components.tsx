@@ -1,4 +1,5 @@
 import React from "react";
+import Image from "next/image";
 import Link from "next/link";
 import {
   Lightbulb,
@@ -9,6 +10,23 @@ import {
 } from "lucide-react";
 import { slugify } from "@/lib/utils";
 import { CodeBlock, HeadingAnchor } from "./mdx-client-components";
+
+function isOptimizableImage(src: string): boolean {
+  if (src.startsWith("/")) return true;
+  try {
+    const url = new URL(src);
+    const allowed = [
+      "assets.dub.co",
+      "images.unsplash.com",
+      "avatar.vercel.sh",
+      "github.com",
+      "avatars.githubusercontent.com",
+    ];
+    return allowed.includes(url.hostname);
+  } catch {
+    return false;
+  }
+}
 
 /**
  * Extract plain text from React children to generate heading IDs.
@@ -50,9 +68,13 @@ export function Quote({
         <div className="flex items-center gap-3">
           {avatar && (
             <div className="relative size-6 shrink-0 rounded-full overflow-hidden">
-              <img
+              <Image
                 src={avatar}
                 alt={author || "Quote author"}
+                width={24}
+                height={24}
+                sizes="24px"
+                unoptimized={!isOptimizableImage(avatar)}
                 className="size-6 rounded-full object-cover"
               />
               <div className="pointer-events-none absolute inset-0 rounded-full shadow-[inset_0_0_0_1px_rgba(0,0,0,0.1)]" />
@@ -224,15 +246,19 @@ export const blogMdxComponents = {
   ),
 
   img: ({ src, alt }: React.ImgHTMLAttributes<HTMLImageElement>) => {
-    if (!src) return null;
+    if (!src || typeof src !== "string") return null;
     return (
       <span className="not-prose group relative my-8 block w-full overflow-hidden rounded-xl border border-neutral-200 bg-neutral-50 shadow-sm">
-        <img
-          src={src}
-          alt={alt || "Post illustration"}
-          loading="lazy"
-          className="w-full object-cover transition-transform duration-300 group-hover:scale-[1.01]"
-        />
+        <div className="relative aspect-[16/9] w-full bg-neutral-100">
+          <Image
+            src={src}
+            alt={alt || "Post illustration"}
+            fill
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 750px, 800px"
+            unoptimized={!isOptimizableImage(src)}
+            className="object-cover transition-transform duration-300 group-hover:scale-[1.01]"
+          />
+        </div>
         {alt && (
           <span className="block border-t border-neutral-100 bg-white px-4 py-2 text-center text-xs text-neutral-500">
             {alt}

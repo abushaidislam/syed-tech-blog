@@ -17,6 +17,7 @@ export function PostSidebarCTA() {
           alt="Syed Blog"
           width={600}
           height={315}
+          sizes="(max-width: 768px) 100vw, 350px"
           className="size-full object-cover"
         />
       </div>
