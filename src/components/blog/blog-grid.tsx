@@ -1,25 +1,9 @@
-"use client";
-
-import { motion, type Variants } from "motion/react";
 import type { BlogPostMeta } from "@/types/blog";
 import { BlogCard } from "./blog-card";
 
 interface BlogGridProps {
   posts: BlogPostMeta[];
 }
-
-const cardVariants: Variants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      type: "spring",
-      stiffness: 260,
-      damping: 24,
-    },
-  },
-};
 
 export function BlogGrid({ posts }: BlogGridProps) {
   if (posts.length === 0) {
@@ -35,16 +19,12 @@ export function BlogGrid({ posts }: BlogGridProps) {
       <div className="relative z-0 mx-auto max-w-grid-width border-x border-grid-border">
         <div className="grid grid-cols-1 md:grid-cols-3 md:[&>*:not(:nth-child(3n))]:border-r md:[&>*:nth-child(n+4)]:border-t [&>*]:border-grid-border max-md:[&>*]:border-t">
           {posts.map((post, index) => (
-            <motion.div
+            <div
               key={post.slug}
-              variants={cardVariants}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, margin: "-40px" }}
               className="flex h-full flex-col"
             >
-              <BlogCard post={post} priority={index < 3} />
-            </motion.div>
+              <BlogCard post={post} priority={index === 0} />
+            </div>
           ))}
         </div>
       </div>

@@ -13,6 +13,12 @@ export function SmoothScrollProvider({ children }: SmoothScrollProviderProps) {
   const lenisRef = useRef<Lenis | null>(null);
 
   useEffect(() => {
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const isTouchDevice = window.matchMedia("(pointer: coarse)").matches;
+
+    // Native scrolling is lighter and more predictable on touch devices.
+    if (prefersReducedMotion || isTouchDevice) return;
+
     // Initialize Lenis smooth scroll
     const lenis = new Lenis({
       duration: 1.15,

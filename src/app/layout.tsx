@@ -15,6 +15,9 @@ export const metadata: Metadata = {
     template: `%s | ${siteConfig.name}`,
   },
   description: siteConfig.description,
+  alternates: {
+    canonical: siteConfig.url,
+  },
   openGraph: {
     title: siteConfig.name,
     description: siteConfig.description,
@@ -63,6 +66,23 @@ export default function RootLayout({
       )}
     >
       <body className="font-default text-neutral-900 antialiased selection:bg-neutral-900 selection:text-white min-h-screen flex flex-col justify-between bg-white">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebSite",
+              name: siteConfig.name,
+              url: siteConfig.url,
+              description: siteConfig.description,
+              publisher: {
+                "@type": "Person",
+                name: siteConfig.author.name,
+                url: siteConfig.url,
+              },
+            }),
+          }}
+        />
         <SmoothScrollProvider>
           <Nav />
           <div className="grow">{children}</div>

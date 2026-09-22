@@ -27,7 +27,6 @@ export function SkyAnimation({
           src="/images/clouds-pattern.png"
           width={887}
           height={267}
-          priority
           className="relative block h-full w-auto animate-infinite-scroll [--scroll:-100%]"
           style={{ animationDuration: duration }}
         />
@@ -36,7 +35,6 @@ export function SkyAnimation({
           src="/images/clouds-pattern.png"
           width={887}
           height={267}
-          priority
           className="-ml-px relative block h-full w-auto animate-infinite-scroll [--scroll:-100%]"
           style={{ animationDuration: duration }}
         />

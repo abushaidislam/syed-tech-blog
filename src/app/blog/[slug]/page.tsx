@@ -9,6 +9,7 @@ import {
 } from "@/lib/blog";
 import { PostLayout } from "@/components/blog/post-layout";
 import { blogMdxComponents } from "@/components/blog/mdx-components";
+import { siteConfig } from "@/config/site";
 import remarkGfm from "remark-gfm";
 
 export function generateStaticParams() {
@@ -36,9 +37,13 @@ export async function generateMetadata({
   return {
     title: `${post.title} | Syed Blog`,
     description: post.summary,
+    alternates: {
+      canonical: `/blog/${post.slug}`,
+    },
     openGraph: {
       title: post.title,
       description: post.summary,
+      url: `/blog/${post.slug}`,
       ...(post.image && {
         images: [
           {
@@ -79,6 +84,10 @@ export default async function BlogPostPage({
   };
 
   const relatedPosts = getRelatedPosts(slug, 4);
+  const postUrl = new URL(`/blog/${post.slug}`, siteConfig.url).toString();
+  const imageUrl = post.image
+    ? new URL(post.image, siteConfig.url).toString()
+    : undefined;
 
   const { content: mdxContent } = await compileMDX({
     source: postMdx.content,
@@ -92,6 +101,48 @@ export default async function BlogPostPage({
 
   return (
     <main className="min-h-screen bg-white">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify([
+            {
+              "@context": "https://schema.org",
+              "@type": "Article",
+              headline: post.title,
+              description: post.summary,
+              url: postUrl,
+              datePublished: post.dateIso,
+              dateModified: post.dateIso,
+              ...(imageUrl ? { image: [imageUrl] } : {}),
+              author: post.authors.map((author) => ({
+                "@type": "Person",
+                name: author.name,
+                ...(author.image
+                  ? { image: new URL(author.image, siteConfig.url).toString() }
+                  : {}),
+              })),
+              publisher: {
+                "@type": "Person",
+                name: siteConfig.author.name,
+                url: siteConfig.url,
+              },
+              mainEntityOfPage: {
+                "@type": "WebPage",
+                "@id": postUrl,
+              },
+            },
+            {
+              "@context": "https://schema.org",
+              "@type": "BreadcrumbList",
+              itemListElement: [
+                { "@type": "ListItem", position: 1, name: "Home", item: siteConfig.url },
+                { "@type": "ListItem", position: 2, name: "Blog", item: `${siteConfig.url}/blog` },
+                { "@type": "ListItem", position: 3, name: post.title, item: postUrl },
+              ],
+            },
+          ]),
+        }}
+      />
       <PostLayout post={post} relatedPosts={relatedPosts} mdxContent={mdxContent} />
     </main>
   );

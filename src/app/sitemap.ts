@@ -15,7 +15,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   const categoryRoutes: MetadataRoute.Sitemap = BLOG_CATEGORIES.map((cat) => ({
     url: `${siteConfig.url}/blog/category/${cat.slug}`,
-    lastModified: new Date(),
     changeFrequency: "weekly",
     priority: 0.7,
   }));
@@ -23,13 +22,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const staticRoutes: MetadataRoute.Sitemap = [
     {
       url: siteConfig.url,
-      lastModified: new Date(),
       changeFrequency: "daily",
       priority: 1.0,
     },
     {
       url: `${siteConfig.url}/blog`,
-      lastModified: new Date(),
       changeFrequency: "daily",
       priority: 0.9,
     },

@@ -23,7 +23,7 @@ const config: Config = {
         display: ["var(--font-satoshi)", "system-ui", "sans-serif"],
         default: ["var(--font-inter)", "system-ui", "sans-serif"],
         mono: ["var(--font-geist-mono, ui-monospace)", "ui-monospace", "monospace"],
-        rowan: ["Rowan", "Georgia", "serif"],
+        rowan: ["Georgia", "Times New Roman", "serif"],
       },
       fontSize: {
         "2xs": [

@@ -3,7 +3,7 @@ export const siteConfig = {
   description:
     "Engineering insights, high-scale digital architecture, and modern software tutorials by Syed.",
   url: process.env.NEXT_PUBLIC_SITE_URL || "https://syedblog.com",
-  ogImage: "https://assets.dub.co/og/partners.jpg",
+  ogImage: "/images/blog/default-cover.jpg",
   author: {
     name: "Syed",
     image: "/images/author-avatar.png",
