@@ -10,20 +10,33 @@ export function BackToTop() {
   const [scrollProgress, setScrollProgress] = useState(0);
 
   useEffect(() => {
+    let ticking = false;
+    let frameId: number;
+
     const handleScroll = () => {
-      const totalScroll =
-        document.documentElement.scrollHeight - window.innerHeight;
-      const currentScroll = window.scrollY;
+      if (!ticking) {
+        // ⚡ Bolt Optimization: Throttle scroll event to RAF to prevent layout thrashing and excessive state updates on main thread.
+        frameId = window.requestAnimationFrame(() => {
+          const totalScroll =
+            document.documentElement.scrollHeight - window.innerHeight;
+          const currentScroll = window.scrollY;
 
-      if (totalScroll > 0) {
-        setScrollProgress(Math.min(100, Math.round((currentScroll / totalScroll) * 100)));
+          if (totalScroll > 0) {
+            setScrollProgress(Math.min(100, Math.round((currentScroll / totalScroll) * 100)));
+          }
+
+          setIsVisible(currentScroll > 320);
+          ticking = false;
+        });
+        ticking = true;
       }
-
-      setIsVisible(currentScroll > 320);
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      if (frameId) window.cancelAnimationFrame(frameId);
+    };
   }, []);
 
   const scrollToTop = () => {
