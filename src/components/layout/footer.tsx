@@ -1,8 +1,7 @@
-"use client";
-
 import Link from "next/link";
 import { SyedBlogWordmark } from "./brand";
 import { cn } from "@/lib/utils";
+import { siteConfig } from "@/config/site";
 import {
   ArrowUpRight,
   Cpu,
@@ -52,7 +51,7 @@ export function LiveStatusBadge({ className }: StatusBadgeProps) {
     <Link
       href="/blog"
       className={cn(
-        "group flex max-w-fit items-center gap-2.5 rounded-lg border border-neutral-200 bg-white py-1.5 pl-2.5 pr-3 shadow-sm transition-all hover:border-neutral-300 hover:bg-neutral-50 active:scale-[0.98]",
+        "group flex max-w-fit items-center gap-2.5 rounded-lg border border-neutral-200 bg-white py-1.5 pl-2.5 pr-3 shadow-sm transition-colors hover:border-neutral-300 hover:bg-neutral-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900 focus-visible:ring-offset-2",
         className,
       )}
     >
@@ -61,7 +60,7 @@ export function LiveStatusBadge({ className }: StatusBadgeProps) {
         <span className="relative inline-flex size-2 rounded-full bg-emerald-500" />
       </div>
       <p className="text-xs font-medium leading-none text-neutral-700 transition-colors group-hover:text-neutral-900">
-        All systems operational
+        Fresh writing, thoughtfully published
       </p>
     </Link>
   );
@@ -71,22 +70,22 @@ const socials = [
   {
     name: "Twitter",
     icon: TwitterIcon,
-    href: "https://twitter.com",
+    href: siteConfig.links.twitter,
   },
   {
     name: "LinkedIn",
     icon: LinkedInIcon,
-    href: "https://linkedin.com",
+    href: siteConfig.links.linkedin,
   },
   {
     name: "GitHub",
     icon: GitHubIcon,
-    href: "https://github.com",
+    href: siteConfig.links.github,
   },
   {
     name: "YouTube",
     icon: YouTubeIcon,
-    href: "https://youtube.com",
+    href: siteConfig.links.youtube,
   },
 ];
 
@@ -131,7 +130,7 @@ const navigation = {
     { name: "Documentation", href: "/blog" },
     {
       name: "Source Code",
-      href: "https://github.com",
+      href: siteConfig.links.github,
       external: true,
     },
   ],
@@ -148,181 +147,235 @@ const navigation = {
 const linkHeaderClass = "text-sm font-semibold text-neutral-900 tracking-tight";
 const linkListClass = "flex flex-col mt-3.5 gap-3";
 const linkItemClass =
-  "group flex items-center gap-2 text-sm text-neutral-500 transition-all duration-150 hover:text-neutral-900 hover:translate-x-0.5";
+  "group flex items-center gap-2 text-sm text-neutral-500 transition-colors hover:text-neutral-900 focus-visible:rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900 focus-visible:ring-offset-2";
 
 export function Footer() {
   return (
-    <div className="relative z-10 mx-auto w-full max-w-grid-width px-4 pt-10 sm:px-8">
-      <div className="relative overflow-hidden rounded-t-3xl border border-b-0 border-grid-border bg-white/70 py-16 backdrop-blur-xl shadow-[0_-8px_30px_rgba(0,0,0,0.02)]">
-        {/* Subtle Ambient Grid Background Mask */}
-        <div className="pointer-events-none absolute inset-0 border-x border-neutral-100/60 [mask-image:linear-gradient(black,transparent)]" />
+    <>
+      {/* Spacer Grid Section */}
+      <div className="grid-section relative overflow-clip border-y border-b-0 border-grid-border px-4 [.grid-section_~_&]:border-t-0">
+        <div className="relative z-0 mx-auto h-12 max-w-grid-width border-x border-grid-border sm:h-16" />
+      </div>
 
-        <footer className="relative mx-auto max-w-7xl px-6 sm:px-10">
-          <div className="xl:grid xl:grid-cols-3 xl:gap-12">
-            {/* Left Col: Brand Wordmark + Bio + Socials */}
-            <div className="flex flex-col justify-between gap-8">
-              <div className="space-y-4">
-                <Link href="/blog" className="block max-w-fit">
-                  <SyedBlogWordmark />
-                </Link>
-                <p className="max-w-xs text-sm leading-relaxed text-neutral-500">
-                  Engineering insights, high-scale digital architecture, and modern software tutorials by Syed.
-                </p>
-              </div>
-
-              {/* Social Icons matching Dub UX */}
-              <div className="flex items-center gap-2">
-                {socials.map(({ name, icon: Icon, href }) => (
-                  <a
-                    key={name}
-                    href={href}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="group flex size-9 items-center justify-center rounded-lg border border-neutral-200/80 bg-white text-neutral-600 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-neutral-300 hover:bg-neutral-50 hover:text-neutral-900 hover:shadow"
-                    aria-label={name}
+      {/* Footer Main Section — Grid-line style */}
+      <div className="grid-section relative overflow-clip border-y border-grid-border px-4 [.grid-section_~_&]:border-t-0">
+        <div className="relative z-0 mx-auto max-w-grid-width border-x border-grid-border">
+          {/* Ambient grid background mask */}
+          <div className="pointer-events-none absolute inset-0 overflow-hidden">
+            <div className="absolute inset-y-0 left-1/2 w-[1200px] -translate-x-1/2">
+              <svg
+                className="pointer-events-none absolute inset-0 text-grid-border/40 [mask-composite:intersect] [mask-image:linear-gradient(transparent,black),radial-gradient(black,transparent)]"
+                width="100%"
+                height="100%"
+              >
+                <defs>
+                  <pattern
+                    id="grid-footer-bg"
+                    x="-1"
+                    y="-1"
+                    width="60"
+                    height="60"
+                    patternUnits="userSpaceOnUse"
                   >
-                    <Icon className="size-4 transition-transform duration-200 group-hover:scale-110" />
-                  </a>
-                ))}
-              </div>
+                    <path
+                      d="M 60 0 L 0 0 0 60"
+                      fill="transparent"
+                      stroke="currentColor"
+                      strokeWidth="1"
+                    />
+                  </pattern>
+                </defs>
+                <rect
+                  fill="url(#grid-footer-bg)"
+                  width="100%"
+                  height="100%"
+                />
+              </svg>
             </div>
+          </div>
 
-            {/* Right Cols: Navigation Links Grid */}
-            <div className="mt-14 grid grid-cols-2 gap-8 sm:grid-cols-4 xl:col-span-2 xl:mt-0">
-              {/* Product / Topics */}
-              <div>
-                <h3 className={linkHeaderClass}>Topics</h3>
-                <ul role="list" className={linkListClass}>
-                  {navigation.product.map((item) => {
-                    const Icon = item.icon;
-                    return (
+          <footer className="relative">
+            {/* Top Row: Brand + Navigation Grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-12">
+              {/* Left Col: Brand Wordmark + Bio + Socials */}
+              <div className="flex flex-col justify-between gap-8 border-b border-grid-border bg-white/70 p-6 sm:p-10 lg:col-span-4 lg:border-b-0 lg:border-r">
+                <div className="space-y-5">
+                  <Link
+                    href="/blog"
+                    className="group block max-w-fit rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900 focus-visible:ring-offset-2"
+                  >
+                    <SyedBlogWordmark />
+                  </Link>
+                  <p className="max-w-xs text-sm leading-relaxed text-neutral-500">
+                    Engineering insights, high-scale digital architecture, and
+                    modern software tutorials by Syed.
+                  </p>
+                  <Link
+                    href="/blog"
+                    className="group inline-flex items-center gap-1.5 text-sm font-semibold text-neutral-900 transition-colors hover:text-neutral-600 focus-visible:rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900 focus-visible:ring-offset-2"
+                  >
+                    Browse all articles
+                    <ArrowUpRight className="size-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                  </Link>
+                </div>
+
+                {/* Social Icons */}
+                <div className="flex items-center gap-2">
+                  {socials.map(({ name, icon: Icon, href }) => (
+                    <a
+                      key={name}
+                      href={href}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="group flex size-9 items-center justify-center rounded-lg border border-neutral-200/80 bg-white text-neutral-600 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-neutral-300 hover:bg-neutral-50 hover:text-neutral-900 hover:shadow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900 focus-visible:ring-offset-2"
+                      aria-label={name}
+                    >
+                      <Icon className="size-4 transition-transform duration-200 group-hover:scale-110" />
+                    </a>
+                  ))}
+                </div>
+              </div>
+
+              {/* Right Cols: Navigation Links Grid — 4 columns with grid-line borders */}
+              <div className="grid grid-cols-2 lg:col-span-8 sm:grid-cols-4">
+                {/* Topics */}
+                <div className="border-b border-r border-grid-border bg-white/35 p-6 sm:border-b sm:p-8">
+                  <h3 className={linkHeaderClass}>Topics</h3>
+                  <ul role="list" className={linkListClass}>
+                    {navigation.product.map((item) => {
+                      const Icon = item.icon;
+                      return (
+                        <li key={item.name}>
+                          <Link href={item.href} className={linkItemClass}>
+                            <span
+                              className={cn(
+                                "flex size-5 shrink-0 items-center justify-center rounded border transition-colors",
+                                item.color,
+                              )}
+                            >
+                              <Icon className="size-3" />
+                            </span>
+                            <span>{item.name}</span>
+                          </Link>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
+
+                {/* Categories */}
+                <div className="border-b border-grid-border bg-white/35 p-6 sm:border-r sm:p-8">
+                  <h3 className={linkHeaderClass}>Categories</h3>
+                  <ul role="list" className={linkListClass}>
+                    {navigation.categories.map((item) => (
                       <li key={item.name}>
                         <Link href={item.href} className={linkItemClass}>
-                          <span
-                            className={cn(
-                              "flex size-5 shrink-0 items-center justify-center rounded border transition-colors",
-                              item.color,
-                            )}
-                          >
-                            <Icon className="size-3" />
-                          </span>
-                          <span>{item.name}</span>
+                          {item.name}
                         </Link>
                       </li>
-                    );
-                  })}
-                </ul>
-              </div>
+                    ))}
+                  </ul>
+                </div>
 
-              {/* Categories */}
-              <div>
-                <h3 className={linkHeaderClass}>Categories</h3>
-                <ul role="list" className={linkListClass}>
-                  {navigation.categories.map((item) => (
-                    <li key={item.name}>
-                      <Link href={item.href} className={linkItemClass}>
-                        {item.name}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+                {/* Resources */}
+                <div className="border-b border-r border-grid-border bg-white/35 p-6 sm:border-b-0 sm:p-8">
+                  <h3 className={linkHeaderClass}>Resources</h3>
+                  <ul role="list" className={linkListClass}>
+                    {navigation.resources.map((item) => (
+                      <li key={item.name}>
+                        <Link
+                          href={item.href}
+                          target={item.external ? "_blank" : undefined}
+                          rel={item.external ? "noreferrer" : undefined}
+                          className={linkItemClass}
+                        >
+                          <span>{item.name}</span>
+                          {item.external && (
+                            <ArrowUpRight className="size-3.5 opacity-60 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:opacity-100" />
+                          )}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
 
-              {/* Resources */}
-              <div>
-                <h3 className={linkHeaderClass}>Resources</h3>
-                <ul role="list" className={linkListClass}>
-                  {navigation.resources.map((item) => (
-                    <li key={item.name}>
-                      <Link
-                        href={item.href}
-                        target={item.external ? "_blank" : undefined}
-                        className={linkItemClass}
-                      >
-                        <span>{item.name}</span>
-                        {item.external && (
-                          <ArrowUpRight className="size-3.5 opacity-60 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:opacity-100" />
-                        )}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              {/* Company */}
-              <div>
-                <h3 className={linkHeaderClass}>Company</h3>
-                <ul role="list" className={linkListClass}>
-                  {navigation.company.map((item) => (
-                    <li key={item.name}>
-                      <Link href={item.href} className={linkItemClass}>
-                        {item.name}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
+                {/* Company */}
+                <div className="border-b border-grid-border bg-white/35 p-6 sm:border-b-0 sm:p-8">
+                  <h3 className={linkHeaderClass}>Company</h3>
+                  <ul role="list" className={linkListClass}>
+                    {navigation.company.map((item) => (
+                      <li key={item.name}>
+                        <Link href={item.href} className={linkItemClass}>
+                          {item.name}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* Bottom Row: Status Badge, SOC2 Badge, Copyright */}
-          <div className="mt-14 grid grid-cols-1 items-center gap-6 border-t border-neutral-200/80 pt-8 sm:grid-cols-3">
-            <div>
-              <LiveStatusBadge />
-            </div>
+            {/* Bottom Row */}
+            <div className="grid grid-cols-1 items-center sm:grid-cols-3">
+              <div className="border-b border-grid-border p-5 sm:border-b-0 sm:border-r sm:px-8">
+                <LiveStatusBadge />
+              </div>
 
-            {/* SOC 2 Type II Certified Badge */}
-            <div className="flex sm:justify-center">
-              <div
-                title="AICPA SOC 2 Type II Certified"
-                className="group flex items-center gap-2 rounded-lg border border-neutral-200 bg-white px-3 py-1.5 shadow-sm transition-all hover:border-neutral-300 hover:bg-neutral-50"
-              >
-                <svg
-                  viewBox="0 0 63 32"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-auto text-neutral-800 transition-[filter] group-hover:brightness-75"
+              {/* A concise, honest quality signal for a personal publication. */}
+              <div className="flex border-b border-grid-border p-5 sm:justify-center sm:border-b-0 sm:border-r sm:px-8">
+                <div
+                  title="A publication for people who build"
+                  className="group flex items-center gap-2 rounded-lg border border-neutral-200 bg-white px-3 py-1.5 shadow-sm transition-all hover:border-neutral-300 hover:bg-neutral-50"
                 >
-                  <rect width="63" height="32" rx="4" fill="#0A0A0A" />
-                  <path
-                    d="M14 9C10.6863 9 8 11.6863 8 15C8 18.3137 10.6863 21 14 21C16.5 21 18 19.5 18.5 18H15V16H20.8C20.9 16.5 21 17 21 17.5C21 21.5 18 24 14 24C9 24 5 20 5 15C5 10 9 6 14 6C17.5 6 20 8 20.8 11H18.5C17.8 9.8 16 9 14 9Z"
-                    fill="white"
-                  />
-                  <text
-                    x="24"
-                    y="16"
-                    fill="white"
-                    fontSize="7"
-                    fontWeight="bold"
-                    fontFamily="system-ui, sans-serif"
-                    letterSpacing="0.5"
+                  <svg
+                    viewBox="0 0 63 32"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-auto text-neutral-800 transition-[filter] group-hover:brightness-75"
                   >
-                    SOC 2
-                  </text>
-                  <text
-                    x="24"
-                    y="22"
-                    fill="#A3A3A3"
-                    fontSize="5"
-                    fontFamily="system-ui, sans-serif"
-                    letterSpacing="0.2"
-                  >
-                    TYPE II
-                  </text>
-                </svg>
-                <span className="text-[11px] font-medium text-neutral-600">
-                  Certified Security
-                </span>
+                    <rect width="63" height="32" rx="4" fill="#0A0A0A" />
+                    <path
+                      d="M14 9C10.6863 9 8 11.6863 8 15C8 18.3137 10.6863 21 14 21C16.5 21 18 19.5 18.5 18H15V16H20.8C20.9 16.5 21 17 21 17.5C21 21.5 18 24 14 24C9 24 5 20 5 15C5 10 9 6 14 6C17.5 6 20 8 20.8 11H18.5C17.8 9.8 16 9 14 9Z"
+                      fill="white"
+                    />
+                    <text
+                      x="24"
+                      y="16"
+                      fill="white"
+                      fontSize="7"
+                      fontWeight="bold"
+                      fontFamily="system-ui, sans-serif"
+                      letterSpacing="0.5"
+                    >
+                      BUILD
+                    </text>
+                    <text
+                      x="24"
+                      y="22"
+                      fill="#A3A3A3"
+                      fontSize="5"
+                      fontFamily="system-ui, sans-serif"
+                      letterSpacing="0.2"
+                    >
+                      IN PUBLIC
+                    </text>
+                  </svg>
+                  <span className="text-[11px] font-medium text-neutral-600">
+                    Made for builders
+                  </span>
+                </div>
+              </div>
+
+              {/* Copyright */}
+              <div className="p-5 sm:px-8">
+                <p className="text-xs text-neutral-400 sm:text-right">
+                  © {new Date().getFullYear()} Syed Blog. All rights reserved.
+                </p>
               </div>
             </div>
-
-            {/* Copyright */}
-            <p className="text-xs text-neutral-400 sm:text-right">
-              © {new Date().getFullYear()} Syed Blog. All rights reserved.
-            </p>
-          </div>
-        </footer>
+          </footer>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
