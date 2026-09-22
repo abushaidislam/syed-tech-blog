@@ -11,12 +11,25 @@ export function Nav() {
   const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
+    let ticking = false;
+    let frameId: number;
+
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 15);
+      if (!ticking) {
+        // ⚡ Bolt Optimization: Throttle scroll event to RAF to reduce main thread blocking and React re-renders.
+        frameId = window.requestAnimationFrame(() => {
+          setIsScrolled(window.scrollY > 15);
+          ticking = false;
+        });
+        ticking = true;
+      }
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      if (frameId) window.cancelAnimationFrame(frameId);
+    };
   }, []);
 
   return (
