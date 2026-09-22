@@ -68,17 +68,17 @@ export function CodeBlock({
         <button
           type="button"
           onClick={handleCopy}
-          aria-label="Copy code to clipboard"
-          className="flex items-center gap-1.5 rounded-md px-2 py-1 text-xs text-neutral-400 transition-colors hover:bg-neutral-800 hover:text-white focus:outline-none"
+          aria-label={copied ? "Code copied to clipboard" : "Copy code to clipboard"}
+          className="flex items-center gap-1.5 rounded-md px-2 py-1 text-xs text-neutral-400 transition-colors hover:bg-neutral-800 hover:text-white focus-visible:ring-2 focus-visible:ring-neutral-400 focus-visible:outline-none"
         >
           {copied ? (
             <>
-              <Check className="size-3.5 text-green-400" />
+              <Check className="size-3.5 text-green-400" aria-hidden="true" />
               <span className="text-green-400">Copied</span>
             </>
           ) : (
             <>
-              <Copy className="size-3.5" />
+              <Copy className="size-3.5" aria-hidden="true" />
               <span>Copy</span>
             </>
           )}
@@ -121,6 +121,8 @@ export function HeadingAnchor({
 
   const isH2 = as === "h2";
 
+  const sectionTitle = typeof children === "string" ? children : "section";
+
   return (
     <div
       id={id}
@@ -133,14 +135,19 @@ export function HeadingAnchor({
       <a
         href={`#${id}`}
         onClick={handleClick}
-        className="group flex items-start gap-x-2 !font-medium !text-neutral-800 no-underline hover:text-neutral-900"
+        aria-label={
+          copied
+            ? `Direct link to section ${sectionTitle} copied to clipboard`
+            : `Copy direct link to section: ${sectionTitle}`
+        }
+        className="group flex items-start gap-x-2 !font-medium !text-neutral-800 no-underline hover:text-neutral-900 focus-visible:ring-2 focus-visible:ring-neutral-950 focus-visible:outline-none rounded-md p-1 -m-1"
       >
         <span>{children}</span>
-        <div className="rounded-lg border border-neutral-200 bg-white p-1.5 opacity-0 transition-all hover:border-neutral-300 hover:shadow group-hover:opacity-100">
+        <div className="rounded-lg border border-neutral-200 bg-white p-1.5 opacity-0 transition-all hover:border-neutral-300 hover:shadow group-hover:opacity-100 group-focus-visible:opacity-100">
           {copied ? (
-            <Check className="size-4 text-green-600" aria-label="Link copied" />
+            <Check className="size-4 text-green-600" aria-hidden="true" />
           ) : (
-            <Link2 className="size-4 text-neutral-600" aria-label="Link to section" />
+            <Link2 className="size-4 text-neutral-600" aria-hidden="true" />
           )}
         </div>
       </a>
