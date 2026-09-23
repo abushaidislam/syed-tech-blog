@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo, useCallback } from "react";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "motion/react";
-import { X, Check, Copy, Link2, Share2 } from "lucide-react";
+import { X, Check, Copy, Link2, Share2, Smartphone } from "lucide-react";
 
 interface ShareModalProps {
   isOpen: boolean;
@@ -15,15 +15,15 @@ interface ShareModalProps {
   image?: string;
 }
 
-function decodeHtmlEntities(text: string) {
+// Robust HTML entity decoder using browser DOMParser
+function decodeHtmlEntities(text: string): string {
   if (!text) return "";
-  return text
-    .replace(/&#x27;/g, "'")
-    .replace(/&quot;/g, '"')
-    .replace(/&amp;/g, "&")
-    .replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">")
-    .replace(/&#39;/g, "'");
+  if (typeof window === "undefined") {
+    return text.replace(/&#x27;|&#39;/g, "'").replace(/&quot;/g, '"').replace(/&amp;/g, "&");
+  }
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(text, "text/html");
+  return doc.documentElement.textContent || text;
 }
 
 export function ShareModal({
@@ -37,25 +37,37 @@ export function ShareModal({
 }: ShareModalProps) {
   const [copied, setCopied] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [hasNativeShare, setHasNativeShare] = useState(false);
 
   useEffect(() => {
     setMounted(true);
+    if (typeof navigator !== "undefined" && !!navigator.share) {
+      setHasNativeShare(true);
+    }
   }, []);
 
-  const cleanTitle = decodeHtmlEntities(title);
-  const cleanSummary = decodeHtmlEntities(summary);
+  const cleanTitle = useMemo(() => decodeHtmlEntities(title), [title]);
+  const cleanSummary = useMemo(() => decodeHtmlEntities(summary), [summary]);
 
+  // Extract display hostname dynamically from URL
+  const hostname = useMemo(() => {
+    try {
+      return new URL(url).hostname;
+    } catch {
+      return "";
+    }
+  }, [url]);
+
+  // Handle ESC key and scroll-lock
   useEffect(() => {
     if (!isOpen) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        onClose();
-      }
+      if (e.key === "Escape") onClose();
     };
     window.addEventListener("keydown", handleKeyDown);
 
-    // Pause Lenis smooth scrolling if active
+    // Pause Lenis smooth scrolling if present
     const globalLenis = (
       window as unknown as { lenis?: { stop: () => void; start: () => void } }
     ).lenis;
@@ -71,7 +83,7 @@ export function ShareModal({
     };
   }, [isOpen, onClose]);
 
-  const handleCopyLink = async () => {
+  const handleCopyLink = useCallback(async () => {
     try {
       if (navigator.clipboard && window.isSecureContext) {
         await navigator.clipboard.writeText(url);
@@ -80,7 +92,6 @@ export function ShareModal({
         textArea.value = url;
         textArea.style.position = "fixed";
         textArea.style.left = "-999999px";
-        textArea.style.top = "-999999px";
         document.body.appendChild(textArea);
         textArea.focus();
         textArea.select();
@@ -92,36 +103,46 @@ export function ShareModal({
     } catch (err) {
       console.error("Failed to copy link:", err);
     }
-  };
+  }, [url]);
 
-  const shareUrls = {
-    x: `https://twitter.com/intent/tweet?text=${encodeURIComponent(
-      cleanTitle
-    )}&url=${encodeURIComponent(url)}`,
-    linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(
-      url
-    )}`,
-    facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
-      url
-    )}`,
-    whatsapp: `https://api.whatsapp.com/send?text=${encodeURIComponent(
-      `${cleanTitle} ${url}`
-    )}`,
-  };
+  const openShareWindow = useCallback((shareUrl: string) => {
+    if (typeof window === "undefined") return;
+    const width = 640;
+    const height = 560;
+    const left = window.screen.width / 2 - width / 2;
+    const top = window.screen.height / 2 - height / 2;
+    window.open(
+      shareUrl,
+      "_blank",
+      `toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=${width},height=${height},top=${top},left=${left}`
+    );
+  }, []);
 
-  const openShare = (shareUrl: string) => {
-    if (typeof window !== "undefined") {
-      const width = 640;
-      const height = 540;
-      const left = window.screen.width / 2 - width / 2;
-      const top = window.screen.height / 2 - height / 2;
-      window.open(
-        shareUrl,
-        "_blank",
-        `toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,resizable=yes,copyhistory=no,width=${width},height=${height},top=${top},left=${left}`
-      );
+  const handleNativeShare = useCallback(async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: cleanTitle,
+          text: cleanSummary || cleanTitle,
+          url,
+        });
+      } catch (err) {
+        if ((err as Error).name !== "AbortError") {
+          console.error("Native share failed:", err);
+        }
+      }
     }
-  };
+  }, [cleanTitle, cleanSummary, url]);
+
+  const shareUrls = useMemo(
+    () => ({
+      x: `https://twitter.com/intent/tweet?text=${encodeURIComponent(cleanTitle)}&url=${encodeURIComponent(url)}`,
+      linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`,
+      facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`,
+      whatsapp: `https://api.whatsapp.com/send?text=${encodeURIComponent(`${cleanTitle} ${url}`)}`,
+    }),
+    [cleanTitle, url]
+  );
 
   if (!mounted) return null;
 
@@ -131,40 +152,46 @@ export function ShareModal({
         <div
           className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 overflow-y-auto"
           onClick={onClose}
+          role="presentation"
         >
-          {/* Subtle Translucent Backdrop */}
+          {/* Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 bg-neutral-950/45 backdrop-blur-xs"
+            className="fixed inset-0 bg-neutral-950/50 backdrop-blur-xs"
             aria-hidden="true"
           />
 
-          {/* Light Theme Modal Container matching Blog Design */}
+          {/* Modal Container */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 10 }}
+            initial={{ opacity: 0, scale: 0.96, y: 8 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 10 }}
-            transition={{ type: "spring", duration: 0.3, bounce: 0.05 }}
+            exit={{ opacity: 0, scale: 0.96, y: 8 }}
+            transition={{ type: "spring", duration: 0.25, bounce: 0 }}
             onClick={(e) => e.stopPropagation()}
-            className="relative z-10 w-full max-w-[460px] my-auto overflow-hidden rounded-2xl border border-neutral-200/90 bg-white p-5 sm:p-6 text-neutral-900 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.18)]"
+            className="relative z-10 w-full max-w-[460px] my-auto overflow-hidden rounded-2xl border border-neutral-200/90 bg-white p-5 sm:p-6 text-neutral-900 shadow-xl"
             role="dialog"
             aria-modal="true"
+            aria-labelledby="share-modal-title"
           >
-            {/* Header: Title + Close Button */}
+            {/* Header */}
             <div className="flex items-center justify-between pb-3.5 border-b border-neutral-100">
-              <div className="flex items-center gap-2">
-                <div className="flex size-7 items-center justify-center rounded-lg bg-neutral-100 text-neutral-700">
-                  <Share2 className="size-3.5 text-neutral-800" />
+              <div className="flex items-center gap-2.5">
+                <div className="flex size-7 items-center justify-center rounded-lg bg-neutral-100 text-neutral-800">
+                  <Share2 className="size-4" />
                 </div>
-                <h2 className="font-display text-base font-semibold tracking-tight text-neutral-900">
+                <h2
+                  id="share-modal-title"
+                  className="font-display text-base font-semibold tracking-tight text-neutral-900"
+                >
                   Share this article
                 </h2>
               </div>
 
               <button
+                type="button"
                 onClick={onClose}
                 aria-label="Close modal"
                 className="flex size-7 items-center justify-center rounded-full text-neutral-400 transition-colors hover:bg-neutral-100 hover:text-neutral-700 cursor-pointer"
@@ -173,8 +200,8 @@ export function ShareModal({
               </button>
             </div>
 
-            {/* Article Snippet Card Preview with Thumbnail / OG Image */}
-            <div className="mt-4 overflow-hidden rounded-xl border border-neutral-200/80 bg-neutral-50/50 shadow-2xs">
+            {/* Article Card Preview */}
+            <div className="mt-4 overflow-hidden rounded-xl border border-neutral-200/80 bg-neutral-50/60 shadow-2xs">
               {image && (
                 <div className="relative h-36 sm:h-40 w-full overflow-hidden bg-neutral-100 border-b border-neutral-200/60">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -191,9 +218,11 @@ export function ShareModal({
                   <span className="rounded-md border border-neutral-200 bg-white px-2 py-0.5 text-[10px] font-semibold tracking-wider uppercase text-neutral-600 shadow-2xs">
                     {category}
                   </span>
-                  <span className="text-[11px] text-neutral-400">
-                    blog.flinkeo.online
-                  </span>
+                  {hostname && (
+                    <span className="text-[11px] text-neutral-400 font-medium">
+                      {hostname}
+                    </span>
+                  )}
                 </div>
                 <p className="mt-1.5 line-clamp-2 font-display text-sm font-semibold text-neutral-900 leading-snug">
                   {cleanTitle}
@@ -206,10 +235,11 @@ export function ShareModal({
               </div>
             </div>
 
-            {/* Platform Circular Buttons Row (Clean light theme) */}
+            {/* Platform Circular Buttons */}
             <div className="mt-5 flex items-center justify-between gap-1.5 px-1">
-              {/* 1. Copy Link */}
+              {/* Copy Link */}
               <button
+                type="button"
                 onClick={handleCopyLink}
                 className="group flex flex-col items-center gap-1.5 focus:outline-hidden cursor-pointer"
               >
@@ -237,9 +267,10 @@ export function ShareModal({
                 </span>
               </button>
 
-              {/* 2. X (Twitter) */}
+              {/* X */}
               <button
-                onClick={() => openShare(shareUrls.x)}
+                type="button"
+                onClick={() => openShareWindow(shareUrls.x)}
                 className="group flex flex-col items-center gap-1.5 focus:outline-hidden cursor-pointer"
               >
                 <div className="flex size-12 sm:size-13 items-center justify-center rounded-full border border-neutral-200 bg-white text-neutral-700 shadow-2xs transition-all duration-150 group-hover:scale-105 group-hover:border-neutral-300 group-hover:bg-neutral-50 group-hover:text-black active:scale-95">
@@ -252,9 +283,10 @@ export function ShareModal({
                 </span>
               </button>
 
-              {/* 3. LinkedIn */}
+              {/* LinkedIn */}
               <button
-                onClick={() => openShare(shareUrls.linkedin)}
+                type="button"
+                onClick={() => openShareWindow(shareUrls.linkedin)}
                 className="group flex flex-col items-center gap-1.5 focus:outline-hidden cursor-pointer"
               >
                 <div className="flex size-12 sm:size-13 items-center justify-center rounded-full border border-neutral-200 bg-white text-neutral-700 shadow-2xs transition-all duration-150 group-hover:scale-105 group-hover:border-blue-300 group-hover:bg-blue-50/50 group-hover:text-[#0A66C2] active:scale-95">
@@ -267,24 +299,10 @@ export function ShareModal({
                 </span>
               </button>
 
-              {/* 4. Facebook */}
+              {/* WhatsApp */}
               <button
-                onClick={() => openShare(shareUrls.facebook)}
-                className="group flex flex-col items-center gap-1.5 focus:outline-hidden cursor-pointer"
-              >
-                <div className="flex size-12 sm:size-13 items-center justify-center rounded-full border border-neutral-200 bg-white text-neutral-700 shadow-2xs transition-all duration-150 group-hover:scale-105 group-hover:border-blue-300 group-hover:bg-blue-50/50 group-hover:text-[#1877F2] active:scale-95">
-                  <svg className="size-4 fill-current" viewBox="0 0 24 24">
-                    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
-                  </svg>
-                </div>
-                <span className="text-[11px] font-medium text-neutral-600 group-hover:text-neutral-900">
-                  Facebook
-                </span>
-              </button>
-
-              {/* 5. WhatsApp */}
-              <button
-                onClick={() => openShare(shareUrls.whatsapp)}
+                type="button"
+                onClick={() => openShareWindow(shareUrls.whatsapp)}
                 className="group flex flex-col items-center gap-1.5 focus:outline-hidden cursor-pointer"
               >
                 <div className="flex size-12 sm:size-13 items-center justify-center rounded-full border border-neutral-200 bg-white text-neutral-700 shadow-2xs transition-all duration-150 group-hover:scale-105 group-hover:border-emerald-300 group-hover:bg-emerald-50/50 group-hover:text-[#25D366] active:scale-95">
@@ -296,17 +314,35 @@ export function ShareModal({
                   WhatsApp
                 </span>
               </button>
+
+              {/* Native Device Share (Mobile / Supported Browsers) */}
+              {hasNativeShare && (
+                <button
+                  type="button"
+                  onClick={handleNativeShare}
+                  className="group flex flex-col items-center gap-1.5 focus:outline-hidden cursor-pointer"
+                >
+                  <div className="flex size-12 sm:size-13 items-center justify-center rounded-full border border-neutral-200 bg-white text-neutral-700 shadow-2xs transition-all duration-150 group-hover:scale-105 group-hover:border-purple-300 group-hover:bg-purple-50/50 group-hover:text-purple-600 active:scale-95">
+                    <Smartphone className="size-4.5" />
+                  </div>
+                  <span className="text-[11px] font-medium text-neutral-600 group-hover:text-neutral-900">
+                    More
+                  </span>
+                </button>
+              )}
             </div>
 
-            {/* Seamless Link Box: NO extra borders, smooth neutral-100 background */}
+            {/* Seamless Link Box */}
             <div className="mt-5 flex items-center justify-between rounded-xl bg-neutral-100/80 p-1.5 pl-3.5">
               <input
                 type="text"
                 readOnly
                 value={url}
+                aria-label="Article link"
                 className="w-full bg-transparent text-xs text-neutral-600 truncate focus:outline-hidden select-all font-mono"
               />
               <button
+                type="button"
                 onClick={handleCopyLink}
                 className={`flex shrink-0 items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition-all cursor-pointer ${
                   copied
