@@ -244,9 +244,9 @@ export function ShareModal({
                 className="group flex flex-col items-center gap-1.5 focus:outline-hidden cursor-pointer"
               >
                 <div
-                  className={`flex size-12 sm:size-13 items-center justify-center rounded-full border transition-all duration-150 shadow-2xs group-hover:scale-105 active:scale-95 ${
+                  className={`flex size-12 sm:size-13 items-center justify-center rounded-full border transition-all duration-200 shadow-2xs group-hover:scale-105 active:scale-95 ${
                     copied
-                      ? "border-emerald-500 bg-emerald-50 text-emerald-600"
+                      ? "border-neutral-900 bg-neutral-900 text-white"
                       : "border-neutral-200 bg-white text-neutral-700 group-hover:border-neutral-300 group-hover:bg-neutral-50 group-hover:text-neutral-900"
                   }`}
                 >
@@ -257,10 +257,10 @@ export function ShareModal({
                   )}
                 </div>
                 <span
-                  className={`text-[11px] font-medium transition-colors ${
+                  className={`text-[11px] transition-colors ${
                     copied
-                      ? "text-emerald-600 font-semibold"
-                      : "text-neutral-600 group-hover:text-neutral-900"
+                      ? "text-neutral-900 font-semibold"
+                      : "font-medium text-neutral-600 group-hover:text-neutral-900"
                   }`}
                 >
                   {copied ? "Copied!" : "Copy link"}
@@ -332,23 +332,24 @@ export function ShareModal({
               )}
             </div>
 
-            {/* Seamless Link Box */}
+            {/* Seamless Link Box (No input border, pure Dub.co monochrome styling) */}
             <div className="mt-5 flex items-center justify-between rounded-xl bg-neutral-100/80 p-1.5 pl-3.5">
               <input
                 type="text"
                 readOnly
                 value={url}
                 aria-label="Article link"
-                className="w-full bg-transparent text-xs text-neutral-600 truncate focus:outline-hidden select-all font-mono"
+                style={{
+                  border: "none",
+                  outline: "none",
+                  boxShadow: "none",
+                }}
+                className="w-full !border-0 !border-none bg-transparent !p-0 text-xs text-neutral-600 truncate !focus:border-0 !focus:outline-hidden !focus:ring-0 !shadow-none !ring-0 select-all font-mono"
               />
               <button
                 type="button"
                 onClick={handleCopyLink}
-                className={`flex shrink-0 items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition-all cursor-pointer ${
-                  copied
-                    ? "bg-emerald-600 text-white shadow-2xs"
-                    : "bg-neutral-900 text-white hover:bg-neutral-800 active:scale-95 shadow-2xs"
-                }`}
+                className="flex shrink-0 items-center gap-1.5 rounded-lg bg-neutral-900 px-3 py-1.5 text-xs font-medium text-white shadow-2xs transition-all hover:bg-neutral-800 active:scale-95 cursor-pointer"
               >
                 {copied ? (
                   <>
