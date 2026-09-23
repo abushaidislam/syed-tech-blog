@@ -2,6 +2,8 @@ import Image from "next/image";
 import Link from "next/link";
 import type { BlogPost, BlogPostMeta } from "@/types/blog";
 import { SyedBlogLogo } from "@/components/layout/brand";
+import { siteConfig } from "@/config/site";
+import { SocialShare } from "./social-share";
 import { PostTOC } from "./post-toc";
 import { PostSidebarCTA } from "./post-cta";
 import { BlogBottomCTA } from "./blog-bottom-cta";
@@ -12,6 +14,7 @@ interface PostLayoutProps {
   post: BlogPost;
   relatedPosts: BlogPostMeta[];
   mdxContent?: React.ReactNode;
+  postUrl?: string;
 }
 
 function decodeEntities(text: string) {
@@ -24,12 +27,16 @@ function decodeEntities(text: string) {
     .replace(/&#39;/g, "'");
 }
 
-export function PostLayout({ post, relatedPosts, mdxContent }: PostLayoutProps) {
+export function PostLayout({ post, relatedPosts, mdxContent, postUrl }: PostLayoutProps) {
   const primaryAuthor = post.authors[0] || {
     name: "Syed",
     image: "/images/author-avatar.png",
     title: "Engineering & Architecture",
   };
+
+  const canonicalUrl = postUrl || `${siteConfig.url}/blog/${post.slug}`;
+  const decodedTitle = decodeEntities(post.title);
+  const decodedSummary = decodeEntities(post.summary);
 
   return (
     <div>
@@ -54,12 +61,43 @@ export function PostLayout({ post, relatedPosts, mdxContent }: PostLayoutProps) 
             </div>
 
             <h1 className="mt-5 text-left font-display text-3xl font-medium tracking-tight text-neutral-900 sm:text-4xl sm:leading-[1.25]">
-              {decodeEntities(post.title)}
+              {decodedTitle}
             </h1>
 
             <p className="mt-4 text-left text-base text-neutral-500 sm:text-lg">
-              {decodeEntities(post.summary)}
+              {decodedSummary}
             </p>
+
+            {/* Author & Quick Share Bar */}
+            <div className="mt-6 flex flex-wrap items-center justify-between gap-4 border-t border-neutral-200/60 pt-4">
+              <div className="flex items-center gap-2.5">
+                <div className="relative size-7 shrink-0 overflow-hidden rounded-full border border-neutral-200">
+                  <Image
+                    src={primaryAuthor.image}
+                    alt={primaryAuthor.name}
+                    width={28}
+                    height={28}
+                    className="size-full object-cover"
+                  />
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-xs font-semibold text-neutral-800">
+                    {primaryAuthor.name}
+                  </span>
+                  <span className="text-[11px] text-neutral-400">
+                    {primaryAuthor.title || "Author"}
+                  </span>
+                </div>
+              </div>
+
+              <SocialShare
+                url={canonicalUrl}
+                title={decodedTitle}
+                summary={decodedSummary}
+                category={post.category.name}
+                layout="button"
+              />
+            </div>
           </div>
 
           {/* Right Side Sky Animation (as marked in reference) */}
@@ -106,6 +144,17 @@ export function PostLayout({ post, relatedPosts, mdxContent }: PostLayoutProps) 
                     <div dangerouslySetInnerHTML={{ __html: post.articleHtml }} />
                   ) : null}
                 </article>
+
+                {/* Share Article Bottom Card */}
+                <div className="px-5 sm:px-12">
+                  <SocialShare
+                    url={canonicalUrl}
+                    title={decodedTitle}
+                    summary={decodedSummary}
+                    category={post.category.name}
+                    layout="card"
+                  />
+                </div>
 
                 {/* Author Note & Spotlight Component */}
                 <AuthorSpotlight author={primaryAuthor} />
@@ -187,11 +236,21 @@ export function PostLayout({ post, relatedPosts, mdxContent }: PostLayoutProps) 
                 </div>
               </div>
 
-              {/* Sticky Sidebar Container (TOC + CTA Card) */}
+              {/* Sticky Sidebar Container (TOC + Share + CTA Card) */}
               <div className="sticky top-20 space-y-6 pt-4">
                 {post.headings && post.headings.length > 0 && (
                   <PostTOC headings={post.headings} />
                 )}
+
+                {/* Sidebar Quick Share */}
+                <SocialShare
+                  url={canonicalUrl}
+                  title={decodedTitle}
+                  summary={decodedSummary}
+                  category={post.category.name}
+                  layout="sidebar"
+                />
+
                 <PostSidebarCTA />
               </div>
             </div>
