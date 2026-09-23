@@ -24,6 +24,7 @@ export interface BlogPostFrontmatter {
   category: string;
   categoryName?: string;
   authors: BlogAuthor[];
+  featured?: boolean;
 }
 
 export interface BlogPostMdx {
@@ -99,11 +100,12 @@ export function frontmatterToBlogPostMeta(
     dateFormatted: fm.dateFormatted,
     category: categoryObj,
     authors: fm.authors || [],
+    featured: Boolean(fm.featured),
   };
 }
 
 /**
- * Get all blog posts metadata sorted by date descending.
+ * Get all blog posts metadata sorted by date descending (featured posts prioritized).
  */
 export function getAllBlogPosts(): BlogPostMeta[] {
   const slugs = getAllBlogPostSlugs();
@@ -114,9 +116,11 @@ export function getAllBlogPosts(): BlogPostMeta[] {
     })
     .filter(Boolean) as BlogPostMeta[];
 
-  return posts.sort(
-    (a, b) => new Date(b.dateIso).getTime() - new Date(a.dateIso).getTime(),
-  );
+  return posts.sort((a, b) => {
+    if (a.featured && !b.featured) return -1;
+    if (!a.featured && b.featured) return 1;
+    return new Date(b.dateIso).getTime() - new Date(a.dateIso).getTime();
+  });
 }
 
 /**

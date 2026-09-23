@@ -2,9 +2,10 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, Sparkles } from "lucide-react";
 import type { BlogPostMeta } from "@/types/blog";
 import { SyedBlogLogo } from "@/components/layout/brand";
+import { cn } from "@/lib/utils";
 
 interface BlogCardProps {
   post: BlogPostMeta;
@@ -22,13 +23,29 @@ function decodeEntities(text: string) {
 }
 
 export function BlogCard({ post, priority = false }: BlogCardProps) {
+  const isFeatured = Boolean(post.featured);
+
   return (
     <Link
       href={`/blog/${post.slug}`}
-      className="group relative flex h-full flex-col justify-between overflow-hidden transition-all duration-300 hover:bg-neutral-50/70"
+      className={cn(
+        "group relative flex h-full flex-col justify-between overflow-hidden transition-all duration-300",
+        isFeatured
+          ? "bg-gradient-to-br from-indigo-100/90 via-purple-50/70 to-sky-100/90 shadow-[inset_0_0_0_1px_rgba(99,102,241,0.15)]"
+          : "bg-white hover:bg-neutral-50/70",
+      )}
     >
       <div>
         <div className="relative aspect-[1200/630] w-full overflow-hidden bg-neutral-100">
+          {/* Featured badge pill - Dub style */}
+          {isFeatured && (
+            <div className="absolute top-3 left-3 z-10 inline-flex items-center gap-1.5 rounded-full border border-neutral-200/90 bg-white/95 px-2.5 py-1 text-xs font-medium text-neutral-700 shadow-sm backdrop-blur-md select-none">
+              <Sparkles className="size-3 text-neutral-600 stroke-[1.75]" aria-hidden="true" />
+              <span className="text-[11px] font-medium tracking-tight text-neutral-800">
+                Featured
+              </span>
+            </div>
+          )}
           {post.image ? (
             <Image
               src={post.image}
