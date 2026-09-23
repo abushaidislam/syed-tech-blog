@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useMemo, useCallback } from "react";
+import React, { useEffect, useState, useMemo, useCallback, useRef } from "react";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "motion/react";
 import { X, Check, Copy, Link2, Share2, Smartphone } from "lucide-react";
@@ -38,12 +38,16 @@ export function ShareModal({
   const [copied, setCopied] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [hasNativeShare, setHasNativeShare] = useState(false);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     setMounted(true);
     if (typeof navigator !== "undefined" && !!navigator.share) {
       setHasNativeShare(true);
     }
+    return () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
   }, []);
 
   const cleanTitle = useMemo(() => decodeHtmlEntities(title), [title]);
@@ -99,7 +103,8 @@ export function ShareModal({
         document.body.removeChild(textArea);
       }
       setCopied(true);
-      setTimeout(() => setCopied(false), 2200);
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+      timeoutRef.current = setTimeout(() => setCopied(false), 2200);
     } catch (err) {
       console.error("Failed to copy link:", err);
     }
@@ -138,7 +143,6 @@ export function ShareModal({
     () => ({
       x: `https://twitter.com/intent/tweet?text=${encodeURIComponent(cleanTitle)}&url=${encodeURIComponent(url)}`,
       linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`,
-      facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`,
       whatsapp: `https://api.whatsapp.com/send?text=${encodeURIComponent(`${cleanTitle} ${url}`)}`,
     }),
     [cleanTitle, url]
