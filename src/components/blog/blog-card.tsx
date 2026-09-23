@@ -2,9 +2,10 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, Sparkles } from "lucide-react";
 import type { BlogPostMeta } from "@/types/blog";
 import { SyedBlogLogo } from "@/components/layout/brand";
+import { cn } from "@/lib/utils";
 
 interface BlogCardProps {
   post: BlogPostMeta;
@@ -22,13 +23,32 @@ function decodeEntities(text: string) {
 }
 
 export function BlogCard({ post, priority = false }: BlogCardProps) {
+  const isFeatured = Boolean(post.featured);
+
   return (
     <Link
       href={`/blog/${post.slug}`}
-      className="group relative flex h-full flex-col justify-between overflow-hidden transition-all duration-300 hover:bg-neutral-50/70"
+      className={cn(
+        "group relative flex h-full flex-col justify-between overflow-hidden transition-all duration-300",
+        isFeatured
+          ? "bg-gradient-to-br from-indigo-50/70 via-purple-50/35 to-amber-50/45 hover:from-indigo-100/80 hover:via-purple-100/50 hover:to-amber-100/60"
+          : "bg-white hover:bg-neutral-50/70",
+      )}
     >
+      {/* Subtle top accent bar for featured card */}
+      {isFeatured && (
+        <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-[2px] bg-gradient-to-r from-indigo-500 via-purple-500 to-amber-500 opacity-80" />
+      )}
+
       <div>
         <div className="relative aspect-[1200/630] w-full overflow-hidden bg-neutral-100">
+          {/* Featured badge pill */}
+          {isFeatured && (
+            <div className="absolute top-3 left-3 z-10 flex items-center gap-1.5 rounded-full border border-black/[0.08] bg-white/90 px-2.5 py-0.5 text-[11px] font-medium text-neutral-800 shadow-sm backdrop-blur select-none">
+              <Sparkles className="size-3 text-amber-500 fill-amber-500" />
+              <span>Featured</span>
+            </div>
+          )}
           {post.image ? (
             <Image
               src={post.image}

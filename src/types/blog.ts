@@ -27,6 +27,7 @@ export interface BlogPostMeta {
   dateFormatted: string;
   category: BlogCategory;
   authors: BlogAuthor[];
+  featured?: boolean;
 }
 
 export interface BlogPostHeading {
