@@ -31,7 +31,7 @@ export function BlogCard({ post, priority = false }: BlogCardProps) {
       className={cn(
         "group relative flex h-full flex-col justify-between overflow-hidden transition-all duration-300",
         isFeatured
-          ? "bg-gradient-to-b from-neutral-100/80 via-neutral-50/40 to-white hover:bg-neutral-100/60"
+          ? "bg-gradient-to-br from-indigo-100/90 via-purple-50/70 to-sky-100/90 shadow-[inset_0_0_0_1px_rgba(99,102,241,0.15)]"
           : "bg-white hover:bg-neutral-50/70",
       )}
     >
