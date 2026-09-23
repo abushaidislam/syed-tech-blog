@@ -31,22 +31,19 @@ export function BlogCard({ post, priority = false }: BlogCardProps) {
       className={cn(
         "group relative flex h-full flex-col justify-between overflow-hidden transition-all duration-300",
         isFeatured
-          ? "bg-gradient-to-br from-indigo-50/70 via-purple-50/35 to-amber-50/45 hover:from-indigo-100/80 hover:via-purple-100/50 hover:to-amber-100/60"
+          ? "bg-gradient-to-b from-neutral-100/80 via-neutral-50/40 to-white hover:bg-neutral-100/60"
           : "bg-white hover:bg-neutral-50/70",
       )}
     >
-      {/* Subtle top accent bar for featured card */}
-      {isFeatured && (
-        <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-[2px] bg-gradient-to-r from-indigo-500 via-purple-500 to-amber-500 opacity-80" />
-      )}
-
       <div>
         <div className="relative aspect-[1200/630] w-full overflow-hidden bg-neutral-100">
-          {/* Featured badge pill */}
+          {/* Featured badge pill - Dub style */}
           {isFeatured && (
-            <div className="absolute top-3 left-3 z-10 flex items-center gap-1.5 rounded-full border border-black/[0.08] bg-white/90 px-2.5 py-0.5 text-[11px] font-medium text-neutral-800 shadow-sm backdrop-blur select-none">
-              <Sparkles className="size-3 text-amber-500 fill-amber-500" />
-              <span>Featured</span>
+            <div className="absolute top-3 left-3 z-10 inline-flex items-center gap-1.5 rounded-full border border-neutral-200/90 bg-white/95 px-2.5 py-1 text-xs font-medium text-neutral-700 shadow-sm backdrop-blur-md select-none">
+              <Sparkles className="size-3 text-neutral-600 stroke-[1.75]" />
+              <span className="text-[11px] font-medium tracking-tight text-neutral-800">
+                Featured
+              </span>
             </div>
           )}
           {post.image ? (
