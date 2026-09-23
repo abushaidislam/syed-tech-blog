@@ -9,6 +9,7 @@ interface SocialShareProps {
   title: string;
   summary?: string;
   category?: string;
+  image?: string;
   layout?: "button" | "card" | "sidebar";
   className?: string;
 }
@@ -18,6 +19,7 @@ export function SocialShare({
   title,
   summary = "",
   category = "Article",
+  image,
   layout = "button",
   className = "",
 }: SocialShareProps) {
@@ -88,6 +90,7 @@ export function SocialShare({
         title={title}
         summary={summary}
         category={category}
+        image={image}
       />
     </>
   );

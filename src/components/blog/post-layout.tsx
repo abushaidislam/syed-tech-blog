@@ -37,6 +37,7 @@ export function PostLayout({ post, relatedPosts, mdxContent, postUrl }: PostLayo
   const canonicalUrl = postUrl || `${siteConfig.url}/blog/${post.slug}`;
   const decodedTitle = decodeEntities(post.title);
   const decodedSummary = decodeEntities(post.summary);
+  const previewImage = post.image || `/blog/${post.slug}/opengraph-image`;
 
   return (
     <div>
@@ -67,37 +68,6 @@ export function PostLayout({ post, relatedPosts, mdxContent, postUrl }: PostLayo
             <p className="mt-4 text-left text-base text-neutral-500 sm:text-lg">
               {decodedSummary}
             </p>
-
-            {/* Author & Quick Share Bar */}
-            <div className="mt-6 flex flex-wrap items-center justify-between gap-4 border-t border-neutral-200/60 pt-4">
-              <div className="flex items-center gap-2.5">
-                <div className="relative size-7 shrink-0 overflow-hidden rounded-full border border-neutral-200">
-                  <Image
-                    src={primaryAuthor.image}
-                    alt={primaryAuthor.name}
-                    width={28}
-                    height={28}
-                    className="size-full object-cover"
-                  />
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-xs font-semibold text-neutral-800">
-                    {primaryAuthor.name}
-                  </span>
-                  <span className="text-[11px] text-neutral-400">
-                    {primaryAuthor.title || "Author"}
-                  </span>
-                </div>
-              </div>
-
-              <SocialShare
-                url={canonicalUrl}
-                title={decodedTitle}
-                summary={decodedSummary}
-                category={post.category.name}
-                layout="button"
-              />
-            </div>
           </div>
 
           {/* Right Side Sky Animation (as marked in reference) */}
@@ -152,6 +122,7 @@ export function PostLayout({ post, relatedPosts, mdxContent, postUrl }: PostLayo
                     title={decodedTitle}
                     summary={decodedSummary}
                     category={post.category.name}
+                    image={previewImage}
                     layout="card"
                   />
                 </div>
@@ -248,6 +219,7 @@ export function PostLayout({ post, relatedPosts, mdxContent, postUrl }: PostLayo
                   title={decodedTitle}
                   summary={decodedSummary}
                   category={post.category.name}
+                  image={previewImage}
                   layout="sidebar"
                 />
 

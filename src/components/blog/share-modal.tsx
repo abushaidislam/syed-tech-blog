@@ -12,6 +12,7 @@ interface ShareModalProps {
   title: string;
   summary?: string;
   category?: string;
+  image?: string;
 }
 
 function decodeHtmlEntities(text: string) {
@@ -32,6 +33,7 @@ export function ShareModal({
   title,
   summary = "",
   category = "Article",
+  image,
 }: ShareModalProps) {
   const [copied, setCopied] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -171,24 +173,37 @@ export function ShareModal({
               </button>
             </div>
 
-            {/* Article Snippet Card Preview */}
-            <div className="mt-4 rounded-xl bg-neutral-50/80 p-3.5">
-              <div className="flex items-center gap-2">
-                <span className="rounded-md border border-neutral-200 bg-white px-2 py-0.5 text-[10px] font-semibold tracking-wider uppercase text-neutral-600 shadow-2xs">
-                  {category}
-                </span>
-                <span className="text-[11px] text-neutral-400">
-                  blog.flinkeo.online
-                </span>
-              </div>
-              <p className="mt-2 line-clamp-2 font-display text-sm font-semibold text-neutral-900 leading-snug">
-                {cleanTitle}
-              </p>
-              {cleanSummary && (
-                <p className="mt-1 line-clamp-1 text-xs text-neutral-500">
-                  {cleanSummary}
-                </p>
+            {/* Article Snippet Card Preview with Thumbnail / OG Image */}
+            <div className="mt-4 overflow-hidden rounded-xl border border-neutral-200/80 bg-neutral-50/50 shadow-2xs">
+              {image && (
+                <div className="relative h-36 sm:h-40 w-full overflow-hidden bg-neutral-100 border-b border-neutral-200/60">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={image}
+                    alt={cleanTitle}
+                    className="size-full object-cover"
+                    loading="lazy"
+                  />
+                </div>
               )}
+              <div className="p-3.5">
+                <div className="flex items-center gap-2">
+                  <span className="rounded-md border border-neutral-200 bg-white px-2 py-0.5 text-[10px] font-semibold tracking-wider uppercase text-neutral-600 shadow-2xs">
+                    {category}
+                  </span>
+                  <span className="text-[11px] text-neutral-400">
+                    blog.flinkeo.online
+                  </span>
+                </div>
+                <p className="mt-1.5 line-clamp-2 font-display text-sm font-semibold text-neutral-900 leading-snug">
+                  {cleanTitle}
+                </p>
+                {cleanSummary && (
+                  <p className="mt-1 line-clamp-1 text-xs text-neutral-500">
+                    {cleanSummary}
+                  </p>
+                )}
+              </div>
             </div>
 
             {/* Platform Circular Buttons Row (Clean light theme) */}
