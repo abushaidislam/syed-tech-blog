@@ -21,7 +21,8 @@ export function BlogComments({
   category = process.env.NEXT_PUBLIC_GISCUS_CATEGORY || "General",
   categoryId = process.env.NEXT_PUBLIC_GISCUS_CATEGORY_ID || "DIC_kwDOUip-3c4DGP4M",
   mapping = "pathname",
-  theme = (process.env.NEXT_PUBLIC_GISCUS_THEME as Theme) || "light",
+  theme = (process.env.NEXT_PUBLIC_GISCUS_THEME as Theme) ||
+    "https://blog.flinkeo.online/styles/giscus.css",
   className = "",
 }: BlogCommentsProps) {
   const [mounted, setMounted] = useState(false);
@@ -38,31 +39,31 @@ export function BlogComments({
       className={`border-t border-grid-border px-5 py-10 sm:px-12 ${className}`}
     >
       <div className="mx-auto max-w-3xl">
-        {/* Section Header */}
-        <div className="mb-8 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-center gap-2.5">
-            <div className="flex size-9 items-center justify-center rounded-lg border border-neutral-200/80 bg-neutral-100 text-neutral-800 shadow-2xs">
+        {/* Dub-style Section Header Card */}
+        <div className="mb-6 flex flex-col gap-3 rounded-2xl border border-neutral-200/80 bg-neutral-50/50 p-4 sm:p-5 sm:flex-row sm:items-center sm:justify-between shadow-2xs">
+          <div className="flex items-center gap-3">
+            <div className="flex size-10 shrink-0 items-center justify-center rounded-xl border border-neutral-200 bg-white text-neutral-900 shadow-2xs">
               <MessageSquare className="size-4" />
             </div>
             <div>
-              <h3 className="font-display text-lg font-semibold tracking-tight text-neutral-900 sm:text-xl">
+              <h3 className="font-display text-base font-semibold tracking-tight text-neutral-900 sm:text-lg">
                 Discussion & Comments
               </h3>
               <p className="text-xs text-neutral-500">
-                Powered by GitHub Discussions • Markdown and emoji reactions supported
+                Threaded replies powered by GitHub Discussions
               </p>
             </div>
           </div>
 
-          <div className="hidden sm:flex items-center gap-1.5 text-xs text-neutral-400">
+          <div className="flex items-center gap-1.5 text-xs text-neutral-500 sm:justify-end">
             <Sparkles className="size-3.5 text-neutral-400" />
-            <span>Sign in with GitHub to comment</span>
+            <span>Markdown & code snippets supported</span>
           </div>
         </div>
 
-        {/* Content Area: Configured vs Setup Helper */}
+        {/* Content Area */}
         {isConfigured ? (
-          <div className="min-h-[280px]">
+          <div className="min-h-[260px]">
             {mounted ? (
               <Giscus
                 id="blog-comments"
@@ -72,7 +73,7 @@ export function BlogComments({
                 categoryId={categoryId}
                 mapping={mapping}
                 strict="0"
-                reactionsEnabled="1"
+                reactionsEnabled="0"
                 emitMetadata="0"
                 inputPosition="top"
                 theme={theme}
@@ -81,7 +82,7 @@ export function BlogComments({
               />
             ) : (
               <div className="flex h-32 items-center justify-center text-sm text-neutral-400">
-                Loading comments...
+                Loading discussion...
               </div>
             )}
           </div>
@@ -101,34 +102,8 @@ export function BlogComments({
                   <code className="rounded bg-neutral-200/70 px-1.5 py-0.5 text-neutral-900 font-mono text-2xs">
                     {repo}
                   </code>
-                  . To activate live comments, configure your repository ID and category ID in{" "}
-                  <code className="rounded bg-neutral-200/70 px-1.5 py-0.5 text-neutral-900 font-mono text-2xs">
-                    .env.local
-                  </code>
                   .
                 </p>
-
-                <ol className="mt-3 list-decimal list-inside space-y-1 text-xs text-neutral-500">
-                  <li>
-                    Enable <strong>Discussions</strong> in your GitHub repository settings.
-                  </li>
-                  <li>
-                    Visit{" "}
-                    <a
-                      href="https://giscus.app"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="font-medium text-neutral-800 underline underline-offset-2 hover:text-neutral-950"
-                    >
-                      giscus.app
-                    </a>{" "}
-                    to generate your repository &amp; category IDs.
-                  </li>
-                  <li>
-                    Add <code className="font-mono text-2xs text-neutral-700">NEXT_PUBLIC_GISCUS_REPO_ID</code> and{" "}
-                    <code className="font-mono text-2xs text-neutral-700">NEXT_PUBLIC_GISCUS_CATEGORY_ID</code> to your environment.
-                  </li>
-                </ol>
               </div>
 
               <a

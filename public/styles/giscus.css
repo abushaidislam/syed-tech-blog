@@ -1,0 +1,254 @@
+/*! 
+ * Dub-style Custom Theme for Giscus
+ * Syed Tech Blog (https://blog.flinkeo.online)
+ * Clean minimal aesthetic with tree-threaded reply lines
+ */
+
+main {
+  font-family: var(--font-geist-sans), var(--font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  
+  /* Syntax Highlighting */
+  --color-prettylights-syntax-comment: #737373;
+  --color-prettylights-syntax-constant: #0969da;
+  --color-prettylights-syntax-entity: #8250df;
+  --color-prettylights-syntax-storage-modifier-import: #262626;
+  --color-prettylights-syntax-entity-tag: #16a34a;
+  --color-prettylights-syntax-keyword: #dc2626;
+  --color-prettylights-syntax-string: #0a3069;
+  --color-prettylights-syntax-variable: #ea580c;
+  --color-prettylights-syntax-brackethighlighter-unmatched: #dc2626;
+  --color-prettylights-syntax-invalid-illegal-text: #ffffff;
+  --color-prettylights-syntax-invalid-illegal-bg: #dc2626;
+  --color-prettylights-syntax-carriage-return-text: #ffffff;
+  --color-prettylights-syntax-carriage-return-bg: #dc2626;
+  --color-prettylights-syntax-string-regexp: #16a34a;
+  --color-prettylights-syntax-markup-list: #ca8a04;
+  --color-prettylights-syntax-markup-heading: #0969da;
+  --color-prettylights-syntax-markup-italic: #262626;
+  --color-prettylights-syntax-markup-bold: #262626;
+  --color-prettylights-syntax-markup-deleted-text: #dc2626;
+  --color-prettylights-syntax-markup-deleted-bg: #fef2f2;
+  --color-prettylights-syntax-markup-inserted-text: #16a34a;
+  --color-prettylights-syntax-markup-inserted-bg: #f0fdf4;
+  --color-prettylights-syntax-markup-changed-text: #ea580c;
+  --color-prettylights-syntax-markup-changed-bg: #fff7ed;
+  --color-prettylights-syntax-markup-ignored-text: #f5f5f5;
+  --color-prettylights-syntax-markup-ignored-bg: #0969da;
+  --color-prettylights-syntax-meta-diff-range: #8250df;
+  --color-prettylights-syntax-brackethighlighter-angle: #737373;
+  --color-prettylights-syntax-sublimelinter-gutter-mark: #a3a3a3;
+  --color-prettylights-syntax-constant-other-reference-link: #0a3069;
+
+  /* Button Defaults */
+  --color-btn-text: #171717;
+  --color-btn-bg: #fafafa;
+  --color-btn-border: #e5e5e5;
+  --color-btn-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --color-btn-inset-shadow: transparent;
+  --color-btn-hover-bg: #f5f5f5;
+  --color-btn-hover-border: #d4d4d4;
+  --color-btn-active-bg: #e5e5e5;
+  --color-btn-active-border: #a3a3a3;
+  --color-btn-selected-bg: #f5f5f5;
+
+  /* Primary Button (Dub Signature Dark Button) */
+  --color-btn-primary-text: #ffffff;
+  --color-btn-primary-bg: #171717;
+  --color-btn-primary-border: #171717;
+  --color-btn-primary-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+  --color-btn-primary-inset-shadow: transparent;
+  --color-btn-primary-hover-bg: #262626;
+  --color-btn-primary-hover-border: #262626;
+  --color-btn-primary-selected-bg: #0a0a0a;
+  --color-btn-primary-selected-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
+  --color-btn-primary-disabled-text: rgba(255, 255, 255, 0.6);
+  --color-btn-primary-disabled-bg: #737373;
+  --color-btn-primary-disabled-border: #737373;
+
+  /* Segmented Controls / Tab Bars */
+  --color-segmented-control-bg: #f5f5f5;
+  --color-segmented-control-button-bg: #ffffff;
+  --color-segmented-control-button-selected-border: #e5e5e5;
+
+  /* Foreground Colors */
+  --color-fg-default: #171717;
+  --color-fg-muted: #737373;
+  --color-fg-subtle: #a3a3a3;
+
+  /* Background Colors */
+  --color-canvas-default: #ffffff;
+  --color-canvas-overlay: #ffffff;
+  --color-canvas-inset: #fafafa;
+  --color-canvas-subtle: #f5f5f5;
+
+  /* Borders & Accents */
+  --color-border-default: #e5e5e5;
+  --color-border-muted: #f0f0f0;
+  --color-neutral-muted: #f5f5f5;
+  --color-accent-fg: #171717;
+  --color-accent-emphasis: #171717;
+  --color-accent-muted: #e5e5e5;
+  --color-accent-subtle: #fafafa;
+  --color-success-fg: #16a34a;
+  --color-attention-fg: #ca8a04;
+  --color-attention-muted: #fef08a;
+  --color-attention-subtle: #fefce8;
+  --color-danger-fg: #dc2626;
+  --color-danger-muted: #fecaca;
+  --color-danger-subtle: #fef2f2;
+}
+
+/* ========================================================
+   1. Dub-style Comment Writing Box
+   ======================================================== */
+.gsc-comment-box {
+  border: 1px solid #e5e5e5 !important;
+  border-radius: 16px !important;
+  background-color: #ffffff !important;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.04) !important;
+  overflow: hidden !important;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.gsc-comment-box:focus-within {
+  border-color: #171717 !important;
+  box-shadow: 0 0 0 1px #171717, 0 4px 14px 0 rgba(0, 0, 0, 0.05) !important;
+}
+
+/* Tab Header (Write / Preview) */
+.gsc-comment-box-tabs {
+  background-color: #fafafa !important;
+  border-bottom: 1px solid #f0f0f0 !important;
+  padding: 6px 12px !important;
+  gap: 6px !important;
+}
+
+.gsc-comment-box-tabs button {
+  border-radius: 8px !important;
+  font-weight: 500 !important;
+  font-size: 13px !important;
+  padding: 6px 12px !important;
+  color: #737373 !important;
+  transition: all 0.15s ease !important;
+}
+
+.gsc-comment-box-tabs button[aria-selected="true"] {
+  background-color: #ffffff !important;
+  color: #171717 !important;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
+}
+
+/* Textarea Writing Area */
+.gsc-comment-box-textarea {
+  font-family: inherit !important;
+  font-size: 14px !important;
+  padding: 14px 16px !important;
+  background-color: #ffffff !important;
+  color: #171717 !important;
+  border: none !important;
+  line-height: 1.6 !important;
+}
+
+.gsc-comment-box-textarea::placeholder {
+  color: #a3a3a3 !important;
+}
+
+/* Bottom Bar & Dub Dark Action Button */
+.gsc-comment-box-bottom {
+  border-top: 1px solid #f0f0f0 !important;
+  background-color: #ffffff !important;
+  padding: 10px 14px !important;
+}
+
+.gsc-comment-box-bottom button,
+.gsc-comment-box-bottom .btn-primary {
+  background-color: #171717 !important;
+  border: 1px solid #171717 !important;
+  color: #ffffff !important;
+  border-radius: 10px !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  padding: 7px 16px !important;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.08) !important;
+  transition: all 0.15s ease !important;
+  cursor: pointer !important;
+}
+
+.gsc-comment-box-bottom button:hover,
+.gsc-comment-box-bottom .btn-primary:hover {
+  background-color: #262626 !important;
+  border-color: #262626 !important;
+  transform: translateY(-0.5px);
+}
+
+.gsc-comment-box-bottom button:active,
+.gsc-comment-box-bottom .btn-primary:active {
+  transform: scale(0.98);
+}
+
+/* ========================================================
+   2. Tree-threaded Replies (YouTube / Reddit Style)
+   ======================================================== */
+
+/* Continuous vertical connecting line */
+.gsc-replies {
+  position: relative !important;
+  margin-left: 20px !important;
+  padding-left: 24px !important;
+  border-left: 2px solid #e5e5e5 !important;
+  margin-top: 12px !important;
+  transition: border-color 0.2s ease !important;
+}
+
+.gsc-replies:hover {
+  border-left-color: #a3a3a3 !important;
+}
+
+/* Individual reply branch line with curved corner */
+.gsc-reply,
+.gsc-replies > .gsc-comment {
+  position: relative !important;
+  margin-top: 14px !important;
+}
+
+.gsc-reply::before,
+.gsc-replies > .gsc-comment::before {
+  content: "" !important;
+  position: absolute !important;
+  top: 18px !important;
+  left: -24px !important;
+  width: 20px !important;
+  height: 14px !important;
+  border-left: 2px solid #e5e5e5 !important;
+  border-bottom: 2px solid #e5e5e5 !important;
+  border-bottom-left-radius: 10px !important;
+  pointer-events: none !important;
+  transition: border-color 0.2s ease !important;
+}
+
+.gsc-replies:hover .gsc-reply::before,
+.gsc-replies:hover .gsc-replies > .gsc-comment::before {
+  border-left-color: #a3a3a3 !important;
+  border-bottom-color: #a3a3a3 !important;
+}
+
+/* Comment cards refinements */
+.gsc-comment-content {
+  border-radius: 14px !important;
+  border: 1px solid #f0f0f0 !important;
+  background-color: #ffffff !important;
+  padding: 14px 18px !important;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.02) !important;
+}
+
+/* Avatar circular outline */
+.gsc-comment-author-avatar img {
+  border-radius: 9999px !important;
+  border: 1px solid #e5e5e5 !important;
+}
+
+/* Hide top reactions empty space */
+.gsc-reactions-count:empty,
+.gsc-reactions-count[data-count="0"] {
+  display: none !important;
+}
