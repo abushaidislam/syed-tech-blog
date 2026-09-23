@@ -40,7 +40,7 @@ export function BlogCard({ post, priority = false }: BlogCardProps) {
           {/* Featured badge pill - Dub style */}
           {isFeatured && (
             <div className="absolute top-3 left-3 z-10 inline-flex items-center gap-1.5 rounded-full border border-neutral-200/90 bg-white/95 px-2.5 py-1 text-xs font-medium text-neutral-700 shadow-sm backdrop-blur-md select-none">
-              <Sparkles className="size-3 text-neutral-600 stroke-[1.75]" />
+              <Sparkles className="size-3 text-neutral-600 stroke-[1.75]" aria-hidden="true" />
               <span className="text-[11px] font-medium tracking-tight text-neutral-800">
                 Featured
               </span>
