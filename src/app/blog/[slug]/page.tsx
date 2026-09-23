@@ -33,6 +33,7 @@ export async function generateMetadata({
   }
 
   const post = frontmatterToBlogPostMeta(postMdx.frontmatter);
+  const ogImageUrl = post.image || `/blog/${post.slug}/opengraph-image`;
 
   return {
     title: `${post.title} | Syed Blog`,
@@ -44,24 +45,20 @@ export async function generateMetadata({
       title: post.title,
       description: post.summary,
       url: `/blog/${post.slug}`,
-      ...(post.image && {
-        images: [
-          {
-            url: post.image,
-            width: 1200,
-            height: 630,
-            alt: post.title,
-          },
-        ],
-      }),
+      images: [
+        {
+          url: ogImageUrl,
+          width: 1200,
+          height: 630,
+          alt: post.title,
+        },
+      ],
     },
     twitter: {
       card: "summary_large_image",
       title: post.title,
       description: post.summary,
-      ...(post.image && {
-        images: [post.image],
-      }),
+      images: [ogImageUrl],
     },
   };
 }
@@ -143,7 +140,12 @@ export default async function BlogPostPage({
           ]),
         }}
       />
-      <PostLayout post={post} relatedPosts={relatedPosts} mdxContent={mdxContent} />
+      <PostLayout
+        post={post}
+        relatedPosts={relatedPosts}
+        mdxContent={mdxContent}
+        postUrl={postUrl}
+      />
     </main>
   );
 }

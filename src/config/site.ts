@@ -2,7 +2,7 @@ export const siteConfig = {
   name: "Syed Blog",
   description:
     "Engineering insights, high-scale digital architecture, and modern software tutorials by Syed.",
-  url: process.env.NEXT_PUBLIC_SITE_URL || "https://syedblog.com",
+  url: process.env.NEXT_PUBLIC_SITE_URL || "https://blog.flinkeo.online",
   ogImage: "/images/blog/default-cover.jpg",
   author: {
     name: "Syed",

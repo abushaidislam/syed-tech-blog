@@ -249,7 +249,7 @@ export const blogMdxComponents = {
     if (!src || typeof src !== "string") return null;
     return (
       <span className="not-prose group relative my-8 block w-full overflow-hidden rounded-xl border border-neutral-200 bg-neutral-50 shadow-sm">
-        <div className="relative aspect-[16/9] w-full bg-neutral-100">
+        <span className="block relative aspect-[16/9] w-full bg-neutral-100">
           <Image
             src={src}
             alt={alt || "Post illustration"}
@@ -258,7 +258,7 @@ export const blogMdxComponents = {
             unoptimized={!isOptimizableImage(src)}
             className="object-cover transition-transform duration-300 group-hover:scale-[1.01]"
           />
-        </div>
+        </span>
         {alt && (
           <span className="block border-t border-neutral-100 bg-white px-4 py-2 text-center text-xs text-neutral-500">
             {alt}
