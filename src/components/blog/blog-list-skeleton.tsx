@@ -1,4 +1,4 @@
-export default function Loading() {
+export function BlogListSkeleton() {
   return (
     <main className="min-h-screen bg-white">
       {/* Blog Header Skeleton with Grid Pattern */}

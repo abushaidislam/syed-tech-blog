@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   title: "Syed Blog | Insights, Engineering & Technology",
   description:
     "Stay informed with the latest updates, engineering insights, and tech articles from Syed Blog.",
-  alternates: { canonical: "/" },
+  alternates: { canonical: "/blog" },
 };
 
 export default function BlogOverviewPage() {
