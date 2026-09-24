@@ -9,6 +9,7 @@ import { PostSidebarCTA } from "./post-cta";
 import { BlogBottomCTA } from "./blog-bottom-cta";
 import { SkyAnimation } from "./sky-animation";
 import { AuthorSpotlight } from "./author-spotlight";
+import { BlogComments } from "./blog-comments";
 
 interface PostLayoutProps {
   post: BlogPost;
@@ -129,6 +130,9 @@ export function PostLayout({ post, relatedPosts, mdxContent, postUrl }: PostLayo
 
                 {/* Author Note & Spotlight Component */}
                 <AuthorSpotlight author={primaryAuthor} />
+
+                {/* Comments Section */}
+                <BlogComments postSlug={post.slug} postTitle={decodedTitle} />
               </div>
 
               {/* Related Posts "Read more" */}

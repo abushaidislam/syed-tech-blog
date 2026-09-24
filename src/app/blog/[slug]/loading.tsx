@@ -1,12 +1,12 @@
 export default function PostLoading() {
   return (
-    <div className="min-h-screen bg-white">
+    <main className="min-h-screen bg-white">
       {/* Top Hero Section Skeleton */}
       <div className="grid-section relative overflow-clip border-b border-grid-border px-4">
-        <div className="relative z-0 mx-auto max-w-grid-width border-x border-grid-border px-4 pb-12 pt-16 sm:px-12">
+        <div className="relative z-0 mx-auto flex max-w-grid-width flex-col justify-between gap-8 border-x border-grid-border px-4 pb-12 pt-16 sm:px-12 lg:flex-row lg:items-center">
           <div className="pointer-events-none absolute inset-0 border-x border-grid-border [mask-image:linear-gradient(transparent,black)]" />
 
-          <div className="relative max-w-screen-sm animate-pulse">
+          <div className="relative z-10 max-w-screen-sm animate-pulse">
             {/* Category & Date */}
             <div className="flex items-center space-x-4">
               <div className="h-7 w-24 rounded-lg bg-neutral-100" />
@@ -33,6 +33,11 @@ export default function PostLoading() {
                 <div className="h-3 w-36 rounded bg-neutral-100" />
               </div>
             </div>
+          </div>
+
+          {/* Right Side Sky Animation Skeleton Placeholder */}
+          <div className="relative z-0 hidden lg:flex items-center justify-center lg:w-[460px] xl:w-[520px] shrink-0 animate-pulse">
+            <div className="h-64 w-full rounded-2xl bg-neutral-100/60" />
           </div>
         </div>
       </div>
@@ -79,6 +84,6 @@ export default function PostLoading() {
           </div>
         </div>
       </div>
-    </div>
+    </main>
   );
 }
