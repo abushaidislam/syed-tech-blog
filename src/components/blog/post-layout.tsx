@@ -132,7 +132,7 @@ export function PostLayout({ post, relatedPosts, mdxContent, postUrl }: PostLayo
                 <AuthorSpotlight author={primaryAuthor} />
 
                 {/* Comments Section */}
-                <BlogComments />
+                <BlogComments postSlug={post.slug} postTitle={decodedTitle} />
               </div>
 
               {/* Related Posts "Read more" */}
