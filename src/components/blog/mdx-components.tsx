@@ -10,6 +10,49 @@ import {
 } from "lucide-react";
 import { slugify } from "@/lib/utils";
 import { CodeBlock, HeadingAnchor } from "./mdx-client-components";
+import {
+  Steps,
+  Step,
+  CodeTabs,
+  Tab,
+  FileTree,
+  Folder,
+  File,
+  MetricsGrid,
+  StatCard,
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionPanel,
+  AccordionContent,
+  LinkList,
+  LinkGroup,
+  ResourceList,
+  LinkCard,
+  Badge,
+} from "./mdx-interactive";
+
+export {
+  Steps,
+  Step,
+  CodeTabs,
+  Tab,
+  FileTree,
+  Folder,
+  File,
+  MetricsGrid,
+  StatCard,
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionPanel,
+  AccordionContent,
+  LinkList,
+  LinkGroup,
+  ResourceList,
+  LinkCard,
+  Badge,
+};
 
 function isOptimizableImage(src: string): boolean {
   if (src.startsWith("/")) return true;
@@ -227,6 +270,27 @@ export const blogMdxComponents = {
   Callout,
   Video,
   video: Video,
+
+  // Interactive High-Value MDX Components
+  Steps,
+  Step,
+  CodeTabs,
+  Tab,
+  FileTree,
+  Folder,
+  File,
+  MetricsGrid,
+  StatCard,
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionPanel,
+  AccordionContent,
+  LinkList,
+  LinkGroup,
+  ResourceList,
+  LinkCard,
+  Badge,
 
   // Headings matching Dub's exact typography and hover link anchor button
   h2: ({ children }: React.HTMLAttributes<HTMLHeadingElement>) => {
