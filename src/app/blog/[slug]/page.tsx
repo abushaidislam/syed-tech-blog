@@ -20,6 +20,13 @@ export function generateStaticParams() {
   }));
 }
 
+function truncateDescription(text: string, maxLength = 155): string {
+  if (!text) return "";
+  const cleaned = text.replace(/\s+/g, " ").trim();
+  if (cleaned.length <= maxLength) return cleaned;
+  return cleaned.slice(0, maxLength - 3).trim() + "...";
+}
+
 export async function generateMetadata({
   params,
 }: {
@@ -30,37 +37,45 @@ export async function generateMetadata({
 
   if (!postMdx) {
     return {
-      title: "Post Not Found | Syed Blog",
+      title: "Post Not Found",
     };
   }
 
   const post = frontmatterToBlogPostMeta(postMdx.frontmatter);
-  const ogImageUrl = post.image || `/blog/${post.slug}/opengraph-image`;
+  const relativeOgUrl = post.image || `/blog/${post.slug}/opengraph-image`;
+  const absoluteOgUrl = new URL(relativeOgUrl, siteConfig.url).toString();
+  const canonicalUrl = `${siteConfig.url}/blog/${post.slug}`;
+  const truncatedSummary = truncateDescription(post.summary);
 
   return {
-    title: `${post.title} | Syed Blog`,
-    description: post.summary,
+    title: post.title,
+    description: truncatedSummary,
     alternates: {
-      canonical: `/blog/${post.slug}`,
+      canonical: canonicalUrl,
     },
     openGraph: {
       title: post.title,
-      description: post.summary,
-      url: `/blog/${post.slug}`,
+      description: truncatedSummary,
+      url: canonicalUrl,
+      siteName: siteConfig.name,
       images: [
         {
-          url: ogImageUrl,
+          url: absoluteOgUrl,
           width: 1200,
           height: 630,
           alt: post.title,
         },
       ],
+      locale: "en_US",
+      type: "article",
+      publishedTime: post.dateIso,
+      authors: post.authors.map((a) => a.name),
     },
     twitter: {
       card: "summary_large_image",
       title: post.title,
-      description: post.summary,
-      images: [ogImageUrl],
+      description: truncatedSummary,
+      images: [absoluteOgUrl],
     },
   };
 }
@@ -107,7 +122,8 @@ export default async function BlogPostPage({
           __html: JSON.stringify([
             {
               "@context": "https://schema.org",
-              "@type": "Article",
+              "@type": "BlogPosting",
+              "@id": `${postUrl}#article`,
               headline: post.title,
               description: post.summary,
               url: postUrl,
@@ -125,6 +141,7 @@ export default async function BlogPostPage({
                 "@type": "Person",
                 name: siteConfig.author.name,
                 url: siteConfig.url,
+                image: new URL(siteConfig.author.image, siteConfig.url).toString(),
               },
               mainEntityOfPage: {
                 "@type": "WebPage",

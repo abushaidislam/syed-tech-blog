@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { BlogHeader } from "@/components/blog/blog-header";
 import { BlogGrid } from "@/components/blog/blog-grid";
 import { BlogBottomCTA } from "@/components/blog/blog-bottom-cta";
+import { siteConfig } from "@/config/site";
 import {
   BLOG_CATEGORIES,
   getCategoryBySlug,
@@ -25,15 +26,42 @@ export async function generateMetadata({
 
   if (!category) {
     return {
-      title: "Category Not Found | Syed Blog",
+      title: "Category Not Found",
     };
   }
 
+  const title = `${category.name} Category`;
+  const description =
+    category.description || `Articles and engineering insights in ${category.name} from Syed Blog.`;
+  const canonicalUrl = `${siteConfig.url}/blog/category/${category.slug}`;
+
   return {
-    title: `${category.name} | Syed Blog`,
-    description: category.description || `Articles in ${category.name} from Syed Blog.`,
+    title: category.name,
+    description,
     alternates: {
-      canonical: `/blog/category/${category.slug}`,
+      canonical: canonicalUrl,
+    },
+    openGraph: {
+      title: `${title} | ${siteConfig.name}`,
+      description,
+      url: canonicalUrl,
+      siteName: siteConfig.name,
+      images: [
+        {
+          url: new URL(siteConfig.ogImage, siteConfig.url).toString(),
+          width: 1200,
+          height: 630,
+          alt: `${category.name} - ${siteConfig.name}`,
+        },
+      ],
+      locale: "en_US",
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${title} | ${siteConfig.name}`,
+      description,
+      images: [new URL(siteConfig.ogImage, siteConfig.url).toString()],
     },
   };
 }

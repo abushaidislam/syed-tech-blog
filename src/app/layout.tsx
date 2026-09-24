@@ -74,6 +74,7 @@ export default function RootLayout({
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "WebSite",
+              "@id": `${siteConfig.url}/#website`,
               name: siteConfig.name,
               url: siteConfig.url,
               description: siteConfig.description,
@@ -81,6 +82,7 @@ export default function RootLayout({
                 "@type": "Person",
                 name: siteConfig.author.name,
                 url: siteConfig.url,
+                image: new URL(siteConfig.author.image, siteConfig.url).toString(),
               },
             }),
           }}
