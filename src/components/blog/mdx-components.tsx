@@ -144,23 +144,78 @@ export function Callout({
 }
 
 /**
- * Custom MDX Video component matching Dub's video player wrapper.
+ * Custom MDX Video component matching Dub's video player wrapper with full controls and accessibility.
  */
-export function Video({ src }: { src: string }) {
+export function Video({
+  src,
+  poster,
+  caption,
+  autoPlay = true,
+  loop = true,
+  muted = true,
+  playsInline = true,
+  controls = true,
+  className,
+  children,
+  ...props
+}: {
+  src?: string;
+  poster?: string;
+  caption?: string;
+  autoPlay?: boolean;
+  loop?: boolean;
+  muted?: boolean;
+  playsInline?: boolean;
+  controls?: boolean;
+  className?: string;
+  children?: React.ReactNode;
+} & React.VideoHTMLAttributes<HTMLVideoElement>) {
+  // Extract src from children <source> tags if not directly passed on props
+  let resolvedSrc = src;
+  if (!resolvedSrc && children) {
+    if (React.isValidElement(children)) {
+      const p = children.props as { src?: string };
+      if (p.src) resolvedSrc = p.src;
+    } else if (Array.isArray(children)) {
+      for (const child of children) {
+        if (React.isValidElement(child)) {
+          const p = child.props as { src?: string };
+          if (p.src) {
+            resolvedSrc = p.src;
+            break;
+          }
+        }
+      }
+    }
+  }
+
+  if (!resolvedSrc && !children) return null;
+
   return (
-    <div className="not-prose my-6 aspect-video w-full overflow-hidden rounded-xl border border-neutral-200 bg-black shadow-sm">
-      <video
-        className="size-full object-cover"
-        loop
-        autoPlay
-        muted
-        playsInline
-        src={src}
-      >
-        <source src={src} type="video/mp4" />
-        Your browser does not support the video tag.
-      </video>
-    </div>
+    <figure className="not-prose my-6 w-full">
+      <div className="relative aspect-video w-full overflow-hidden rounded-xl border border-neutral-200 bg-neutral-950 shadow-sm">
+        <video
+          className="size-full object-cover"
+          src={resolvedSrc}
+          poster={poster}
+          autoPlay={autoPlay}
+          loop={loop}
+          muted={muted}
+          playsInline={playsInline}
+          controls={controls}
+          preload="metadata"
+          {...props}
+        >
+          {children || (resolvedSrc ? <source src={resolvedSrc} type="video/mp4" /> : null)}
+          Your browser does not support the video tag.
+        </video>
+      </div>
+      {caption && (
+        <figcaption className="mt-2 text-center text-xs text-neutral-500">
+          {caption}
+        </figcaption>
+      )}
+    </figure>
   );
 }
 
@@ -171,6 +226,7 @@ export const blogMdxComponents = {
   Quote,
   Callout,
   Video,
+  video: Video,
 
   // Headings matching Dub's exact typography and hover link anchor button
   h2: ({ children }: React.HTMLAttributes<HTMLHeadingElement>) => {
