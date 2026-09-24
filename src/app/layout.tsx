@@ -1,5 +1,6 @@
 import { geistMono, inter, satoshi } from "@/styles/fonts";
 import "@/styles/globals.css";
+import "katex/dist/katex.min.css";
 import { cn } from "@/lib/utils";
 import type { Metadata } from "next";
 import { Nav } from "@/components/layout/nav";

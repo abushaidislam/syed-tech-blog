@@ -11,6 +11,8 @@ import { PostLayout } from "@/components/blog/post-layout";
 import { blogMdxComponents } from "@/components/blog/mdx-components";
 import { siteConfig } from "@/config/site";
 import remarkGfm from "remark-gfm";
+import remarkMath from "remark-math";
+import rehypeKatex from "rehype-katex";
 
 export function generateStaticParams() {
   return getAllBlogPostSlugs().map((slug) => ({
@@ -91,7 +93,8 @@ export default async function BlogPostPage({
     components: blogMdxComponents,
     options: {
       mdxOptions: {
-        remarkPlugins: [remarkGfm],
+        remarkPlugins: [remarkGfm, remarkMath],
+        rehypePlugins: [rehypeKatex],
       },
     },
   });
