@@ -77,7 +77,7 @@ export function BlogComments({
               categoryId={categoryId}
               mapping="pathname"
               strict="0"
-              reactionsEnabled="0"
+              reactionsEnabled="1"
               emitMetadata="0"
               inputPosition="top"
               theme={themeUrl}

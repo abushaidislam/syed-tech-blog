@@ -262,9 +262,58 @@ main {
   border: 1px solid #e5e5e5 !important;
 }
 
-/* Hide top reactions empty space */
-.gsc-reactions-count:empty,
-.gsc-reactions-count[data-count="0"],
+/* ========================================================
+   3. Modern Dub-style Reactions
+   ======================================================== */
 .gsc-reactions {
-  display: none !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  margin: 14px 0 !important;
+  padding: 8px 14px !important;
+  background-color: #fafafa !important;
+  border: 1px solid #f0f0f0 !important;
+  border-radius: 14px !important;
+}
+
+.gsc-reactions-button {
+  border-radius: 9999px !important;
+  border: 1px solid #e5e5e5 !important;
+  background-color: #ffffff !important;
+  padding: 4px 10px !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  color: #525252 !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04) !important;
+  transition: all 0.15s ease !important;
+  cursor: pointer !important;
+}
+
+.gsc-reactions-button:hover {
+  background-color: #f5f5f5 !important;
+  border-color: #d4d4d4 !important;
+  transform: translateY(-0.5px);
+}
+
+.gsc-social-reaction-summary-item {
+  border-radius: 9999px !important;
+  border: 1px solid #e5e5e5 !important;
+  background-color: #ffffff !important;
+  padding: 4px 10px !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  transition: all 0.15s ease !important;
+}
+
+.gsc-social-reaction-summary-item:hover {
+  background-color: #f5f5f5 !important;
+  border-color: #d4d4d4 !important;
+}
+
+.gsc-reactions-popover {
+  border-radius: 16px !important;
+  border: 1px solid #e5e5e5 !important;
+  background-color: #ffffff !important;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1) !important;
+  padding: 8px !important;
 }
