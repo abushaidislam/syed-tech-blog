@@ -22,10 +22,18 @@ export function BlogComments({
     setMounted(true);
   }, []);
 
-  // Theme URL served via jsDelivr CDN directly from this GitHub branch
-  const themeUrl =
-    process.env.NEXT_PUBLIC_GISCUS_THEME ||
-    "https://cdn.jsdelivr.net/gh/abushaidislam/syed-tech-blog@feat/giscus-comments/public/styles/giscus.css";
+  // Production-grade theme resolution:
+  // In production (https://blog.flinkeo.online), it serves /styles/giscus.css directly from origin.
+  // In local/preview environments, it seamlessly falls back to jsDelivr CDN served over HTTPS.
+  const themeUrl = React.useMemo(() => {
+    if (process.env.NEXT_PUBLIC_GISCUS_THEME) {
+      return process.env.NEXT_PUBLIC_GISCUS_THEME;
+    }
+    if (typeof window !== "undefined" && window.location.protocol === "https:") {
+      return `${window.location.origin}/styles/giscus.css`;
+    }
+    return "https://cdn.jsdelivr.net/gh/abushaidislam/syed-tech-blog@feat/giscus-comments/public/styles/giscus.css";
+  }, []);
 
   const repo = (process.env.NEXT_PUBLIC_GISCUS_REPO || "abushaidislam/syed-tech-blog") as Repo;
   const repoId = process.env.NEXT_PUBLIC_GISCUS_REPO_ID || "R_kgDOUip-3Q";

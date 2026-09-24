@@ -1,0 +1,8 @@
+{
+  "origins": [
+    "https://blog.flinkeo.online"
+  ],
+  "originsRegex": [
+    "http://localhost:[0-9]+"
+  ]
+}
