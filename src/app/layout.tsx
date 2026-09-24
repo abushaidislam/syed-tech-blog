@@ -7,6 +7,7 @@ import { Nav } from "@/components/layout/nav";
 import { Footer } from "@/components/layout/footer";
 import { SmoothScrollProvider } from "@/components/layout/smooth-scroll-provider";
 import { BackToTop } from "@/components/layout/back-to-top";
+import { AutoScrollReader } from "@/components/layout/auto-scroll-reader";
 import { siteConfig } from "@/config/site";
 
 export const metadata: Metadata = {
@@ -89,6 +90,7 @@ export default function RootLayout({
           <div className="grow">{children}</div>
           <Footer />
           <BackToTop />
+          <AutoScrollReader />
         </SmoothScrollProvider>
       </body>
     </html>
