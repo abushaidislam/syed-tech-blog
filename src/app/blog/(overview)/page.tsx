@@ -4,11 +4,39 @@ import { BlogGrid } from "@/components/blog/blog-grid";
 import { BlogBottomCTA } from "@/components/blog/blog-bottom-cta";
 import { getAllBlogPosts } from "@/lib/blog";
 
+import { siteConfig } from "@/config/site";
+
 export const metadata: Metadata = {
-  title: "Syed Blog | Insights, Engineering & Technology",
+  title: {
+    absolute: "Syed Blog | Insights, Engineering & Technology",
+  },
   description:
     "Stay informed with the latest updates, engineering insights, and tech articles from Syed Blog.",
-  alternates: { canonical: "/blog" },
+  alternates: { canonical: `${siteConfig.url}/blog` },
+  openGraph: {
+    title: "Syed Blog | Insights, Engineering & Technology",
+    description:
+      "Stay informed with the latest updates, engineering insights, and tech articles from Syed Blog.",
+    url: `${siteConfig.url}/blog`,
+    siteName: siteConfig.name,
+    images: [
+      {
+        url: new URL(siteConfig.ogImage, siteConfig.url).toString(),
+        width: 1200,
+        height: 630,
+        alt: siteConfig.name,
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Syed Blog | Insights, Engineering & Technology",
+    description:
+      "Stay informed with the latest updates, engineering insights, and tech articles from Syed Blog.",
+    images: [new URL(siteConfig.ogImage, siteConfig.url).toString()],
+  },
 };
 
 export default function BlogOverviewPage() {
