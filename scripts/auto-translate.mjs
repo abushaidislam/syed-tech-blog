@@ -34,55 +34,79 @@ const BLOG_BN_DIR = path.join(process.cwd(), "content", "blog", "bn");
 if (!fs.existsSync(BLOG_EN_DIR)) fs.mkdirSync(BLOG_EN_DIR, { recursive: true });
 if (!fs.existsSync(BLOG_BN_DIR)) fs.mkdirSync(BLOG_BN_DIR, { recursive: true });
 
+const delay = (ms) => new Promise((res) => setTimeout(res, ms));
+
 async function callGemini(prompt, content) {
-  // Use gemini-2.5-flash or gemini-1.5-flash
-  const models = ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash"];
+  // Try supported Gemini model names in order of recommendation and speed
+  const models = [
+    "gemini-3.8-flash",
+    "gemini-3.6-flash",
+    "gemini-3.5-flash",
+    "gemini-flash-latest",
+    "gemini-2.5-flash",
+    "gemini-pro-latest",
+  ];
 
   for (const model of models) {
     const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_API_KEY}`;
-    try {
-      const response = await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          contents: [
-            {
-              parts: [
-                {
-                  text: `${prompt}\n\nHere is the raw MDX content:\n\n${content}`,
-                },
-              ],
+    let attempts = 0;
+    const maxAttempts = 3;
+
+    while (attempts < maxAttempts) {
+      attempts++;
+      try {
+        const response = await fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            contents: [
+              {
+                parts: [
+                  {
+                    text: `${prompt}\n\nHere is the raw MDX content:\n\n${content}`,
+                  },
+                ],
+              },
+            ],
+            generationConfig: {
+              temperature: 0.2,
             },
-          ],
-          generationConfig: {
-            temperature: 0.2,
-          },
-        }),
-      });
+          }),
+        });
 
-      if (!response.ok) {
-        const errText = await response.text();
-        console.warn(`[auto-translate] Model ${model} returned ${response.status}: ${errText}`);
-        continue;
+        if (response.status === 503 || response.status === 429) {
+          if (attempts < maxAttempts) {
+            console.warn(`[auto-translate] Model ${model} returned ${response.status} (high demand). Retrying in 2s... (attempt ${attempts}/${maxAttempts})`);
+            await delay(2000);
+            continue;
+          }
+        }
+
+        if (!response.ok) {
+          const errText = await response.text();
+          console.warn(`[auto-translate] Model ${model} returned ${response.status}: ${errText.slice(0, 150)}...`);
+          break; // Move to next model if 404 or other unrecoverable error
+        }
+
+        const data = await response.json();
+        let translated = data.candidates?.[0]?.content?.parts?.[0]?.text;
+        if (!translated) break;
+
+        // Clean any accidental triple backtick wrapper around the whole file
+        translated = translated.trim();
+        if (translated.startsWith("```mdx")) {
+          translated = translated.replace(/^```mdx\r?\n/, "").replace(/\r?\n```$/, "");
+        } else if (translated.startsWith("```markdown")) {
+          translated = translated.replace(/^```markdown\r?\n/, "").replace(/\r?\n```$/, "");
+        } else if (translated.startsWith("```")) {
+          translated = translated.replace(/^```[a-z]*\r?\n/, "").replace(/\r?\n```$/, "");
+        }
+
+        return translated;
+      } catch (err) {
+        console.warn(`[auto-translate] Failed with model ${model}:`, err.message);
+        break;
       }
-
-      const data = await response.json();
-      let translated = data.candidates?.[0]?.content?.parts?.[0]?.text;
-      if (!translated) continue;
-
-      // Clean any accidental triple backtick wrapper around the whole file
-      translated = translated.trim();
-      if (translated.startsWith("```mdx")) {
-        translated = translated.replace(/^```mdx\r?\n/, "").replace(/\r?\n```$/, "");
-      } else if (translated.startsWith("```markdown")) {
-        translated = translated.replace(/^```markdown\r?\n/, "").replace(/\r?\n```$/, "");
-      } else if (translated.startsWith("```")) {
-        translated = translated.replace(/^```[a-z]*\r?\n/, "").replace(/\r?\n```$/, "");
-      }
-
-      return translated;
-    } catch (err) {
-      console.warn(`[auto-translate] Failed with model ${model}:`, err.message);
     }
   }
 
