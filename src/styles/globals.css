@@ -66,6 +66,21 @@
 @plugin "@tailwindcss/typography";
 @plugin "@tailwindcss/forms";
 
+/* Explicit Bengali Font Rules */
+html[lang^="bn"],
+body.font-bangla,
+.font-bangla {
+  font-family: var(--font-hind-siliguri), "Hind Siliguri", "Noto Sans Bengali", system-ui, sans-serif !important;
+}
+
+html[lang^="bn"] .font-display,
+html[lang^="bn"] h1,
+html[lang^="bn"] h2,
+html[lang^="bn"] h3,
+html[lang^="bn"] h4 {
+  font-family: var(--font-hind-siliguri), "Hind Siliguri", "Noto Sans Bengali", system-ui, sans-serif !important;
+}
+
 /* Lenis Smooth Scroll Essential Rules */
 html.lenis,
 html.lenis body {

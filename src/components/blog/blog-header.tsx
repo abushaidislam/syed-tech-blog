@@ -27,10 +27,22 @@ export function BlogHeader({
   const displayTitle = title || dict.header.title;
   const displayDescription = description || dict.header.description;
 
+  const categoryNameMap: Record<string, string> = {
+    overview: locale === "bn" ? "সারসংক্ষেপ" : "Overview",
+    company: locale === "bn" ? "কোম্পানি" : "Company News",
+    education: locale === "bn" ? "শিক্ষা" : "Education",
+    engineering: locale === "bn" ? "ইঞ্জিনিয়ারিং" : "Engineering",
+    customers: locale === "bn" ? "গ্রাহকদের গল্প" : "Customer Stories",
+  };
+
   const tabs = [
-    { name: locale === "bn" ? "সারসংক্ষেপ" : "Overview", href: `/${locale}/blog`, slug: "overview" },
+    {
+      name: categoryNameMap.overview,
+      href: `/${locale}/blog`,
+      slug: "overview",
+    },
     ...BLOG_CATEGORIES.map((cat) => ({
-      name: cat.name,
+      name: categoryNameMap[cat.slug] || cat.name,
       href: `/${locale}/blog/category/${cat.slug}`,
       slug: cat.slug,
     })),
@@ -134,6 +146,7 @@ export function BlogHeader({
                     <div
                       className={cn(
                         "relative z-10 px-4 py-1.5 text-sm font-medium transition-colors duration-150",
+                        locale === "bn" && "font-bangla",
                         active
                           ? "text-white"
                           : "text-neutral-700 hover:text-neutral-900",
@@ -184,11 +197,13 @@ export function BlogHeader({
             >
               <span className="flex items-center gap-2">
                 <List className="size-4 text-neutral-600" />
-                <span>
-                  {tabs.find((t) => isCurrentActive(t.slug))?.name || "Categories"}
+                <span className={cn(locale === "bn" && "font-bangla")}>
+                  {tabs.find((t) => isCurrentActive(t.slug))?.name || (locale === "bn" ? "ক্যাটাগরি" : "Categories")}
                 </span>
               </span>
-              <span className="text-xs text-neutral-400">Tap to switch</span>
+              <span className="text-xs text-neutral-400">
+                {locale === "bn" ? "পরিবর্তন করতে চাপুন" : "Tap to switch"}
+              </span>
             </button>
 
             <AnimatePresence>

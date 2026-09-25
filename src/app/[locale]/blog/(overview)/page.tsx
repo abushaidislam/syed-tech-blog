@@ -26,10 +26,10 @@ export async function generateMetadata({
 
   const isBn = locale === "bn";
   const title = isBn
-    ? "সকল প্রবন্ধ | সৈয়দ ব্লগ"
+    ? "সকল প্রবন্ধ | সাঈদ ব্লগ"
     : "All Articles | Syed Blog";
   const description = isBn
-    ? "সৈয়দ ব্লগের সাম্প্রতিক সফটওয়্যার ইঞ্জিনিয়ারিং, ক্লাউড আর্কিটেকচার এবং টেক আপডেটের সমস্ত নিবন্ধ।"
+    ? "সাঈদ ব্লগের সাম্প্রতিক সফটওয়্যার ইঞ্জিনিয়ারিং, ক্লাউড আর্কিটেকচার এবং টেক আপডেটের সমস্ত নিবন্ধ।"
     : "Stay informed with the latest updates, engineering insights, and tech articles from Syed Blog.";
 
   return {

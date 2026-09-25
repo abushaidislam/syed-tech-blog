@@ -25,6 +25,20 @@ export function generateStaticParams() {
   );
 }
 
+const CATEGORY_BN_NAMES: Record<string, string> = {
+  company: "কোম্পানি",
+  education: "শিক্ষা",
+  engineering: "ইঞ্জিনিয়ারিং",
+  customers: "গ্রাহকদের গল্প",
+};
+
+const CATEGORY_BN_DESCS: Record<string, string> = {
+  company: "সাঈদ ব্লগ টিমের মাইলফলক, প্রোডাক্ট রিলিজ এবং আপডেট।",
+  education: "আপনার ডিজিটাল দক্ষতা বৃদ্ধির জন্য গাইড, টিউটোরিয়াল এবং প্রযুক্তিগত অন্তর্দৃষ্টি।",
+  engineering: "হাই-স্কেল সফটওয়্যার সিস্টেম, সিস্টেম আর্কিটেকচার এবং ডেভেলপার টুলস নিয়ে বিশ্লেষণ।",
+  customers: "কীভাবে বিভিন্ন স্টার্টআপ এবং এন্টারপ্রাইজ সাঈদ ব্লগের সাথে তৈরি ও স্কেল করছে।",
+};
+
 export async function generateMetadata({
   params,
 }: {
@@ -41,17 +55,19 @@ export async function generateMetadata({
   }
 
   const isBn = locale === "bn";
+  const displayName = isBn ? (CATEGORY_BN_NAMES[categorySlug] || category.name) : category.name;
+  const displayDesc = isBn
+    ? (CATEGORY_BN_DESCS[categorySlug] || category.description)
+    : (category.description || `Articles and engineering insights in ${category.name} from Syed Blog.`);
+
   const title = isBn
-    ? `${category.name} ক্যাটাগরি | ${siteConfig.name}`
+    ? `${displayName} ক্যাটাগরি | সাঈদ ব্লগ`
     : `${category.name} Category | ${siteConfig.name}`;
-  const description =
-    category.description ||
-    `Articles and engineering insights in ${category.name} from Syed Blog.`;
   const canonicalUrl = `${siteConfig.url}/${locale}/blog/category/${category.slug}`;
 
   return {
-    title: category.name,
-    description,
+    title: displayName,
+    description: displayDesc,
     alternates: {
       canonical: canonicalUrl,
       languages: {
@@ -61,15 +77,15 @@ export async function generateMetadata({
     },
     openGraph: {
       title,
-      description,
+      description: displayDesc,
       url: canonicalUrl,
-      siteName: siteConfig.name,
+      siteName: isBn ? "সাঈদ ব্লগ" : siteConfig.name,
       images: [
         {
           url: new URL(siteConfig.ogImage, siteConfig.url).toString(),
           width: 1200,
           height: 630,
-          alt: `${category.name} - ${siteConfig.name}`,
+          alt: `${displayName} - ${isBn ? "সাঈদ ব্লগ" : siteConfig.name}`,
         },
       ],
       locale: isBn ? "bn_BD" : "en_US",
@@ -78,7 +94,7 @@ export async function generateMetadata({
     twitter: {
       card: "summary_large_image",
       title,
-      description,
+      description: displayDesc,
       images: [new URL(siteConfig.ogImage, siteConfig.url).toString()],
     },
   };
@@ -102,6 +118,10 @@ export default async function BlogCategoryPage({
     notFound();
   }
 
+  const isBn = locale === "bn";
+  const displayName = isBn ? (CATEGORY_BN_NAMES[categorySlug] || category.name) : category.name;
+  const displayDesc = isBn ? (CATEGORY_BN_DESCS[categorySlug] || category.description) : category.description;
+
   const posts = getBlogPostsByCategory(categorySlug, locale);
   const categoryUrl = `${siteConfig.url}/${locale}/blog/category/${category.slug}`;
 
@@ -116,14 +136,14 @@ export default async function BlogCategoryPage({
             itemListElement: [
               { "@type": "ListItem", position: 1, name: "Home", item: `${siteConfig.url}/${locale}` },
               { "@type": "ListItem", position: 2, name: "Blog", item: `${siteConfig.url}/${locale}/blog` },
-              { "@type": "ListItem", position: 3, name: category.name, item: categoryUrl },
+              { "@type": "ListItem", position: 3, name: displayName, item: categoryUrl },
             ],
           }),
         }}
       />
       <BlogHeader
-        title={category.name}
-        description={category.description}
+        title={displayName}
+        description={displayDesc}
         activeCategory={category.slug}
       />
       <BlogGrid posts={posts} />

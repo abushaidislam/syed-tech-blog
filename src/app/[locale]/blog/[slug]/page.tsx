@@ -52,7 +52,7 @@ export async function generateMetadata({
     };
   }
 
-  const post = frontmatterToBlogPostMeta(postMdx.frontmatter);
+  const post = frontmatterToBlogPostMeta(postMdx.frontmatter, locale);
   const relativeOgUrl = post.image || `/blog/${post.slug}/opengraph-image`;
   const absoluteOgUrl = new URL(relativeOgUrl, siteConfig.url).toString();
   const canonicalUrl = `${siteConfig.url}/${locale}/blog/${post.slug}`;
@@ -120,7 +120,7 @@ export default async function BlogPostPage({
   }
 
   const post = {
-    ...frontmatterToBlogPostMeta(postMdx.frontmatter),
+    ...frontmatterToBlogPostMeta(postMdx.frontmatter, locale),
     headings: postMdx.headings,
     isFallback: postMdx.isFallback,
     locale: postMdx.locale,

@@ -132,15 +132,28 @@ export function getBlogPostBySlug(
 }
 
 /**
- * Convert frontmatter to BlogPostMeta for list views.
+ * Convert frontmatter to BlogPostMeta for list views with localized category names.
  */
 export function frontmatterToBlogPostMeta(
   fm: BlogPostFrontmatter,
+  locale: Locale = "en",
 ): BlogPostMeta {
-  const categoryObj = BLOG_CATEGORIES.find((c) => c.slug === fm.category) || {
+  const baseCategory = BLOG_CATEGORIES.find((c) => c.slug === fm.category) || {
     slug: fm.category,
     name: fm.categoryName || fm.category,
   };
+
+  const bnCategoryNames: Record<string, string> = {
+    company: "কোম্পানি",
+    education: "শিক্ষা",
+    engineering: "ইঞ্জিনিয়ারিং",
+    customers: "গ্রাহকদের গল্প",
+  };
+
+  const categoryName =
+    locale === "bn"
+      ? bnCategoryNames[baseCategory.slug] || baseCategory.name
+      : baseCategory.name;
 
   return {
     slug: fm.slug,
@@ -149,7 +162,10 @@ export function frontmatterToBlogPostMeta(
     image: fm.image,
     dateIso: fm.dateIso,
     dateFormatted: fm.dateFormatted,
-    category: categoryObj,
+    category: {
+      ...baseCategory,
+      name: categoryName,
+    },
     authors: fm.authors || [],
     featured: Boolean(fm.featured),
     ogTitle: fm.ogTitle,
@@ -170,7 +186,7 @@ export function getAllBlogPosts(locale: Locale = "en"): BlogPostMeta[] {
       const mdx = getBlogPostBySlug(slug, locale);
       if (!mdx) return null;
       return {
-        ...frontmatterToBlogPostMeta(mdx.frontmatter),
+        ...frontmatterToBlogPostMeta(mdx.frontmatter, locale),
         isFallback: mdx.isFallback,
         locale: mdx.locale,
       };

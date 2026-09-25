@@ -119,7 +119,12 @@ export default async function RootLayout({
         locale === "bn" && "font-bangla",
       )}
     >
-      <body className="font-default text-neutral-900 antialiased selection:bg-neutral-900 selection:text-white min-h-screen flex flex-col justify-between bg-white">
+      <body
+        className={cn(
+          locale === "bn" ? "font-bangla" : "font-default",
+          "text-neutral-900 antialiased selection:bg-neutral-900 selection:text-white min-h-screen flex flex-col justify-between bg-white",
+        )}
+      >
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{

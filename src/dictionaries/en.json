@@ -15,6 +15,13 @@
     "all": "All",
     "searchPlaceholder": "Search articles..."
   },
+  "categories": {
+    "overview": "Overview",
+    "company": "Company News",
+    "education": "Education",
+    "engineering": "Engineering",
+    "customers": "Customer Stories"
+  },
   "blog": {
     "minRead": "min read",
     "published": "Published",
