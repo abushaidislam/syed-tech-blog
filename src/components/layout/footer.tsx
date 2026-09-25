@@ -1,7 +1,10 @@
+"use client";
+
 import Link from "next/link";
 import { SyedBlogWordmark } from "./brand";
 import { cn } from "@/lib/utils";
 import { siteConfig } from "@/config/site";
+import { useLocale } from "./locale-provider";
 import {
   ArrowUpRight,
   Cpu,
@@ -47,9 +50,10 @@ interface StatusBadgeProps {
 }
 
 export function LiveStatusBadge({ className }: StatusBadgeProps) {
+  const { locale } = useLocale();
   return (
     <Link
-      href="/blog"
+      href={`/${locale}/blog`}
       className={cn(
         "group flex max-w-fit items-center gap-2.5 rounded-lg border border-neutral-200 bg-white py-1.5 pl-2.5 pr-3 shadow-sm transition-colors hover:border-neutral-300 hover:bg-neutral-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900 focus-visible:ring-offset-2",
         className,
@@ -150,6 +154,9 @@ const linkItemClass =
   "group flex items-center gap-2 text-sm text-neutral-500 transition-colors hover:text-neutral-900 focus-visible:rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900 focus-visible:ring-offset-2";
 
 export function Footer() {
+  const { locale } = useLocale();
+  const toLocaleHref = (href: string) => (href.startsWith("http") ? href : `/${locale}${href}`);
+
   return (
     <>
       {/* Spacer Grid Section */}
@@ -201,20 +208,21 @@ export function Footer() {
               <div className="flex flex-col justify-between gap-8 border-b border-grid-border bg-white/70 p-6 sm:p-10 lg:col-span-4 lg:border-b-0 lg:border-r">
                 <div className="space-y-5">
                   <Link
-                    href="/blog"
+                    href={`/${locale}/blog`}
                     className="group block max-w-fit rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900 focus-visible:ring-offset-2"
                   >
                     <SyedBlogWordmark />
                   </Link>
                   <p className="max-w-xs text-sm leading-relaxed text-neutral-500">
-                    Engineering insights, high-scale digital architecture, and
-                    modern software tutorials by Syed.
+                    {locale === "bn"
+                      ? "সফটওয়্যার ইঞ্জিনিয়ারিং, হাই-স্কেল ডিজিটাল আর্কিটেকচার এবং আধুনিক টেক টিউটোরিয়াল।"
+                      : "Engineering insights, high-scale digital architecture, and modern software tutorials by Syed."}
                   </p>
                   <Link
-                    href="/blog"
+                    href={`/${locale}/blog`}
                     className="group inline-flex items-center gap-1.5 text-sm font-semibold text-neutral-900 transition-colors hover:text-neutral-600 focus-visible:rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900 focus-visible:ring-offset-2"
                   >
-                    Browse all articles
+                    {locale === "bn" ? "সকল প্রবন্ধ ব্রাউজ করুন" : "Browse all articles"}
                     <ArrowUpRight className="size-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                   </Link>
                 </div>
@@ -240,13 +248,13 @@ export function Footer() {
               <div className="grid grid-cols-2 lg:col-span-8 sm:grid-cols-4">
                 {/* Topics */}
                 <div className="border-b border-r border-grid-border bg-white/35 p-6 sm:border-b sm:p-8">
-                  <h3 className={linkHeaderClass}>Topics</h3>
+                  <h3 className={linkHeaderClass}>{locale === "bn" ? "বিষয়সমূহ" : "Topics"}</h3>
                   <ul role="list" className={linkListClass}>
                     {navigation.product.map((item) => {
                       const Icon = item.icon;
                       return (
                         <li key={item.name}>
-                          <Link href={item.href} className={linkItemClass}>
+                          <Link href={toLocaleHref(item.href)} className={linkItemClass}>
                             <span
                               className={cn(
                                 "flex size-5 shrink-0 items-center justify-center rounded border transition-colors",
@@ -265,11 +273,11 @@ export function Footer() {
 
                 {/* Categories */}
                 <div className="border-b border-grid-border bg-white/35 p-6 sm:border-r sm:p-8">
-                  <h3 className={linkHeaderClass}>Categories</h3>
+                  <h3 className={linkHeaderClass}>{locale === "bn" ? "ক্যাটাগরি" : "Categories"}</h3>
                   <ul role="list" className={linkListClass}>
                     {navigation.categories.map((item) => (
                       <li key={item.name}>
-                        <Link href={item.href} className={linkItemClass}>
+                        <Link href={toLocaleHref(item.href)} className={linkItemClass}>
                           {item.name}
                         </Link>
                       </li>
@@ -279,12 +287,12 @@ export function Footer() {
 
                 {/* Resources */}
                 <div className="border-b border-r border-grid-border bg-white/35 p-6 sm:border-b-0 sm:p-8">
-                  <h3 className={linkHeaderClass}>Resources</h3>
+                  <h3 className={linkHeaderClass}>{locale === "bn" ? "রিসোর্স" : "Resources"}</h3>
                   <ul role="list" className={linkListClass}>
                     {navigation.resources.map((item) => (
                       <li key={item.name}>
                         <Link
-                          href={item.href}
+                          href={toLocaleHref(item.href)}
                           target={item.external ? "_blank" : undefined}
                           rel={item.external ? "noreferrer" : undefined}
                           className={linkItemClass}
@@ -301,11 +309,11 @@ export function Footer() {
 
                 {/* Company */}
                 <div className="border-b border-grid-border bg-white/35 p-6 sm:border-b-0 sm:p-8">
-                  <h3 className={linkHeaderClass}>Company</h3>
+                  <h3 className={linkHeaderClass}>{locale === "bn" ? "কোম্পানি" : "Company"}</h3>
                   <ul role="list" className={linkListClass}>
                     {navigation.company.map((item) => (
                       <li key={item.name}>
-                        <Link href={item.href} className={linkItemClass}>
+                        <Link href={toLocaleHref(item.href)} className={linkItemClass}>
                           {item.name}
                         </Link>
                       </li>
@@ -369,7 +377,7 @@ export function Footer() {
               {/* Copyright */}
               <div className="p-5 sm:px-8">
                 <p className="text-xs text-neutral-400 sm:text-right">
-                  © {new Date().getFullYear()} Syed Blog. All rights reserved.
+                  © {new Date().getFullYear()} Syed Blog. {locale === "bn" ? "সর্বস্বত্ব সংরক্ষিত।" : "All rights reserved."}
                 </p>
               </div>
             </div>

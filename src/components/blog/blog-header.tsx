@@ -7,6 +7,8 @@ import { motion, AnimatePresence, LayoutGroup } from "motion/react";
 import { cn } from "@/lib/utils";
 import { BLOG_CATEGORIES } from "@/config/blog-categories";
 
+import { useLocale } from "@/components/layout/locale-provider";
+
 interface BlogHeaderProps {
   title?: string;
   description?: string;
@@ -14,18 +16,22 @@ interface BlogHeaderProps {
 }
 
 export function BlogHeader({
-  title = "Syed Blog",
-  description = "Latest news, architecture, and engineering updates from Syed Blog",
+  title,
+  description,
   activeCategory,
 }: BlogHeaderProps) {
+  const { locale, dict } = useLocale();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [hoveredTab, setHoveredTab] = useState<string | null>(null);
 
+  const displayTitle = title || dict.header.title;
+  const displayDescription = description || dict.header.description;
+
   const tabs = [
-    { name: "Overview", href: "/blog", slug: "overview" },
+    { name: locale === "bn" ? "সারসংক্ষেপ" : "Overview", href: `/${locale}/blog`, slug: "overview" },
     ...BLOG_CATEGORIES.map((cat) => ({
       name: cat.name,
-      href: `/blog/category/${cat.slug}`,
+      href: `/${locale}/blog/category/${cat.slug}`,
       slug: cat.slug,
     })),
   ];
@@ -103,10 +109,10 @@ export function BlogHeader({
 
         <div className="relative">
           <h1 className="font-display text-4xl font-medium tracking-tight text-neutral-900 sm:text-5xl sm:leading-[1.15]">
-            {title}
+            {displayTitle}
           </h1>
           <p className="mt-4 text-lg text-neutral-500 sm:text-xl">
-            {description}
+            {displayDescription}
           </p>
 
           {/* Desktop Category Navigation */}

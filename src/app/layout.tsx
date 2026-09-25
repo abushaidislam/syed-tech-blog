@@ -1,14 +1,24 @@
-import { geistMono, inter, satoshi } from "@/styles/fonts";
+import { geistMono, hindSiliguri, inter, satoshi } from "@/styles/fonts";
 import "@/styles/globals.css";
 import "katex/dist/katex.min.css";
 import { cn } from "@/lib/utils";
 import type { Metadata } from "next";
+import { headers, cookies } from "next/headers";
 import { Nav } from "@/components/layout/nav";
 import { Footer } from "@/components/layout/footer";
 import { SmoothScrollProvider } from "@/components/layout/smooth-scroll-provider";
 import { BackToTop } from "@/components/layout/back-to-top";
 import { AutoScrollReader } from "@/components/layout/auto-scroll-reader";
 import { siteConfig } from "@/config/site";
+import {
+  DEFAULT_LOCALE,
+  LOCALE_COOKIE,
+  LOCALE_METADATA,
+  isSupportedLocale,
+  type Locale,
+} from "@/config/i18n";
+import { getDictionary } from "@/lib/dictionary";
+import { LocaleProvider } from "@/components/layout/locale-provider";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
@@ -82,18 +92,31 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const cookieStore = await cookies();
+  const headersList = await headers();
+  const headerLocale = headersList.get("x-locale");
+  const cookieLocale = cookieStore.get(LOCALE_COOKIE)?.value;
+
+  const rawLocale = headerLocale || cookieLocale || DEFAULT_LOCALE;
+  const locale: Locale = isSupportedLocale(rawLocale) ? rawLocale : DEFAULT_LOCALE;
+  const dict = getDictionary(locale);
+  const meta = LOCALE_METADATA[locale];
+
   return (
     <html
-      lang="en"
+      lang={meta.code}
+      dir={meta.dir}
       className={cn(
         satoshi.variable,
         inter.variable,
         geistMono.variable,
+        hindSiliguri.variable,
+        locale === "bn" && "font-bangla",
       )}
     >
       <body className="font-default text-neutral-900 antialiased selection:bg-neutral-900 selection:text-white min-h-screen flex flex-col justify-between bg-white">
@@ -116,14 +139,17 @@ export default function RootLayout({
             }),
           }}
         />
-        <SmoothScrollProvider>
-          <Nav />
-          <div className="grow">{children}</div>
-          <Footer />
-          <BackToTop />
-          <AutoScrollReader />
-        </SmoothScrollProvider>
+        <LocaleProvider locale={locale} dict={dict}>
+          <SmoothScrollProvider>
+            <Nav />
+            <div className="grow">{children}</div>
+            <Footer />
+            <BackToTop />
+            <AutoScrollReader />
+          </SmoothScrollProvider>
+        </LocaleProvider>
       </body>
     </html>
   );
 }
+

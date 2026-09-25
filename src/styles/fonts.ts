@@ -1,5 +1,6 @@
 import { GeistMono } from "geist/font/mono";
 import localFont from "next/font/local";
+import { Hind_Siliguri } from "next/font/google";
 
 export const satoshi = localFont({
   src: "./Satoshi-Variable.woff2",
@@ -17,4 +18,12 @@ export const inter = localFont({
   style: "normal",
 });
 
+export const hindSiliguri = Hind_Siliguri({
+  weight: ["300", "400", "500", "600", "700"],
+  subsets: ["bengali", "latin"],
+  variable: "--font-hind-siliguri",
+  display: "swap",
+});
+
 export const geistMono = GeistMono;
+

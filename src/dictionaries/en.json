@@ -1,0 +1,41 @@
+{
+  "nav": {
+    "allArticles": "All Articles",
+    "engineering": "Engineering",
+    "company": "Company",
+    "education": "Education",
+    "customers": "Customer Stories",
+    "explore": "Explore",
+    "language": "Language",
+    "menu": "Menu"
+  },
+  "header": {
+    "title": "Syed Blog",
+    "description": "Latest news, architecture, and engineering updates from Syed Blog",
+    "all": "All",
+    "searchPlaceholder": "Search articles..."
+  },
+  "blog": {
+    "minRead": "min read",
+    "published": "Published",
+    "updated": "Updated",
+    "by": "By",
+    "tableOfContents": "Table of Contents",
+    "relatedArticles": "Related Articles",
+    "shareArticle": "Share this article",
+    "copyLink": "Copy link",
+    "copied": "Copied!",
+    "backToArticles": "Back to all articles",
+    "readingTime": "Reading time",
+    "articleFallbackNotice": "This article is currently displayed in English. Bengali translation will be available soon."
+  },
+  "cta": {
+    "title": "Ready to build something extraordinary?",
+    "description": "Explore technical deep dives and practical architectures for modern applications.",
+    "button": "Explore Engineering"
+  },
+  "footer": {
+    "copyright": "All rights reserved.",
+    "builtWith": "Crafted with Next.js, Tailwind CSS & MDX."
+  }
+}

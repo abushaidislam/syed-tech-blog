@@ -22,12 +22,15 @@ function decodeEntities(text: string) {
     .replace(/&#39;/g, "'");
 }
 
+import { useLocale } from "@/components/layout/locale-provider";
+
 export function BlogCard({ post, priority = false }: BlogCardProps) {
+  const { locale } = useLocale();
   const isFeatured = Boolean(post.featured);
 
   return (
     <Link
-      href={`/blog/${post.slug}`}
+      href={`/${locale}/blog/${post.slug}`}
       className={cn(
         "group relative flex h-full flex-col justify-between overflow-hidden transition-all duration-300",
         isFeatured

@@ -9,6 +9,7 @@ import type {
 } from "@/types/blog";
 import { BLOG_CATEGORIES } from "@/config/blog-categories";
 import { slugify } from "./utils";
+import type { Locale } from "@/config/i18n";
 
 export { BLOG_CATEGORIES, slugify };
 
@@ -36,6 +37,8 @@ export interface BlogPostMdx {
   frontmatter: BlogPostFrontmatter;
   content: string;
   headings: BlogPostHeading[];
+  isFallback?: boolean;
+  locale?: Locale;
 }
 
 export function extractHeadingsFromMdx(content: string): BlogPostHeading[] {
@@ -57,31 +60,74 @@ export function extractHeadingsFromMdx(content: string): BlogPostHeading[] {
 }
 
 /**
- * Get all blog post slugs from the content/blog directory.
+ * Get all base blog post slugs from the content/blog directory (deduplicated across locales).
  */
 export function getAllBlogPostSlugs(): string[] {
   if (!fs.existsSync(BLOG_DIR)) return [];
-  return fs
-    .readdirSync(BLOG_DIR)
-    .filter((file) => file.endsWith(".mdx"))
-    .map((file) => file.replace(/\.mdx$/, ""));
+  const files = fs.readdirSync(BLOG_DIR);
+  const slugs = new Set<string>();
+
+  for (const file of files) {
+    if (file.endsWith(".mdx")) {
+      const baseSlug = file.replace(/\.bn\.mdx$/, "").replace(/\.mdx$/, "");
+      slugs.add(baseSlug);
+    }
+  }
+
+  return Array.from(slugs);
 }
 
 /**
- * Read and parse a single blog post MDX file by slug.
+ * Read and parse a single blog post MDX file by slug and locale with graceful fallback.
  */
-export function getBlogPostBySlug(slug: string): BlogPostMdx | null {
-  const filePath = path.join(BLOG_DIR, `${slug}.mdx`);
-  if (!fs.existsSync(filePath)) return null;
+export function getBlogPostBySlug(
+  slug: string,
+  locale: Locale = "en",
+): BlogPostMdx | null {
+  const bnPath = path.join(BLOG_DIR, `${slug}.bn.mdx`);
+  const enPath = path.join(BLOG_DIR, `${slug}.mdx`);
 
-  const raw = fs.readFileSync(filePath, "utf-8");
+  let targetPath = enPath;
+  let isFallback = false;
+  let actualLocale: Locale = "en";
+
+  if (locale === "bn") {
+    if (fs.existsSync(bnPath)) {
+      targetPath = bnPath;
+      actualLocale = "bn";
+    } else if (fs.existsSync(enPath)) {
+      targetPath = enPath;
+      isFallback = true;
+      actualLocale = "en";
+    } else {
+      return null;
+    }
+  } else {
+    if (fs.existsSync(enPath)) {
+      targetPath = enPath;
+      actualLocale = "en";
+    } else if (fs.existsSync(bnPath)) {
+      targetPath = bnPath;
+      isFallback = true;
+      actualLocale = "bn";
+    } else {
+      return null;
+    }
+  }
+
+  const raw = fs.readFileSync(targetPath, "utf-8");
   const { data, content } = matter(raw);
   const headings = extractHeadingsFromMdx(content);
 
   return {
-    frontmatter: data as BlogPostFrontmatter,
+    frontmatter: {
+      ...(data as BlogPostFrontmatter),
+      slug,
+    },
     content,
     headings,
+    isFallback,
+    locale: actualLocale,
   };
 }
 
@@ -117,12 +163,17 @@ export function frontmatterToBlogPostMeta(
 /**
  * Get all blog posts metadata sorted by date descending (featured posts prioritized).
  */
-export function getAllBlogPosts(): BlogPostMeta[] {
+export function getAllBlogPosts(locale: Locale = "en"): BlogPostMeta[] {
   const slugs = getAllBlogPostSlugs();
   const posts = slugs
     .map((slug) => {
-      const mdx = getBlogPostBySlug(slug);
-      return mdx ? frontmatterToBlogPostMeta(mdx.frontmatter) : null;
+      const mdx = getBlogPostBySlug(slug, locale);
+      if (!mdx) return null;
+      return {
+        ...frontmatterToBlogPostMeta(mdx.frontmatter),
+        isFallback: mdx.isFallback,
+        locale: mdx.locale,
+      };
     })
     .filter(Boolean) as BlogPostMeta[];
 
@@ -136,8 +187,11 @@ export function getAllBlogPosts(): BlogPostMeta[] {
 /**
  * Get blog posts by category slug.
  */
-export function getBlogPostsByCategory(categorySlug: string): BlogPostMeta[] {
-  return getAllBlogPosts().filter((p) => p.category.slug === categorySlug);
+export function getBlogPostsByCategory(
+  categorySlug: string,
+  locale: Locale = "en",
+): BlogPostMeta[] {
+  return getAllBlogPosts(locale).filter((p) => p.category.slug === categorySlug);
 }
 
 /**
@@ -153,8 +207,9 @@ export function getCategoryBySlug(slug: string): BlogCategory | undefined {
 export function getRelatedPosts(
   currentSlug: string,
   limit = 4,
+  locale: Locale = "en",
 ): BlogPostMeta[] {
-  const all = getAllBlogPosts();
+  const all = getAllBlogPosts(locale);
   const current = all.find((p) => p.slug === currentSlug);
   if (!current) return all.slice(0, limit);
 
@@ -172,3 +227,4 @@ export function getRelatedPosts(
 
   return [...sameCategory, ...others].slice(0, limit);
 }
+
