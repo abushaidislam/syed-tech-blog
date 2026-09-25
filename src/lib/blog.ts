@@ -60,60 +60,78 @@ export function extractHeadingsFromMdx(content: string): BlogPostHeading[] {
 }
 
 /**
- * Get all base blog post slugs from the content/blog directory (deduplicated across locales).
+ * Get all base blog post slugs from content/blog/en, content/blog/bn, or root (deduplicated across locales).
  */
 export function getAllBlogPostSlugs(): string[] {
   if (!fs.existsSync(BLOG_DIR)) return [];
-  const files = fs.readdirSync(BLOG_DIR);
   const slugs = new Set<string>();
 
-  for (const file of files) {
-    if (file.endsWith(".mdx")) {
-      const baseSlug = file.replace(/\.bn\.mdx$/, "").replace(/\.mdx$/, "");
-      slugs.add(baseSlug);
+  const scanDir = (dir: string) => {
+    if (!fs.existsSync(dir)) return;
+    const entries = fs.readdirSync(dir, { withFileTypes: true });
+    for (const entry of entries) {
+      if (entry.isFile() && entry.name.endsWith(".mdx")) {
+        const baseSlug = entry.name
+          .replace(/\.bn\.mdx$/, "")
+          .replace(/\.en\.mdx$/, "")
+          .replace(/\.mdx$/, "");
+        slugs.add(baseSlug);
+      }
     }
-  }
+  };
+
+  scanDir(path.join(BLOG_DIR, "en"));
+  scanDir(path.join(BLOG_DIR, "bn"));
+  scanDir(BLOG_DIR);
 
   return Array.from(slugs);
 }
 
 /**
- * Read and parse a single blog post MDX file by slug and locale with graceful fallback.
+ * Read and parse a single blog post MDX file by slug and locale with graceful fallback across en and bn folders.
  */
 export function getBlogPostBySlug(
   slug: string,
   locale: Locale = "en",
 ): BlogPostMdx | null {
-  const bnPath = path.join(BLOG_DIR, `${slug}.bn.mdx`);
-  const enPath = path.join(BLOG_DIR, `${slug}.mdx`);
+  const bnCandidates = [
+    path.join(BLOG_DIR, "bn", `${slug}.mdx`),
+    path.join(BLOG_DIR, `${slug}.bn.mdx`),
+  ];
+  const enCandidates = [
+    path.join(BLOG_DIR, "en", `${slug}.mdx`),
+    path.join(BLOG_DIR, `${slug}.mdx`),
+  ];
 
-  let targetPath = enPath;
+  let targetPath: string | null = null;
   let isFallback = false;
-  let actualLocale: Locale = "en";
+  let actualLocale: Locale = locale;
 
   if (locale === "bn") {
-    if (fs.existsSync(bnPath)) {
-      targetPath = bnPath;
+    targetPath = bnCandidates.find((p) => fs.existsSync(p)) || null;
+    if (targetPath) {
       actualLocale = "bn";
-    } else if (fs.existsSync(enPath)) {
-      targetPath = enPath;
-      isFallback = true;
-      actualLocale = "en";
     } else {
-      return null;
+      targetPath = enCandidates.find((p) => fs.existsSync(p)) || null;
+      if (targetPath) {
+        isFallback = true;
+        actualLocale = "en";
+      }
     }
   } else {
-    if (fs.existsSync(enPath)) {
-      targetPath = enPath;
+    targetPath = enCandidates.find((p) => fs.existsSync(p)) || null;
+    if (targetPath) {
       actualLocale = "en";
-    } else if (fs.existsSync(bnPath)) {
-      targetPath = bnPath;
-      isFallback = true;
-      actualLocale = "bn";
     } else {
-      return null;
+      targetPath = bnCandidates.find((p) => fs.existsSync(p)) || null;
+      if (targetPath) {
+        isFallback = true;
+        actualLocale = "bn";
+      }
     }
   }
+
+  if (!targetPath) return null;
 
   const raw = fs.readFileSync(targetPath, "utf-8");
   const { data, content } = matter(raw);
