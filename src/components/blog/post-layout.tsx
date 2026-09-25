@@ -97,13 +97,22 @@ export function PostLayout({ post, relatedPosts, mdxContent, postUrl }: PostLayo
                       className="aspect-[1200/630] size-full object-cover"
                     />
                   ) : (
-                    <div className="flex size-full flex-col items-center justify-center bg-gradient-to-br from-neutral-50 via-neutral-100 to-neutral-200/60 p-12 text-center select-none">
-                      <div className="flex size-16 items-center justify-center rounded-2xl border border-neutral-200 bg-white/90 shadow-sm backdrop-blur">
-                        <SyedBlogLogo className="size-8 text-neutral-900" />
+                    <div className="relative aspect-[1200/630] flex size-full flex-col items-center justify-center overflow-hidden bg-neutral-900 select-none">
+                      <Image
+                        src="/renderx_background_VECTOR_DOTS_AND_LINES.svg"
+                        alt={post.title}
+                        fill
+                        priority
+                        className="object-cover"
+                      />
+                      <div className="relative z-10 flex flex-col items-center justify-center p-12 text-center">
+                        <div className="flex size-16 items-center justify-center rounded-2xl border border-neutral-200/80 bg-white/95 shadow-md backdrop-blur-md">
+                          <SyedBlogLogo className="size-8 text-neutral-900" />
+                        </div>
+                        <span className="mt-3.5 rounded-full border border-neutral-200/90 bg-white/90 px-3.5 py-1 text-xs font-semibold uppercase tracking-widest text-neutral-800 shadow-sm backdrop-blur">
+                          {post.category?.name || "Article"}
+                        </span>
                       </div>
-                      <span className="mt-3 text-xs font-semibold uppercase tracking-widest text-neutral-400">
-                        {post.category?.name || "Article"}
-                      </span>
                     </div>
                   )}
                 </div>

@@ -171,3 +171,13 @@ html.lenis body {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* KaTeX math enhancements & fraction line alignment */
+.katex {
+  text-rendering: auto;
+}
+
+.katex .frac-line {
+  border-bottom-style: solid;
+}
+

@@ -57,13 +57,22 @@ export function BlogCard({ post, priority = false }: BlogCardProps) {
               className="aspect-[1200/630] w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03]"
             />
           ) : (
-            <div className="flex size-full flex-col items-center justify-center bg-gradient-to-br from-neutral-50 via-neutral-100 to-neutral-200/60 p-6 text-center select-none">
-              <div className="flex size-12 items-center justify-center rounded-2xl border border-neutral-200 bg-white/90 shadow-sm backdrop-blur transition-transform duration-300 group-hover:scale-110">
-                <SyedBlogLogo className="size-6 text-neutral-900" />
+            <div className="relative aspect-[1200/630] flex size-full flex-col items-center justify-center overflow-hidden bg-neutral-900 select-none">
+              <Image
+                src="/renderx_background_VECTOR_DOTS_AND_LINES.svg"
+                alt={decodeEntities(post.title)}
+                fill
+                sizes="(max-width: 768px) 100vw, (max-width: 1024px) 33vw, 33vw"
+                className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03]"
+              />
+              <div className="relative z-10 flex flex-col items-center justify-center p-6 text-center">
+                <div className="flex size-12 items-center justify-center rounded-2xl border border-neutral-200/80 bg-white/95 shadow-md backdrop-blur-md transition-transform duration-300 group-hover:scale-110">
+                  <SyedBlogLogo className="size-6 text-neutral-900" />
+                </div>
+                <span className="mt-2.5 rounded-full border border-neutral-200/90 bg-white/90 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-neutral-800 shadow-sm backdrop-blur">
+                  {post.category?.name || "Article"}
+                </span>
               </div>
-              <span className="mt-3 text-[11px] font-semibold uppercase tracking-widest text-neutral-400">
-                {post.category?.name || "Article"}
-              </span>
             </div>
           )}
           <div className="pointer-events-none absolute inset-0 ring-1 ring-inset ring-black/[0.04]" />

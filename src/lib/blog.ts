@@ -25,6 +25,8 @@ export interface BlogPostFrontmatter {
   categoryName?: string;
   authors: BlogAuthor[];
   featured?: boolean;
+  ogTitle?: string;
+  ogSummary?: string;
 }
 
 export interface BlogPostMdx {
@@ -101,6 +103,8 @@ export function frontmatterToBlogPostMeta(
     category: categoryObj,
     authors: fm.authors || [],
     featured: Boolean(fm.featured),
+    ogTitle: fm.ogTitle,
+    ogSummary: fm.ogSummary,
   };
 }
 

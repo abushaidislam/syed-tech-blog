@@ -207,7 +207,7 @@ export function ShareModal({
             {/* Article Card Preview */}
             <div className="mt-4 overflow-hidden rounded-xl border border-neutral-200/80 bg-neutral-50/60 shadow-2xs">
               {image && (
-                <div className="relative h-36 sm:h-40 w-full overflow-hidden bg-neutral-100 border-b border-neutral-200/60">
+                <div className="relative aspect-[1200/630] w-full overflow-hidden bg-neutral-100 border-b border-neutral-200/60">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={image}

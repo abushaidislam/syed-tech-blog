@@ -28,6 +28,8 @@ export interface BlogPostMeta {
   category: BlogCategory;
   authors: BlogAuthor[];
   featured?: boolean;
+  ogTitle?: string;
+  ogSummary?: string;
 }
 
 export interface BlogPostHeading {

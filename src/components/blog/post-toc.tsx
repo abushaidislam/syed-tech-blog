@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { AlignLeft } from "lucide-react";
+import katex from "katex";
 import { cn } from "@/lib/utils";
 import type { BlogPostHeading } from "@/types/blog";
 
@@ -17,6 +18,53 @@ function decodeEntities(text: string) {
     .replace(/&lt;/g, "<")
     .replace(/&gt;/g, ">")
     .replace(/&#39;/g, "'");
+}
+
+function renderTitleWithMath(rawTitle: string): React.ReactNode {
+  const decoded = decodeEntities(rawTitle);
+  const mathRegex = /\$\$([\s\S]+?)\$\$|\$([^\$\n]+?)\$/g;
+
+  if (!mathRegex.test(decoded)) {
+    return decoded;
+  }
+
+  mathRegex.lastIndex = 0;
+  const elements: React.ReactNode[] = [];
+  let lastIndex = 0;
+  let match: RegExpExecArray | null;
+
+  while ((match = mathRegex.exec(decoded)) !== null) {
+    if (match.index > lastIndex) {
+      elements.push(decoded.slice(lastIndex, match.index));
+    }
+
+    const math = match[1] || match[2];
+    const isDisplay = Boolean(match[1]);
+
+    try {
+      const html = katex.renderToString(math.trim(), {
+        throwOnError: false,
+        displayMode: isDisplay,
+      });
+      elements.push(
+        <span
+          key={match.index}
+          className="inline-block align-baseline [&_.katex]:text-inherit [&_.katex]:text-[0.95em]"
+          dangerouslySetInnerHTML={{ __html: html }}
+        />,
+      );
+    } catch {
+      elements.push(match[0]);
+    }
+
+    lastIndex = mathRegex.lastIndex;
+  }
+
+  if (lastIndex < decoded.length) {
+    elements.push(decoded.slice(lastIndex));
+  }
+
+  return <>{elements}</>;
 }
 
 export function PostTOC({ headings }: PostTOCProps) {
@@ -83,7 +131,7 @@ export function PostTOC({ headings }: PostTOCProps) {
                     : "text-neutral-500 hover:text-neutral-900",
                 )}
               >
-                {decodeEntities(heading.title)}
+                {renderTitleWithMath(heading.title)}
               </a>
             );
           })}

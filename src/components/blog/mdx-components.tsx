@@ -83,7 +83,33 @@ function extractText(node: React.ReactNode): string {
     return node.map(extractText).join("");
   }
   if (React.isValidElement(node) && node.props) {
-    return extractText((node.props as { children?: React.ReactNode }).children);
+    const props = node.props as {
+      className?: string;
+      children?: React.ReactNode;
+    };
+    if (props.className && props.className.includes("katex")) {
+      const findAnnotation = (n: React.ReactNode): string => {
+        if (!n) return "";
+        if (React.isValidElement(n)) {
+          if (n.type === "annotation") {
+            return extractText((n.props as { children?: React.ReactNode }).children);
+          }
+          if (n.props && (n.props as { children?: React.ReactNode }).children) {
+            return findAnnotation((n.props as { children?: React.ReactNode }).children);
+          }
+        }
+        if (Array.isArray(n)) {
+          for (const item of n) {
+            const found = findAnnotation(item);
+            if (found) return found;
+          }
+        }
+        return "";
+      };
+      const tex = findAnnotation(props.children);
+      if (tex) return `$${tex}$`;
+    }
+    return extractText(props.children);
   }
   return "";
 }
