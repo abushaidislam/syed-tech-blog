@@ -50,7 +50,7 @@ async function callGemini(prompt, content) {
   for (const model of models) {
     const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_API_KEY}`;
     let attempts = 0;
-    const maxAttempts = 3;
+    const maxAttempts = 5;
 
     while (attempts < maxAttempts) {
       attempts++;
@@ -76,8 +76,9 @@ async function callGemini(prompt, content) {
 
         if (response.status === 503 || response.status === 429) {
           if (attempts < maxAttempts) {
-            console.warn(`[auto-translate] Model ${model} returned ${response.status} (high demand). Retrying in 2s... (attempt ${attempts}/${maxAttempts})`);
-            await delay(2000);
+            const waitTime = response.status === 429 ? 10000 : 3000;
+            console.warn(`[auto-translate] Model ${model} returned ${response.status} (rate/quota limit). Waiting ${waitTime / 1000}s... (attempt ${attempts}/${maxAttempts})`);
+            await delay(waitTime);
             continue;
           }
         }
@@ -191,6 +192,7 @@ async function main() {
       } catch (err) {
         console.error(`   ❌ Failed to translate ${filename}:`, err.message);
       }
+      await delay(3000); // Respect Gemini API free-tier 15 RPM rate limit
     }
   }
 
