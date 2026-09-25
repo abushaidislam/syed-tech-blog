@@ -46,10 +46,14 @@ export async function generateMetadata({
   const absoluteOgUrl = new URL(relativeOgUrl, siteConfig.url).toString();
   const canonicalUrl = `${siteConfig.url}/blog/${post.slug}`;
   const truncatedSummary = truncateDescription(post.summary);
+  const keywords = Array.from(
+    new Set([post.category.name, ...(post.keywords || []), ...(post.tags || [])]),
+  );
 
   return {
     title: post.title,
     description: truncatedSummary,
+    keywords,
     alternates: {
       canonical: canonicalUrl,
     },
@@ -69,7 +73,9 @@ export async function generateMetadata({
       locale: "en_US",
       type: "article",
       publishedTime: post.dateIso,
+      modifiedTime: post.updatedAt || post.dateIso,
       authors: post.authors.map((a) => a.name),
+      tags: keywords,
     },
     twitter: {
       card: "summary_large_image",
@@ -103,6 +109,9 @@ export default async function BlogPostPage({
     ? new URL(post.image, siteConfig.url).toString()
     : undefined;
 
+  const wordCount = postMdx.content.trim().split(/\s+/).length;
+  const readingTimeMinutes = Math.max(1, Math.ceil(wordCount / 200));
+
   const { content: mdxContent } = await compileMDX({
     source: postMdx.content,
     components: blogMdxComponents,
@@ -127,8 +136,13 @@ export default async function BlogPostPage({
               headline: post.title,
               description: post.summary,
               url: postUrl,
+              inLanguage: "en-US",
+              articleSection: post.category.name,
+              keywords: [post.category.name, ...(post.keywords || []), ...(post.tags || [])].join(", "),
+              wordCount,
+              timeRequired: `PT${readingTimeMinutes}M`,
               datePublished: post.dateIso,
-              dateModified: post.dateIso,
+              dateModified: post.updatedAt || post.dateIso,
               ...(imageUrl ? { image: [imageUrl] } : {}),
               author: post.authors.map((author) => ({
                 "@type": "Person",
@@ -141,7 +155,10 @@ export default async function BlogPostPage({
                 "@type": "Person",
                 name: siteConfig.author.name,
                 url: siteConfig.url,
-                image: new URL(siteConfig.author.image, siteConfig.url).toString(),
+                logo: {
+                  "@type": "ImageObject",
+                  url: new URL(siteConfig.author.image, siteConfig.url).toString(),
+                },
               },
               mainEntityOfPage: {
                 "@type": "WebPage",
@@ -154,7 +171,13 @@ export default async function BlogPostPage({
               itemListElement: [
                 { "@type": "ListItem", position: 1, name: "Home", item: siteConfig.url },
                 { "@type": "ListItem", position: 2, name: "Blog", item: `${siteConfig.url}/blog` },
-                { "@type": "ListItem", position: 3, name: post.title, item: postUrl },
+                {
+                  "@type": "ListItem",
+                  position: 3,
+                  name: post.category.name,
+                  item: `${siteConfig.url}/blog/category/${post.category.slug}`,
+                },
+                { "@type": "ListItem", position: 4, name: post.title, item: postUrl },
               ],
             },
           ]),

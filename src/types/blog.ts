@@ -30,6 +30,9 @@ export interface BlogPostMeta {
   featured?: boolean;
   ogTitle?: string;
   ogSummary?: string;
+  tags?: string[];
+  keywords?: string[];
+  updatedAt?: string;
 }
 
 export interface BlogPostHeading {

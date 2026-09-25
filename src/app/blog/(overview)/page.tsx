@@ -44,6 +44,19 @@ export default function BlogOverviewPage() {
 
   return (
     <main className="min-h-screen bg-white">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              { "@type": "ListItem", position: 1, name: "Home", item: siteConfig.url },
+              { "@type": "ListItem", position: 2, name: "Blog", item: `${siteConfig.url}/blog` },
+            ],
+          }),
+        }}
+      />
       <BlogHeader
         title="Syed Blog"
         description="Latest news, architecture, and engineering updates from Syed Blog"

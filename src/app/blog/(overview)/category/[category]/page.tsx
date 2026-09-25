@@ -80,8 +80,24 @@ export default async function BlogCategoryPage({
 
   const posts = getBlogPostsByCategory(categorySlug);
 
+  const categoryUrl = `${siteConfig.url}/blog/category/${category.slug}`;
+
   return (
     <main className="min-h-screen bg-white">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              { "@type": "ListItem", position: 1, name: "Home", item: siteConfig.url },
+              { "@type": "ListItem", position: 2, name: "Blog", item: `${siteConfig.url}/blog` },
+              { "@type": "ListItem", position: 3, name: category.name, item: categoryUrl },
+            ],
+          }),
+        }}
+      />
       <BlogHeader
         title={category.name}
         description={category.description}

@@ -27,6 +27,9 @@ export interface BlogPostFrontmatter {
   featured?: boolean;
   ogTitle?: string;
   ogSummary?: string;
+  tags?: string[];
+  keywords?: string[];
+  updatedAt?: string;
 }
 
 export interface BlogPostMdx {
@@ -105,6 +108,9 @@ export function frontmatterToBlogPostMeta(
     featured: Boolean(fm.featured),
     ogTitle: fm.ogTitle,
     ogSummary: fm.ogSummary,
+    tags: fm.tags || [],
+    keywords: fm.keywords || [],
+    updatedAt: fm.updatedAt || fm.dateIso,
   };
 }
 

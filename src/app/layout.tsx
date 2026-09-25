@@ -17,8 +17,34 @@ export const metadata: Metadata = {
     template: `%s | ${siteConfig.name}`,
   },
   description: siteConfig.description,
+  keywords: [
+    "Software Engineering",
+    "System Architecture",
+    "Web Development",
+    "Next.js",
+    "Programming Tutorials",
+    "High Scale Architecture",
+    "Syed Blog",
+  ],
+  authors: [{ name: siteConfig.author.name, url: siteConfig.url }],
+  creator: siteConfig.author.name,
+  publisher: siteConfig.name,
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
   alternates: {
     canonical: siteConfig.url,
+    types: {
+      "application/rss+xml": `${siteConfig.url}/feed.xml`,
+    },
   },
   openGraph: {
     title: siteConfig.name,
@@ -41,6 +67,9 @@ export const metadata: Metadata = {
     title: siteConfig.name,
     description: siteConfig.description,
     images: [siteConfig.ogImage],
+  },
+  verification: {
+    google: "googleb16df7cb15127c88",
   },
   icons: {
     icon: [
