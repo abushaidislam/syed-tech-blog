@@ -6,22 +6,22 @@ import { getAllBlogPosts } from "@/lib/blog";
 
 import { siteConfig } from "@/config/site";
 
+const absoluteOgImage = new URL(siteConfig.ogImage, siteConfig.url).toString();
+
 export const metadata: Metadata = {
   title: {
-    absolute: "Syed Blog | Insights, Engineering & Technology",
+    absolute: "Syed Blog | High-Scale Software Engineering & Architecture",
   },
-  description:
-    "Stay informed with the latest updates, engineering insights, and tech articles from Syed Blog.",
+  description: siteConfig.description,
   alternates: { canonical: siteConfig.url },
   openGraph: {
-    title: "Syed Blog | Insights, Engineering & Technology",
-    description:
-      "Stay informed with the latest updates, engineering insights, and tech articles from Syed Blog.",
+    title: "Syed Blog | High-Scale Software Engineering & Architecture",
+    description: siteConfig.description,
     url: siteConfig.url,
     siteName: siteConfig.name,
     images: [
       {
-        url: new URL(siteConfig.ogImage, siteConfig.url).toString(),
+        url: absoluteOgImage,
         width: 1200,
         height: 630,
         alt: siteConfig.name,
@@ -32,10 +32,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Syed Blog | Insights, Engineering & Technology",
-    description:
-      "Stay informed with the latest updates, engineering insights, and tech articles from Syed Blog.",
-    images: [new URL(siteConfig.ogImage, siteConfig.url).toString()],
+    title: "Syed Blog | High-Scale Software Engineering & Architecture",
+    description: siteConfig.description,
+    images: [absoluteOgImage],
   },
 };
 
@@ -46,7 +45,7 @@ export default function HomePage() {
     <main className="min-h-screen bg-white">
       <BlogHeader
         title="Syed Blog"
-        description="Latest news, architecture, and engineering updates from Syed Blog"
+        description="Explore expert software engineering insights, high-scale system architecture, and modern web development tutorials by Syed."
         activeCategory="overview"
       />
       <BlogGrid posts={posts} />

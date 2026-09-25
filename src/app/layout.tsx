@@ -10,10 +10,12 @@ import { BackToTop } from "@/components/layout/back-to-top";
 import { AutoScrollReader } from "@/components/layout/auto-scroll-reader";
 import { siteConfig } from "@/config/site";
 
+const absoluteOgImage = new URL(siteConfig.ogImage, siteConfig.url).toString();
+
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
   title: {
-    default: siteConfig.name,
+    default: "Syed Blog | High-Scale Software Engineering & Architecture",
     template: `%s | ${siteConfig.name}`,
   },
   description: siteConfig.description,
@@ -47,13 +49,13 @@ export const metadata: Metadata = {
     },
   },
   openGraph: {
-    title: siteConfig.name,
+    title: "Syed Blog | High-Scale Software Engineering & Architecture",
     description: siteConfig.description,
     url: siteConfig.url,
     siteName: siteConfig.name,
     images: [
       {
-        url: siteConfig.ogImage,
+        url: absoluteOgImage,
         width: 1200,
         height: 630,
         alt: siteConfig.name,
@@ -64,9 +66,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: siteConfig.name,
+    title: "Syed Blog | High-Scale Software Engineering & Architecture",
     description: siteConfig.description,
-    images: [siteConfig.ogImage],
+    images: [absoluteOgImage],
   },
   verification: {
     google: "googleb16df7cb15127c88",
@@ -87,6 +89,8 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const authorAvatarUrl = new URL(siteConfig.author.image, siteConfig.url).toString();
+
   return (
     <html
       lang="en"
@@ -107,11 +111,15 @@ export default function RootLayout({
               name: siteConfig.name,
               url: siteConfig.url,
               description: siteConfig.description,
+              inLanguage: "en-US",
               publisher: {
-                "@type": "Person",
-                name: siteConfig.author.name,
+                "@type": "Organization",
+                name: siteConfig.name,
                 url: siteConfig.url,
-                image: new URL(siteConfig.author.image, siteConfig.url).toString(),
+                logo: {
+                  "@type": "ImageObject",
+                  url: authorAvatarUrl,
+                },
               },
             }),
           }}

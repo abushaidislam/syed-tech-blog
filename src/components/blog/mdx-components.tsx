@@ -319,6 +319,16 @@ export const blogMdxComponents = {
   Badge,
 
   // Headings matching Dub's exact typography and hover link anchor button
+  h1: ({ children }: React.HTMLAttributes<HTMLHeadingElement>) => {
+    const text = extractText(children);
+    const id = slugify(text);
+    return (
+      <HeadingAnchor id={id} as="h2">
+        {children}
+      </HeadingAnchor>
+    );
+  },
+
   h2: ({ children }: React.HTMLAttributes<HTMLHeadingElement>) => {
     const text = extractText(children);
     const id = slugify(text);

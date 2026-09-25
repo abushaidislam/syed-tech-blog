@@ -24,7 +24,12 @@ function truncateDescription(text: string, maxLength = 155): string {
   if (!text) return "";
   const cleaned = text.replace(/\s+/g, " ").trim();
   if (cleaned.length <= maxLength) return cleaned;
-  return cleaned.slice(0, maxLength - 3).trim() + "...";
+  const truncated = cleaned.slice(0, maxLength - 3);
+  const lastSpace = truncated.lastIndexOf(" ");
+  if (lastSpace > 100) {
+    return truncated.slice(0, lastSpace).trim() + "...";
+  }
+  return truncated.trim() + "...";
 }
 
 export async function generateMetadata({
@@ -105,9 +110,11 @@ export default async function BlogPostPage({
 
   const relatedPosts = getRelatedPosts(slug, 4);
   const postUrl = new URL(`/blog/${post.slug}`, siteConfig.url).toString();
+  const fallbackOgImage = new URL(`/blog/${post.slug}/opengraph-image`, siteConfig.url).toString();
   const imageUrl = post.image
     ? new URL(post.image, siteConfig.url).toString()
-    : undefined;
+    : fallbackOgImage;
+  const defaultAuthorImage = new URL(siteConfig.author.image, siteConfig.url).toString();
 
   const wordCount = postMdx.content.trim().split(/\s+/).length;
   const readingTimeMinutes = Math.max(1, Math.ceil(wordCount / 200));
@@ -122,6 +129,24 @@ export default async function BlogPostPage({
       },
     },
   });
+
+  const authorsSchema = post.authors.length > 0
+    ? post.authors.map((author) => ({
+        "@type": "Person",
+        name: author.name,
+        url: siteConfig.url,
+        image: author.image
+          ? new URL(author.image, siteConfig.url).toString()
+          : defaultAuthorImage,
+      }))
+    : [
+        {
+          "@type": "Person",
+          name: siteConfig.author.name,
+          url: siteConfig.url,
+          image: defaultAuthorImage,
+        },
+      ];
 
   return (
     <main className="min-h-screen bg-white">
@@ -143,21 +168,15 @@ export default async function BlogPostPage({
               timeRequired: `PT${readingTimeMinutes}M`,
               datePublished: post.dateIso,
               dateModified: post.updatedAt || post.dateIso,
-              ...(imageUrl ? { image: [imageUrl] } : {}),
-              author: post.authors.map((author) => ({
-                "@type": "Person",
-                name: author.name,
-                ...(author.image
-                  ? { image: new URL(author.image, siteConfig.url).toString() }
-                  : {}),
-              })),
+              image: [imageUrl],
+              author: authorsSchema,
               publisher: {
-                "@type": "Person",
-                name: siteConfig.author.name,
+                "@type": "Organization",
+                name: siteConfig.name,
                 url: siteConfig.url,
                 logo: {
                   "@type": "ImageObject",
-                  url: new URL(siteConfig.author.image, siteConfig.url).toString(),
+                  url: defaultAuthorImage,
                 },
               },
               mainEntityOfPage: {
