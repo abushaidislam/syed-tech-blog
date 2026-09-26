@@ -1,6 +1,16 @@
+"use client";
+
+import { motion } from "motion/react";
+
 export function BlogPostSkeleton() {
   return (
-    <main className="min-h-screen bg-white">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.18, ease: "easeOut" }}
+      className="w-full"
+    >
+      <main className="min-h-screen bg-white">
       {/* Top Hero Section Skeleton */}
       <div className="grid-section relative overflow-clip border-b border-grid-border px-4">
         <div className="relative z-0 mx-auto flex max-w-grid-width flex-col justify-between gap-8 border-x border-grid-border px-4 pb-12 pt-16 sm:px-12 lg:flex-row lg:items-center">
@@ -85,5 +95,6 @@ export function BlogPostSkeleton() {
         </div>
       </div>
     </main>
+    </motion.div>
   );
 }

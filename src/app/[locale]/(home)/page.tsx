@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { BlogHeader } from "@/components/blog/blog-header";
 import { BlogGrid } from "@/components/blog/blog-grid";
 import { BlogBottomCTA } from "@/components/blog/blog-bottom-cta";
+import { PageTransition } from "@/components/layout/page-transition";
 import { getAllBlogPosts } from "@/lib/blog";
 import { siteConfig } from "@/config/site";
 import {
@@ -84,10 +85,12 @@ export default async function HomePage({
   const posts = getAllBlogPosts(locale);
 
   return (
-    <main className="min-h-screen bg-white">
-      <BlogHeader activeCategory="overview" />
-      <BlogGrid posts={posts} />
-      <BlogBottomCTA />
-    </main>
+    <PageTransition>
+      <main className="min-h-screen bg-white">
+        <BlogHeader activeCategory="overview" />
+        <BlogGrid posts={posts} />
+        <BlogBottomCTA />
+      </main>
+    </PageTransition>
   );
 }
