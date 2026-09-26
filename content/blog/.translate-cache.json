@@ -90,6 +90,11 @@
       "enHash": "6b607c80ec44301d2c76893a7eecca853bd6564902797e11001272f80ea7b9fe",
       "bnHash": "1e221dfe7467229e8f1bce86fe11d1658e3ca00d4b60c7695e51f6d3d95d6cbf",
       "lastTranslatedAt": "2026-09-26T13:34:56.060Z"
+    },
+    "deterministic-ui-morph-engine": {
+      "enHash": "2abb3c666cc52ea803ac9f6178ac53855ae6b67d0da7cea9fcc9f3e0a4af3109",
+      "bnHash": "c6e1deaafe80b3fd7fa2d402db8220d4950ab3d86651e68df92b03484089ae93",
+      "lastTranslatedAt": "2026-09-26T14:12:38.643Z"
     }
   }
 }

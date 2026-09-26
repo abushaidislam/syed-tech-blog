@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Ultra-Polished Dynamic UI Morph Engine (120 BPM)</title>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/geist@1.3.0/dist/fonts/geist-sans/style.css">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #0D0D0E;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: "Geist", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    #viewport {
+      width: 1440px;
+      height: 1440px;
+      background: #E5E3DD;
+      position: relative;
+      overflow: hidden;
+    }
+    #camera {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      transform-origin: 720px 720px;
+    }
+    #stage {
+      position: absolute;
+      top: 720px;
+      left: 720px;
+      transform: translate(-50%, -50%);
+    }
+    #morph-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      transform: translate(-50%, -50%);
+      background: #000000;
+      color: #FFFFFF;
+      overflow: hidden;
+      box-shadow: 
+        0 30px 60px -12px rgba(0, 0, 0, 0.35),
+        0 18px 36px -18px rgba(0, 0, 0, 0.25),
+        0 0 0 1px rgba(255, 255, 255, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .layer {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      opacity: 0;
+      white-space: nowrap;
+    }
+    #cursor {
+      position: absolute;
+      width: 24px;
+      height: 24px;
+      pointer-events: none;
+      z-index: 9999;
+      transform-origin: 2px 2px;
+      filter: drop-shadow(0 6px 10px rgba(0,0,0,0.35));
+    }
+    svg {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+
+<div id="viewport">
+  <div id="camera">
+    <div id="stage">
+      <div id="morph-container">
+        <!-- 1. Button -->
+        <div id="layer-button" class="layer">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#FFF" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            <span style="font-weight: 500; font-size: 15px; letter-spacing: -0.01em;">Deploy</span>
+          </div>
+        </div>
+
+        <!-- 2. Loader -->
+        <div id="layer-loader" class="layer">
+          <svg width="24" height="24" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="9" stroke="rgba(255,255,255,0.18)" stroke-width="2.5" fill="none"/>
+            <path id="loader-spinner" d="M12 3 A9 9 0 0 1 21 12" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+          </svg>
+        </div>
+
+        <!-- 3. Check -->
+        <div id="layer-check" class="layer">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+            <path id="check-path" d="M5 12.5 L9.5 17 L19 7.5" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+
+        <!-- 4. Dynamic Island -->
+        <div id="layer-island" class="layer" style="padding: 0 16px; justify-content: space-between;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <div style="width: 7px; height: 7px; border-radius: 50%; background: #FFF;"></div>
+            <span style="font-size: 12px; font-weight: 500; letter-spacing: -0.01em;">Silent</span>
+          </div>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFF" stroke-width="2" stroke-linecap="round">
+            <line x1="1" y1="1" x2="23" y2="23"></line>
+            <path d="M9 9v3a3 3 0 0 0 5.12 2.12M15 9.34V4a3 3 0 0 0-5.94-.6"></path>
+          </svg>
+        </div>
+
+        <!-- 5. Music Player -->
+        <div id="layer-player" class="layer" style="padding: 0 20px; justify-content: space-between;">
+          <div style="display: flex; align-items: center; gap: 14px;">
+            <div style="width: 44px; height: 44px; border-radius: 9px; background: #1A1A1A; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(255,255,255,0.06);">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFF" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>
+            </div>
+            <div style="text-align: left;">
+              <div style="font-size: 13.5px; font-weight: 600; letter-spacing: -0.02em;">Hyperion</div>
+              <div style="font-size: 11.5px; opacity: 0.45; font-weight: 400;">120 BPM • Pure Master</div>
+            </div>
+          </div>
+          <div id="play-pause-btn" style="width: 36px; height: 36px; border-radius: 50%; background: #1C1C1C; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(255,255,255,0.08);">
+            <svg width="14" height="14" viewBox="0 0 24 24">
+              <path id="pp-p1" fill="#FFF" d="M6 4 L11 7 L11 17 L6 20 Z"/>
+              <path id="pp-p2" fill="#FFF" d="M11 7 L19 12 L19 12 L11 17 Z"/>
+            </svg>
+          </div>
+        </div>
+
+        <!-- 6. Scrubber -->
+        <div id="layer-scrubber" class="layer" style="padding: 0 28px;">
+          <div style="width: 100%; height: 5px; background: #222; border-radius: 3px; position: relative;">
+            <div id="scrub-fill" style="position: absolute; height: 100%; background: #FFF; border-radius: 3px; width: 35%;"></div>
+            <div id="scrub-thumb" style="position: absolute; top: -5.5px; left: 35%; width: 16px; height: 16px; border-radius: 50%; background: #FFF; transform: translateX(-50%); box-shadow: 0 2px 6px rgba(0,0,0,0.5);"></div>
+          </div>
+        </div>
+
+        <!-- 7. Volume Slider -->
+        <div id="layer-volume" class="layer" style="padding: 0 24px; gap: 14px;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FFF" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+          <div style="flex: 1; height: 6px; background: #222; border-radius: 3px; position: relative;">
+            <div id="vol-fill" style="position: absolute; height: 100%; background: #FFF; border-radius: 3px; width: 65%;"></div>
+          </div>
+        </div>
+
+        <!-- 8. Toggle Switch -->
+        <div id="layer-toggle" class="layer" style="padding: 4px;">
+          <div id="toggle-track" style="position: relative; width: 100%; height: 100%; border-radius: 20px;">
+            <div id="toggle-knob" style="position: absolute; top: 0; height: 100%; background: #FFF; border-radius: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.4);"></div>
+          </div>
+        </div>
+
+        <!-- 9. Liquid Tabs -->
+        <div id="layer-tabs" class="layer" style="padding: 5px;">
+          <div style="position: relative; width: 100%; height: 100%; display: flex; align-items: center;">
+            <div id="tab-indicator" style="position: absolute; height: 100%; background: #262626; border-radius: 9px;"></div>
+            <div style="flex: 1; z-index: 2; text-align: center; font-size: 13px; font-weight: 500; letter-spacing: -0.01em;">Overview</div>
+            <div style="flex: 1; z-index: 2; text-align: center; font-size: 13px; font-weight: 500; letter-spacing: -0.01em;">Metrics</div>
+            <div style="flex: 1; z-index: 2; text-align: center; font-size: 13px; font-weight: 500; letter-spacing: -0.01em;">Cluster</div>
+          </div>
+        </div>
+
+        <!-- 10. REFINED PRO-LEVEL METRICS / CHART MODAL -->
+        <div id="layer-chart" class="layer" style="flex-direction: column; padding: 24px 28px; justify-content: space-between; align-items: stretch; position: relative;">
+          
+          <!-- Header Area -->
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; z-index: 2;">
+            <div>
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span style="font-size: 13px; font-weight: 500; color: #EDEDED; letter-spacing: -0.01em;">Cluster Throughput</span>
+                <span style="display: inline-flex; align-items: center; gap: 4px; padding: 2px 7px; background: rgba(255,255,255,0.08); border-radius: 12px; font-size: 10.5px; font-weight: 500; color: #A1A1AA;">
+                  <span style="width: 5px; height: 5px; border-radius: 50%; background: #10B981;"></span> Live
+                </span>
+              </div>
+              <div style="font-size: 11px; color: #71717A; margin-top: 3px;">Avg. 1,420 MB/s across 16 nodes</div>
+            </div>
+            <div style="text-align: right;">
+              <div style="font-size: 17px; font-weight: 600; color: #FFFFFF; letter-spacing: -0.02em;">88.4k <span style="font-size: 12px; font-weight: 400; color: #71717A;">IOPS</span></div>
+              <div style="font-size: 11px; color: #10B981; font-weight: 500; margin-top: 2px;">+14.2% peak</div>
+            </div>
+          </div>
+
+          <!-- Chart Area with Guidelines -->
+          <div style="position: relative; height: 135px; width: 100%; display: flex; flex-direction: column; justify-content: flex-end; margin-top: 6px;">
+            <!-- Horizontal Guidelines -->
+            <div style="position: absolute; top: 0; left: 0; right: 0; border-top: 1px dashed rgba(255,255,255,0.08);"></div>
+            <div style="position: absolute; top: 50%; left: 0; right: 0; border-top: 1px dashed rgba(255,255,255,0.06);"></div>
+            <div style="position: absolute; bottom: 0; left: 0; right: 0; border-top: 1px solid rgba(255,255,255,0.12);"></div>
+
+            <!-- Bar Columns Container -->
+            <div style="display: flex; align-items: flex-end; justify-content: space-between; height: 100%; padding: 0 12px; z-index: 2;">
+              
+              <!-- Col 1 -->
+              <div style="width: 44px; height: 100%; background: #161618; border-radius: 6px 6px 0 0; display: flex; align-items: flex-end;">
+                <div class="chart-col" style="width: 100%; background: #2C2C30; border-radius: 6px 6px 0 0; height: 0%;"></div>
+              </div>
+
+              <!-- Col 2 -->
+              <div style="width: 44px; height: 100%; background: #161618; border-radius: 6px 6px 0 0; display: flex; align-items: flex-end;">
+                <div class="chart-col" style="width: 100%; background: #2C2C30; border-radius: 6px 6px 0 0; height: 0%;"></div>
+              </div>
+
+              <!-- Col 3: Highlight Target -->
+              <div style="width: 44px; height: 100%; background: #161618; border-radius: 6px 6px 0 0; display: flex; align-items: flex-end; position: relative;">
+                <div class="chart-col" style="width: 100%; background: #FFFFFF; border-radius: 6px 6px 0 0; height: 0%; box-shadow: 0 0 20px rgba(255,255,255,0.15);"></div>
+                
+                <!-- Pro Precision Tooltip -->
+                <div id="chart-tooltip" style="position: absolute; top: -42px; left: 50%; transform: translateX(-50%); background: #FFFFFF; color: #000000; font-size: 11px; font-weight: 600; padding: 4px 8px; border-radius: 6px; box-shadow: 0 8px 24px rgba(0,0,0,0.6); opacity: 0; pointer-events: none; display: flex; align-items: center; gap: 4px;">
+                  <span>+94.8%</span>
+                  <div style="position: absolute; bottom: -4px; left: 50%; transform: translateX(-50%) rotate(45deg); width: 8px; height: 8px; background: #FFFFFF;"></div>
+                </div>
+              </div>
+
+              <!-- Col 4 -->
+              <div style="width: 44px; height: 100%; background: #161618; border-radius: 6px 6px 0 0; display: flex; align-items: flex-end;">
+                <div class="chart-col" style="width: 100%; background: #2C2C30; border-radius: 6px 6px 0 0; height: 0%;"></div>
+              </div>
+
+              <!-- Col 5 -->
+              <div style="width: 44px; height: 100%; background: #161618; border-radius: 6px 6px 0 0; display: flex; align-items: flex-end;">
+                <div class="chart-col" style="width: 100%; background: #2C2C30; border-radius: 6px 6px 0 0; height: 0%;"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- X-Axis Timestamps -->
+          <div style="display: flex; justify-content: space-between; padding: 6px 12px 0 12px; font-size: 10.5px; color: #52525B; font-weight: 500;">
+            <span style="width: 44px; text-align: center;">00:00</span>
+            <span style="width: 44px; text-align: center;">04:00</span>
+            <span style="width: 44px; text-align: center; color: #EDEDED;">08:00</span>
+            <span style="width: 44px; text-align: center;">12:00</span>
+            <span style="width: 44px; text-align: center;">16:00</span>
+          </div>
+        </div>
+
+        <!-- 11. Command Palette -->
+        <div id="layer-cmd" class="layer" style="flex-direction: column; align-items: stretch; padding: 18px 22px;">
+          <div style="display: flex; align-items: center; gap: 12px; height: 28px;">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <span id="cmd-input-text" style="font-size: 15px; font-weight: 400; color: #FFF;"></span>
+            <div id="cmd-caret" style="width: 2px; height: 17px; background: #FFF;"></div>
+          </div>
+          <div id="cmd-list" style="margin-top: 16px; display: flex; flex-direction: column; gap: 6px; opacity: 0;">
+            <div id="cmd-row-0" style="padding: 10px 12px; border-radius: 8px; display: flex; justify-content: space-between; font-size: 13px;">
+              <span>Deploy Production Cluster</span>
+              <span style="opacity: 0.4; font-size: 12px;">↵ Enter</span>
+            </div>
+            <div style="padding: 10px 12px; border-radius: 8px; display: flex; justify-content: space-between; font-size: 13px; opacity: 0.35;">
+              <span>Deploy Staging Preview</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 12. Toast Notification -->
+        <div id="layer-toast" class="layer" style="padding: 0 20px; justify-content: flex-start; gap: 12px; width: 100%;">
+          <div style="width: 22px; height: 22px; min-width: 22px; border-radius: 50%; background: #FFF; display: flex; align-items: center; justify-content: center;">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <span id="toast-text" style="font-size: 13.5px; font-weight: 500; letter-spacing: -0.01em; white-space: nowrap;">Cluster successfully deployed</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mouse Cursor -->
+    <div id="cursor">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+        <path d="M3 3L10.07 20.97L12.58 13.58L19.97 11.07L3 3Z" fill="#000000" stroke="#FFFFFF" stroke-width="1.8" stroke-linejoin="round"/>
+      </svg>
+    </div>
+  </div>
+</div>
+
+<script>
+/**
+ * CLOSED-FORM SECOND-ORDER SPRING
+ */
+function springUnitStep(t, omega, zeta) {
+  if (t <= 0) return 0;
+  const wd = omega * Math.sqrt(Math.max(0.001, 1 - zeta * zeta));
+  const decay = Math.exp(-zeta * omega * t);
+  return 1 - decay * (Math.cos(wd * t) + (zeta * omega / wd) * Math.sin(wd * t));
+}
+
+function multiStepSpring(t, steps, omega = 24, zeta = 0.88) {
+  let val = steps[0][1];
+  for (let i = 1; i < steps.length; i++) {
+    const tStep = steps[i][0];
+    const delta = steps[i][1] - steps[i - 1][1];
+    if (t > tStep) {
+      val += delta * springUnitStep(t - tStep, omega, zeta);
+    }
+  }
+  return val;
+}
+
+function hermite(t, p0, p1, m0, m1) {
+  const t2 = t * t, t3 = t2 * t;
+  return (2 * t3 - 3 * t2 + 1) * p0 + (t3 - 2 * t2 + t) * m0 + (-2 * t3 + 3 * t2) * p1 + (t3 - t2) * m1;
+}
+
+function lerp(a, b, t) {
+  return a + (b - a) * t;
+}
+
+// DOM References
+const cameraEl = document.getElementById("camera");
+const morphContainer = document.getElementById("morph-container");
+const cursorEl = document.getElementById("cursor");
+
+const layers = {
+  button: document.getElementById("layer-button"),
+  loader: document.getElementById("layer-loader"),
+  check: document.getElementById("layer-check"),
+  island: document.getElementById("layer-island"),
+  player: document.getElementById("layer-player"),
+  scrubber: document.getElementById("layer-scrubber"),
+  volume: document.getElementById("layer-volume"),
+  toggle: document.getElementById("layer-toggle"),
+  tabs: document.getElementById("layer-tabs"),
+  chart: document.getElementById("layer-chart"),
+  cmd: document.getElementById("layer-cmd"),
+  toast: document.getElementById("layer-toast"),
+};
+
+const loaderSpinner = document.getElementById("loader-spinner");
+const checkPath = document.getElementById("check-path");
+const ppP1 = document.getElementById("pp-p1");
+const ppP2 = document.getElementById("pp-p2");
+const scrubFill = document.getElementById("scrub-fill");
+const scrubThumb = document.getElementById("scrub-thumb");
+const volFill = document.getElementById("vol-fill");
+const toggleKnob = document.getElementById("toggle-knob");
+const toggleTrack = document.getElementById("toggle-track");
+const tabIndicator = document.getElementById("tab-indicator");
+const chartCols = document.querySelectorAll(".chart-col");
+const chartTooltip = document.getElementById("chart-tooltip");
+const cmdInputText = document.getElementById("cmd-input-text");
+const cmdCaret = document.getElementById("cmd-caret");
+const cmdList = document.getElementById("cmd-list");
+const cmdRow0 = document.getElementById("cmd-row-0");
+const toastText = document.getElementById("toast-text");
+
+/**
+ * CONTAINER TIMELINE STEPS
+ * Chart state runs 7.0s -> 8.5s (480x280, r=20)
+ */
+const widthSteps = [
+  [0.0, 180], [0.5, 52], [1.0, 52], [1.5, 230], [2.0, 360],
+  [3.0, 360], [4.0, 280], [4.55, 335], [4.75, 280], [5.0, 84],
+  [6.0, 340], [7.0, 480], [8.5, 520], [9.0, 520], [10.0, 520],
+  [10.5, 310], [11.8, 310], [12.2, 180], [14.0, 180]
+];
+
+const heightSteps = [
+  [0.0, 52], [0.5, 52], [1.0, 52], [1.5, 42], [2.0, 84],
+  [3.0, 60], [4.0, 48], [4.55, 46], [4.75, 48], [5.0, 48],
+  [6.0, 52], [7.0, 280], [8.5, 62], [9.0, 175], [10.0, 50],
+  [10.5, 48], [11.8, 48], [12.2, 52], [14.0, 52]
+];
+
+const radiusSteps = [
+  [0.0, 26], [0.5, 26], [1.0, 26], [1.5, 21], [2.0, 20],
+  [3.0, 16], [4.0, 24], [4.55, 23], [4.75, 24], [5.0, 24],
+  [6.0, 14], [7.0, 20], [8.5, 16], [9.0, 16], [10.0, 16],
+  [10.5, 14], [11.8, 14], [12.2, 26], [14.0, 26]
+];
+
+const cameraZoomSteps = [
+  [0.0, 1.0], [0.5, 1.35], [1.0, 1.35], [1.5, 1.15], [2.0, 1.05],
+  [3.0, 1.1], [4.0, 1.12], [4.55, 1.12], [4.75, 1.12], [5.0, 1.35],
+  [6.0, 1.05], [7.0, 0.95], [8.5, 0.98], [10.5, 1.12], [11.8, 1.12],
+  [12.4, 1.0], [14.0, 1.0]
+];
+
+const tabLeftSteps = [[0.0, 0], [6.0, 0], [6.5, 220], [7.0, 0], [14.0, 0]];
+const tabRightSteps = [[0.0, 110], [6.0, 110], [6.46, 328], [7.0, 110], [14.0, 110]];
+
+/**
+ * PURE SEEK(T)
+ */
+function seek(rawT) {
+  const t = ((rawT % 14.0) + 14.0) % 14.0;
+
+  // 1. Container Closed-Form Springs
+  const w = multiStepSpring(t, widthSteps, 22, 0.86);
+  const h = multiStepSpring(t, heightSteps, 22, 0.86);
+  const r = multiStepSpring(t, radiusSteps, 20, 0.88);
+  const zoom = multiStepSpring(t, cameraZoomSteps, 16, 0.90);
+
+  morphContainer.style.width = `${w}px`;
+  morphContainer.style.height = `${h}px`;
+  morphContainer.style.borderRadius = `${r}px`;
+  cameraEl.style.transform = `scale(${zoom})`;
+
+  // 2. Layer Cross-fades
+  const layerDefs = [
+    { name: "button", start: 0.0, end: 0.5 },
+    { name: "loader", start: 0.5, end: 1.0 },
+    { name: "check", start: 1.0, end: 1.5 },
+    { name: "island", start: 1.5, end: 2.0 },
+    { name: "player", start: 2.0, end: 3.0 },
+    { name: "scrubber", start: 3.0, end: 4.0 },
+    { name: "volume", start: 4.0, end: 5.0 },
+    { name: "toggle", start: 5.0, end: 6.0 },
+    { name: "tabs", start: 6.0, end: 7.0 },
+    { name: "chart", start: 7.0, end: 8.5 },
+    { name: "cmd", start: 8.5, end: 10.5 },
+    { name: "toast", start: 10.5, end: 12.0 },
+    { name: "button", start: 12.0, end: 14.0 }
+  ];
+
+  for (const key in layers) {
+    layers[key].style.opacity = 0;
+    layers[key].style.filter = "blur(5px)";
+  }
+
+  for (const def of layerDefs) {
+    if (t >= def.start && t < def.end) {
+      const localT = t - def.start;
+      const dur = def.end - def.start;
+      const enterDur = 0.12;
+      const exitDur = 0.12;
+
+      let op = 1;
+      let blur = 0;
+      if (localT < enterDur) {
+        const p = localT / enterDur;
+        op = p;
+        blur = (1 - p) * 5;
+      } else if (localT > dur - exitDur) {
+        const p = (dur - localT) / exitDur;
+        op = p;
+        blur = (1 - p) * 5;
+      }
+      layers[def.name].style.opacity = op;
+      layers[def.name].style.filter = blur > 0.05 ? `blur(${blur}px)` : "none";
+    }
+  }
+
+  // 3. Precision Animations
+
+  // Loader
+  if (t >= 0.5 && t < 1.0) {
+    const rot = ((t - 0.5) / 0.5) * 720;
+    loaderSpinner.setAttribute("transform", `rotate(${rot} 12 12)`);
+  }
+
+  // Checkmark
+  if (t >= 1.0 && t < 1.5) {
+    const p = Math.min(1, Math.max(0, (t - 1.0) / 0.22));
+    checkPath.style.strokeDasharray = "30";
+    checkPath.style.strokeDashoffset = `${30 * (1 - p)}`;
+  } else {
+    checkPath.style.strokeDasharray = "none";
+  }
+
+  // Play <-> Pause morph
+  if (t >= 2.0 && t < 3.0) {
+    const morphP = Math.min(1, Math.max(0, (t - 2.5) / 0.16));
+    const p1_x2 = lerp(11, 10, morphP);
+    const p1_y2 = lerp(7, 4, morphP);
+    const p1_y3 = lerp(17, 20, morphP);
+    ppP1.setAttribute("d", `M6 4 L${p1_x2} ${p1_y2} L${p1_x2} ${p1_y3} L6 20 Z`);
+
+    const p2_x1 = lerp(11, 14, morphP);
+    const p2_y1 = lerp(7, 4, morphP);
+    const p2_y4 = lerp(17, 20, morphP);
+    const p2_x2 = lerp(19, 18, morphP);
+    const p2_y2 = lerp(12, 4, morphP);
+    const p2_x3 = lerp(19, 18, morphP);
+    const p2_y3 = lerp(12, 20, morphP);
+    ppP2.setAttribute("d", `M${p2_x1} ${p2_y1} L${p2_x2} ${p2_y2} L${p2_x3} ${p2_y3} L${p2_x1} ${p2_y4} Z`);
+  }
+
+  // Scrubber drag
+  if (t >= 3.0 && t < 4.0) {
+    let scrubP = 0.35;
+    if (t >= 3.1 && t <= 3.65) {
+      scrubP = 0.35 + ((t - 3.1) / 0.55) * 0.45;
+    } else if (t > 3.65) {
+      scrubP = 0.80;
+    }
+    scrubFill.style.width = `${scrubP * 100}%`;
+    scrubThumb.style.left = `${scrubP * 100}%`;
+  }
+
+  // Volume slider drag
+  if (t >= 4.0 && t < 5.0) {
+    let vol = 0.65;
+    if (t >= 4.1 && t < 4.55) {
+      vol = 0.65 + ((t - 4.1) / 0.45) * 0.35;
+    } else if (t >= 4.55) {
+      vol = 1.0;
+    }
+    volFill.style.width = `${vol * 100}%`;
+  }
+
+  // Toggle switch
+  if (t >= 5.0 && t < 6.0) {
+    const isFlipped = t >= 5.3;
+    const knobL = multiStepSpring(t, [[5.0, 4], [5.3, 38], [6.0, 38]], 28, 0.82);
+    const knobR = multiStepSpring(t, [[5.0, 42], [5.24, 76], [5.38, 76], [6.0, 76]], 22, 0.85);
+    toggleKnob.style.left = `${knobL}px`;
+    toggleKnob.style.width = `${Math.max(38, knobR - knobL)}px`;
+    toggleTrack.style.background = isFlipped ? "#FFFFFF" : "#1E1E1E";
+    toggleKnob.style.background = isFlipped ? "#000000" : "#FFFFFF";
+  }
+
+  // Liquid tabs
+  if (t >= 6.0 && t < 7.0) {
+    const leftVal = multiStepSpring(t, tabLeftSteps, 24, 0.85);
+    const rightVal = multiStepSpring(t, tabRightSteps, 30, 0.80);
+    tabIndicator.style.left = `${leftVal}px`;
+    tabIndicator.style.width = `${Math.max(105, rightVal - leftVal)}px`;
+  }
+
+  // 10. REFINED PRO CHART DYNAMICS (Spring rise + Hover Tooltip)
+  if (t >= 7.0 && t < 8.5) {
+    const barProgress = Math.min(1, Math.max(0, (t - 7.15) / 0.42));
+    const heights = [45, 68, 96, 58, 80];
+    chartCols.forEach((col, i) => {
+      // Clean spring physics scaling
+      col.style.height = `${heights[i] * barProgress}%`;
+    });
+    
+    // Smooth Tooltip Appearance
+    if (t >= 7.75 && t < 8.5) {
+      const tipOp = Math.min(1, (t - 7.75) / 0.14);
+      chartTooltip.style.opacity = tipOp;
+      chartTooltip.style.transform = `translateX(-50%) translateY(${(1 - tipOp) * 4}px)`;
+    } else {
+      chartTooltip.style.opacity = 0;
+    }
+  }
+
+  // Command palette
+  if (t >= 8.5 && t < 10.5) {
+    const typeStart = 8.8;
+    const fullText = "deploy production";
+    if (t >= typeStart) {
+      const chars = Math.min(fullText.length, Math.floor((t - typeStart) * 32));
+      cmdInputText.textContent = fullText.slice(0, chars);
+    } else {
+      cmdInputText.textContent = "";
+    }
+    cmdCaret.style.opacity = Math.sin(t * 12) > 0 ? 1 : 0;
+    cmdList.style.opacity = t >= 9.2 ? Math.min(1, (t - 9.2) / 0.15) : 0;
+    cmdRow0.style.background = t >= 9.6 ? "#242424" : "transparent";
+  }
+
+  // Toast Text Protection
+  if (t >= 10.5 && t < 12.0) {
+    if (t >= 11.7) {
+      toastText.style.opacity = Math.max(0, 1 - (t - 11.7) / 0.2);
+    } else {
+      toastText.style.opacity = 1;
+    }
+  }
+
+  // 4. Cursor Trajectory
+  const cursorWaypoints = [
+    { t: 0.0,  x: 720, y: 720, click: 0 },
+    { t: 0.15, x: 720, y: 720, click: 1 },
+    { t: 0.4,  x: 740, y: 750, click: 0 },
+    { t: 1.5,  x: 720, y: 690, click: 0 },
+    { t: 2.3,  x: 865, y: 720, click: 0 },
+    { t: 2.5,  x: 865, y: 720, click: 1 },
+    { t: 3.0,  x: 680, y: 720, click: 0 },
+    { t: 3.1,  x: 680, y: 720, click: 1 },
+    { t: 3.65, x: 810, y: 720, click: 1 },
+    { t: 3.75, x: 810, y: 720, click: 0 },
+    { t: 4.1,  x: 775, y: 720, click: 1 },
+    { t: 4.55, x: 860, y: 720, click: 1 },
+    { t: 4.7,  x: 860, y: 720, click: 0 },
+    { t: 5.2,  x: 720, y: 720, click: 1 },
+    { t: 5.5,  x: 720, y: 720, click: 0 },
+    { t: 6.3,  x: 825, y: 720, click: 0 },
+    { t: 6.5,  x: 825, y: 720, click: 1 },
+    { t: 6.7,  x: 825, y: 720, click: 0 },
+    { t: 7.75, x: 720, y: 640, click: 0 }, // Perfectly hovers Bar 3 inspection
+    { t: 8.8,  x: 880, y: 820, click: 0 },
+    { t: 9.8,  x: 720, y: 740, click: 1 },
+    { t: 10.1, x: 720, y: 740, click: 0 },
+    { t: 11.2, x: 720, y: 760, click: 0 },
+    { t: 12.5, x: 720, y: 720, click: 0 },
+    { t: 14.0, x: 720, y: 720, click: 0 }
+  ];
+
+  let curX = 720, curY = 720, isClick = 0;
+  for (let i = 0; i < cursorWaypoints.length - 1; i++) {
+    const wp0 = cursorWaypoints[i];
+    const wp1 = cursorWaypoints[i + 1];
+    if (t >= wp0.t && t <= wp1.t) {
+      const u = (t - wp0.t) / (wp1.t - wp0.t);
+      curX = hermite(u, wp0.x, wp1.x, 0, 0);
+      curY = hermite(u, wp0.y, wp1.y, 0, 0);
+      isClick = u > 0.08 && u < 0.92 ? wp1.click : wp0.click;
+      break;
+    }
+  }
+
+  const curScale = isClick ? 0.82 : 1.0;
+  cursorEl.style.transform = `translate(${curX}px, ${curY}px) scale(${curScale})`;
+// Global Playwright hook
+window.seek = seek;
+
+// Preview runner
+let startTime = null;
+function frame(time) {
+  if (!startTime) startTime = time;
+  const elapsedSec = (time - startTime) / 1000;
+  seek(elapsedSec);
+  requestAnimationFrame(frame);
+}
+
+// Auto-scale viewport to fit container/iframe responsively
+function fitViewport() {
+  const vp = document.getElementById("viewport");
+  if (!vp) return;
+  const scale = Math.min(window.innerWidth / 1440, window.innerHeight / 1440);
+  vp.style.transform = `scale(${scale})`;
+  vp.style.transformOrigin = "center center";
+}
+window.addEventListener("resize", fitViewport);
+fitViewport();
+
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>
