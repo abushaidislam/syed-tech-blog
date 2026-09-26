@@ -548,11 +548,13 @@ export function AutoScrollReader() {
             className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 max-w-[calc(100vw-32px)]"
           >
             <div
+              role="toolbar"
+              aria-label="Auto-scroll reading controls"
               className={cn(
-                "relative overflow-hidden flex items-center gap-1.5 sm:gap-2.5 rounded-full",
+                "relative flex items-center gap-1.5 overflow-hidden rounded-2xl sm:gap-2",
                 // Day Theme: Crisp white glassmorphism with subtle border and layered shadows
-                "bg-white/95 dark:bg-neutral-900/95 text-neutral-900 dark:text-white",
-                "px-3 sm:px-4 py-2",
+                "reader-control-grid bg-white/95 dark:bg-neutral-900/95 text-neutral-900 dark:text-white",
+                "px-2.5 py-2 sm:px-3.5 sm:py-2.5",
                 "shadow-[0_12px_36px_-6px_rgba(0,0,0,0.12),0_4px_16px_-2px_rgba(0,0,0,0.06)] dark:shadow-2xl",
                 "border border-neutral-200/90 dark:border-neutral-800 backdrop-blur-xl"
               )}
@@ -564,7 +566,7 @@ export function AutoScrollReader() {
               />
 
               {/* Status Indicator */}
-              <div className="flex items-center gap-2 pr-1.5 border-r border-neutral-200/90 dark:border-neutral-800 shrink-0">
+              <div className="flex shrink-0 items-center gap-2 border-r border-neutral-200/90 pr-2 dark:border-neutral-800 sm:pr-2.5">
                 <span className="relative flex size-2.5">
                   {isPaused ? (
                     <span className="size-2.5 rounded-full bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.5)]" />
@@ -575,7 +577,7 @@ export function AutoScrollReader() {
                     </>
                   )}
                 </span>
-                <span className="text-[11px] sm:text-xs font-semibold text-neutral-800 dark:text-neutral-200 hidden xs:inline">
+                <span className="hidden text-[10px] font-bold uppercase tracking-[0.12em] text-neutral-800 dark:text-neutral-200 xs:inline sm:text-[11px]">
                   {isPaused ? "Paused" : "Reading"}
                 </span>
               </div>
@@ -587,28 +589,41 @@ export function AutoScrollReader() {
                 aria-label={isPaused ? "Resume auto-scroll" : "Pause auto-scroll"}
                 title={isPaused ? "Resume (Space)" : "Pause (Space/Scroll)"}
                 className={cn(
-                  "flex size-7.5 items-center justify-center rounded-full transition-all duration-200 shadow-xs",
+                  "flex size-8 items-center justify-center rounded-xl transition-all duration-200 shadow-xs",
                   isPaused
                     ? "bg-emerald-600 hover:bg-emerald-500 text-white font-semibold scale-105"
                     : "bg-neutral-100 hover:bg-neutral-200 text-neutral-800 hover:text-neutral-950 dark:bg-neutral-800 dark:hover:bg-neutral-700 dark:text-neutral-200"
                 )}
               >
-                {isPaused ? (
-                  <Play className="size-3.5 fill-current ml-0.5" />
-                ) : (
-                  <Pause className="size-3.5 fill-current" />
-                )}
+                <AnimatePresence mode="wait" initial={false}>
+                  <motion.span
+                    key={isPaused ? "play" : "pause"}
+                    initial={{ opacity: 0, scale: 0.55, rotate: -45 }}
+                    animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                    exit={{ opacity: 0, scale: 0.55, rotate: 45 }}
+                    transition={{ duration: 0.16, ease: [0.22, 1, 0.36, 1] }}
+                    className="flex items-center justify-center"
+                  >
+                    {isPaused ? (
+                      <Play className="ml-0.5 size-3.5 fill-current" />
+                    ) : (
+                      <Pause className="size-3.5 fill-current" />
+                    )}
+                  </motion.span>
+                </AnimatePresence>
               </button>
 
               {/* Speed Preset Selector (Day Theme Pills) */}
-              <div className="flex items-center rounded-full bg-neutral-100/90 dark:bg-neutral-800/80 p-0.5 border border-neutral-200/80 dark:border-neutral-700/60">
+              <div className="flex items-center rounded-xl border border-neutral-200/80 bg-neutral-100/90 p-0.5 dark:border-neutral-700/60 dark:bg-neutral-800/80">
                 {SPEEDS.map((s) => (
                   <button
                     key={s}
                     type="button"
                     onClick={() => setSpeed(s)}
+                    aria-label={`Set reading speed to ${s}x`}
+                    aria-pressed={speed === s}
                     className={cn(
-                      "px-2 py-0.5 text-[11px] rounded-full transition-all duration-150",
+                      "flex h-7 min-w-7 items-center justify-center rounded-lg px-1.5 text-[10px] transition-all duration-150 sm:px-2 sm:text-[11px]",
                       speed === s
                         ? "bg-white dark:bg-neutral-900 text-neutral-950 dark:text-white shadow-xs font-semibold"
                         : "text-neutral-500 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100 font-medium"
@@ -621,7 +636,7 @@ export function AutoScrollReader() {
 
               {/* 'i' (Information) Button with Rich Floating Tooltip */}
               <div
-                className="relative"
+                className="relative border-l border-neutral-200/90 pl-1 dark:border-neutral-800"
                 ref={helpContainerRef}
                 onMouseEnter={handleMouseEnterHelp}
                 onMouseLeave={handleMouseLeaveHelp}
@@ -633,7 +648,7 @@ export function AutoScrollReader() {
                   aria-label="Gesture shortcuts & tips"
                   aria-expanded={showHelp}
                   className={cn(
-                    "flex size-7 items-center justify-center rounded-full transition-all duration-150",
+                    "flex size-8 items-center justify-center rounded-xl transition-all duration-150",
                     showHelp
                       ? "bg-neutral-200/90 text-neutral-950 dark:bg-neutral-700 dark:text-white"
                       : "text-neutral-400 hover:text-neutral-900 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:text-white dark:hover:bg-neutral-800"
@@ -734,7 +749,7 @@ export function AutoScrollReader() {
                 onClick={stopAutoScroll}
                 aria-label="Exit Auto-scroll"
                 title="Exit (Esc)"
-                className="flex size-7 items-center justify-center rounded-full text-neutral-400 hover:text-neutral-950 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:text-white dark:hover:bg-neutral-800 transition-colors"
+                className="flex size-8 items-center justify-center rounded-xl text-neutral-400 transition-colors hover:bg-neutral-100 hover:text-neutral-950 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white"
               >
                 <X className="size-3.5 stroke-[2.2]" />
               </button>

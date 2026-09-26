@@ -245,22 +245,21 @@ export function PostLayout({ post, relatedPosts, mdxContent, postUrl }: PostLayo
                   <PostTOC headings={post.headings} />
                 )}
 
-                {/* Sidebar Quick Share */}
-                <SocialShare
-                  url={canonicalUrl}
-                  title={decodedTitle}
-                  summary={decodedSummary}
-                  category={post.category.name}
-                  image={previewImage}
-                  layout="sidebar"
-                />
-
                 <PostSidebarCTA />
               </div>
             </div>
           </div>
         </div>
       </div>
+
+      <SocialShare
+        url={canonicalUrl}
+        title={decodedTitle}
+        summary={decodedSummary}
+        category={post.category.name}
+        image={previewImage}
+        layout="floating"
+      />
 
       {/* Bottom Signature Dub Curved Dark Glow Banner */}
       <BlogBottomCTA />

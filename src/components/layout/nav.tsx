@@ -6,7 +6,6 @@ import { SyedBlogWordmark } from "./brand";
 import { Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useLocale } from "./locale-provider";
-import { LanguageSwitcher } from "./language-switcher";
 
 export function Nav() {
   const { locale, dict } = useLocale();
@@ -84,7 +83,6 @@ export function Nav() {
         </div>
 
         <div className="hidden md:flex items-center gap-3">
-          <LanguageSwitcher />
           <Link
             href={`/${locale}/blog/category/engineering`}
             className="flex h-8 items-center rounded-lg bg-neutral-900 px-3.5 text-xs font-medium text-white shadow-sm transition-all hover:bg-neutral-800"
@@ -95,7 +93,6 @@ export function Nav() {
 
         {/* Mobile menu toggle */}
         <div className="flex items-center gap-2 md:hidden">
-          <LanguageSwitcher />
           <button
             type="button"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}

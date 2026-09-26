@@ -5,6 +5,7 @@ import { SyedBlogWordmark } from "./brand";
 import { cn } from "@/lib/utils";
 import { siteConfig } from "@/config/site";
 import { useLocale } from "./locale-provider";
+import { LanguageSwitcher } from "./language-switcher";
 import {
   ArrowUpRight,
   Cpu,
@@ -246,6 +247,13 @@ export function Footer() {
                       <Icon className="size-4 transition-transform duration-200 group-hover:scale-110" />
                     </a>
                   ))}
+                </div>
+
+                <div className="flex items-center justify-between gap-3 border-t border-neutral-200/70 pt-4">
+                  <span className="text-xs font-medium text-neutral-500">
+                    {locale === "bn" ? "ভাষা" : "Language"}
+                  </span>
+                  <LanguageSwitcher />
                 </div>
               </div>
 

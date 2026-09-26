@@ -98,6 +98,98 @@ main {
   --color-danger-subtle: #fef2f2;
 }
 
+/* Blog-native shell and motion cues around the embedded discussion iframe. */
+.giscus-section-header {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  background: transparent;
+  transition: background-color 250ms ease;
+}
+
+.giscus-section-header:hover {
+  background-color: rgba(250, 250, 250, 0.72);
+}
+
+.giscus-section-header::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 3px;
+  background: #34d399;
+  box-shadow: 0 0 18px rgba(52, 211, 153, 0.35);
+  transition: width 250ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.giscus-section-header:hover::before {
+  width: 6px;
+}
+
+.giscus-icon {
+  transition: transform 250ms cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 250ms ease, border-color 250ms ease;
+}
+
+.giscus-section-header:hover .giscus-icon {
+  transform: translateY(-1px);
+  border-color: #a7f3d0 !important;
+  background-color: #ecfdf5 !important;
+}
+
+.giscus-live-dot {
+  animation: giscus-live-pulse 1.8s ease-in-out infinite;
+}
+
+.giscus-markdown-note svg {
+  color: #a78bfa;
+  transition: transform 250ms cubic-bezier(0.22, 1, 0.36, 1), color 250ms ease;
+}
+
+.giscus-section-header:hover .giscus-markdown-note svg {
+  color: #f97316;
+  transform: rotate(12deg) scale(1.08);
+}
+
+.giscus-frame-shell {
+  position: relative;
+  border-radius: 20px;
+  padding: 1px;
+  background: linear-gradient(135deg, #d1fae5, #e0e7ff 48%, #fed7aa);
+  box-shadow: 0 14px 35px -24px rgba(15, 23, 42, 0.42);
+}
+
+.giscus-frame-shell > .giscus,
+.giscus-frame-shell > .giscus-loading {
+  border-radius: 19px;
+  background: #fff;
+}
+
+.giscus-loading {
+  background: #fff;
+}
+
+.giscus-loading-mark {
+  animation: giscus-loading-float 1.6s ease-in-out infinite;
+  color: #6366f1;
+}
+
+@keyframes giscus-live-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.36); }
+  50% { box-shadow: 0 0 0 5px rgba(16, 185, 129, 0); }
+}
+
+@keyframes giscus-loading-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .giscus-live-dot,
+  .giscus-loading-mark {
+    animation: none;
+  }
+}
+
 /* ========================================================
    1. Dub-style Comment Writing Box
    ======================================================== */

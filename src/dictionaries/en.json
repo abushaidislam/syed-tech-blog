@@ -37,6 +37,14 @@
     "articleFallbackNotice": "This article is currently displayed in English. Bengali translation will be available soon.",
     "articleFallbackDetails": "We are adding Bengali versions of all articles. For now, you can read the original English version."
   },
+  "comments": {
+    "ariaLabel": "Discussion and Comments",
+    "title": "Discussion & Comments",
+    "realtime": "GitHub Realtime",
+    "description": "Comments and replies sync live with GitHub Discussions",
+    "markdown": "Markdown supported",
+    "loading": "Loading discussion from GitHub..."
+  },
   "cta": {
     "title": "Ready to build something extraordinary?",
     "description": "Explore technical deep dives and practical architectures for modern applications.",
