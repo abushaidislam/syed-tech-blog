@@ -38,11 +38,12 @@ if (!fs.existsSync(BLOG_BN_DIR)) fs.mkdirSync(BLOG_BN_DIR, { recursive: true });
 const delay = (ms) => new Promise((res) => setTimeout(res, ms));
 
 async function callGemini(prompt, content) {
-  // Try supported Gemini model names in order of recommendation and speed
+  // Try supported Gemini model names in order of speed and current availability
   const models = [
-    "gemini-2.5-flash",
-    "gemini-flash-latest",
-    "gemini-pro-latest",
+    "gemini-3.6-flash",
+    "gemini-3.1-flash-lite",
+    "gemini-3.8-flash",
+    "gemini-3.5-flash",
   ];
 
   for (const model of models) {
