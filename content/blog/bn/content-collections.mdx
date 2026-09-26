@@ -1,0 +1,304 @@
+---
+slug: "content-collections"
+title: "Contentlayer থেকে Content Collections-এ মাইগ্রেশন"
+summary: "আমরা সম্প্রতি আমাদের কন্টেন্ট ফ্রেমওয়ার্ক Contentlayer থেকে Content Collections-এ মাইগ্রেট করেছি। কেন এবং কীভাবে আমরা এটি করেছি তা নিচে আলোচনা করা হলো।"
+image: "https://assets.dub.co/cms/content-collections-2.jpg"
+dateIso: "2024-07-05T00:00:00.000Z"
+dateFormatted: "৫ জুলাই, ২০২৪"
+category: "engineering"
+categoryName: "Engineering"
+authors:
+  - name: "Steven Tey"
+    image: "https://assets.dub.co/author/steventey.jpg"
+    title: "Core Engineering"
+---
+
+[Contentlayer](https://contentlayer.dev) হলো একটি জনপ্রিয় কন্টেন্ট SDK যা আপনার Markdown এবং MDX কন্টেন্টকে টাইপ-সেফ (type-safe) JSON ডেটায় রূপান্তর করে, যা আপনি সহজেই আপনার React অ্যাপ্লিকেশনে ইমপোর্ট করতে পারবেন।
+
+তবে, এর প্রধান স্পন্সর Stackbit-কে Netlify অধিগ্রহণ করার পর থেকে Contentlayer মূলত [আনমেইনটেইনড বা রক্ষণাবেক্ষণহীন](https://github.com/contentlayerdev/contentlayer/issues/429) অবস্থায় রয়েছে। এর সাথে যুক্ত হয়েছে [Next.js App Router-এর সাথে অসঙ্গতি](https://github.com/contentlayerdev/contentlayer/issues/506)-র মতো সমস্যাগুলো। ফলে এটা স্পষ্ট হয়ে গিয়েছিল যে এর একটি ড্রপ-ইন বিকল্প (drop-in replacement) প্রয়োজন।
+
+আর এখানেই এসেছে [Content Collections](https://content-collections.dev)।
+
+## Content Collections কী?
+
+[Content Collections](https://content-collections.dev) হলো Contentlayer দ্বারা অনুপ্রাণিত একটি কন্টেন্ট ফ্রেমওয়ার্ক যা [Sebastian Sdorra তৈরি করেছেন](https://sdorra.dev/posts/2024-01-15-content-collections)। Contentlayer-এর স্কিমা সংজ্ঞায়িত (schema definition) করার নমনীয়তার অভাবে (যেমন: কোনো নির্দিষ্ট ফিল্ডের জন্য `email` বা `url` টাইপ ডিফাইন করা যেত না) হতাশ হয়ে সেবাস্টিয়ান Contentlayer-এর একটি ড্রপ-ইন বিকল্প তৈরির সিদ্ধান্ত নেন যা এই সীমাবদ্ধতাগুলো দূর করে।
+
+## কেন Content Collections বেছে নেবেন?
+
+Contentlayer-এর উপযুক্ত ড্রপ-ইন উত্তরসূরি হিসেবে Content Collections কেন সেরা, তার কয়েকটি কারণ নিচে দেওয়া হলো:
+
+### ১. Zod-চালিত স্কিমা ভ্যালিডেশন (Schema Validation)
+
+আপনি যদি স্কিমা ভ্যালিডেশনের জন্য আগে থেকেই [Zod ব্যবহার করে থাকেন](/blog/zod-api-validation), তবে Content Collections ব্যবহার করা আপনার কাছে একদম সহজ মনে হবে। একটি কালেকশন স্কিমা সংজ্ঞায়িত করতে আপনি সহজেই `schema` অ্যাট্রিবিউট ব্যবহার করতে পারেন, যা একটি Zod প্যারামিটার `z` প্রদান করে:
+
+ content-collections.ts 
+
+```
+ import { defineCollection, defineConfig } from "@content-collections/core" ; 
+
+ const BlogPost = defineCollection ({ 
+ name: "BlogPost" , 
+ directory: "content/blog" , 
+ include: "*.mdx" , 
+ schema : ( z ) => ({ 
+ title: z. string (), 
+ categories: z 
+ . array (z. enum ([ "company" , "engineering" , "education" , "customers" ])) 
+ . default ([ "company" ]), 
+ publishedAt: z. string (). datetime (), 
+ featured: z. boolean (). default ( false ), 
+ }), 
+ }); 
+
+ export default defineConfig ({ 
+ collections: [BlogPost], 
+ }); 
+```
+
+### ২. নেটিভ Fumadocs ইন্টিগ্রেশন
+
+[Fumadocs](https://fumadocs.vercel.app)-এর স্রষ্টা—যা অত্যন্ত জনপ্রিয় একটি ওপেন-সোর্স ডকুমেন্টেশন ফ্রেমওয়ার্ক এবং [Million](https://million.dev/) ও [Turborepo](/blog/turborepo-migration)-র মতো [প্রজেক্টগুলোতে ব্যবহৃত](https://fumadocs.vercel.app/showcase) হয়—সম্প্রতি [Content Collections-এর জন্য নেটিভ সাপোর্ট](https://fumadocs.vercel.app/docs/headless/content-collections) যুক্ত করেছেন।
+
+মজার বিষয় হলো, [Contentlayer-এর জন্য সাপোর্টও](https://fumadocs.vercel.app/docs/headless/contentlayer) এখন ডিপ্রিকেটেড (deprecated) করা হয়েছে।
+
+### ৩. Next.js App Router-এর সাথে সামঞ্জস্যপূর্ণ
+
+Content Collections পুরোপুরিভাবে [Next.js App Router](https://nextjs.org/docs/app) এবং [React Server Components (RSC)](https://nextjs.org/docs/app/building-your-application/rendering/server-components)-এর সাথে সামঞ্জস্যপূর্ণ।
+
+উদাহরণস্বরূপ, এই ব্লগ পোস্টে GitHub রিপোজিটরি কার্ডগুলো রেন্ডার করার জন্য, আপনি একটি সার্ভার কম্পোনেন্ট তৈরি করতে পারেন যা রিপোজিটরির সাম্প্রতিক তথ্য ফেচ (fetch) করে একটি React কম্পোনেন্ট রেন্ডার করবে:
+
+ components/github-repo.tsx lib/github.ts 
+
+```
+ import { getRepo } from "@/lib/github" ; 
+ import { Suspense } from "react" ; 
+
+ export function GithubRepo ({ url } : { url : string }) { 
+ return ( 
+ Suspense fallback = { div >Loading... div >}> 
+ GithubRepoRSC url = {url} /> 
+ Suspense > 
+ ); 
+ } 
+
+ async function GithubRepoRSC ({ url } : { url : string }) { 
+ const { description , stars , forks } = await getRepo (url); 
+ return ( 
+ div className = "not-prose grid gap-4" > 
+ h3 >{description} h3 > 
+ p >{stars} stars p > 
+ p >{forks} forks p > 
+ div > 
+ ); 
+ } 
+```
+
+ এরপর, এটি আপনার MDX কন্টেন্টে যুক্ত করুন:
+
+ components/mdx 
+
+```
+ import { useMDXComponent } from "@content-collections/mdx/react" ; 
+ import { GithubRepo } from "./github-repo" ; 
+
+ export function MDX ({ code , className } : { code : string ; className ?: string }) { 
+ const Component = useMDXComponent (code); 
+
+ return ( 
+ article > 
+ Component 
+ components = {{ 
+ GithubRepo, 
+ }} 
+ /> 
+ article > 
+ ); 
+ } 
+```
+
+### ৪. একজন দুর্দান্ত ডেভেলপার দ্বারা নিয়মিত মেইনটেইন করা হয়
+
+Content Collections নিয়মিতভাবে মেইনটেইন করছেন [Sebastian Sdorra](https://github.com/sdorra)। আপনি যদি Content Collections ব্যবহার করে স্বাচ্ছন্দ্য বোধ করেন, তবে এই প্রজেক্টটি সক্রিয় রাখতে সহায়তার জন্য আমরা [সেবাস্টিয়ানকে স্পন্সর করার](https://github.com/sponsors/sdorra) জন্য জোর সুপারিশ করছি।
+
+## কীভাবে Contentlayer থেকে Content Collections-এ মাইগ্রেট করবেন?
+
+যেহেতু Content Collections হলো Contentlayer-এর একটি ড্রপ-ইন বিকল্প, তাই Contentlayer থেকে Content Collections-এ মাইগ্রেট করার প্রক্রিয়াটি বেশ সহজ ও সোজা।
+
+ [১
+
+## ইন্সটলেশন](#installation) 
+
+প্রথমেই, প্রয়োজনীয় Content Collections প্যাকেজগুলো ইনস্টল করুন।
+
+আপনি যদি Next.js ব্যবহার করেন, তবে আপনার MDX সাপোর্টের জন্য `@content-collections/next` এবং সেই সাথে `@content-collections/mdx` ইনস্টল করতে হবে।
+
+ npm pnpm yarn bun 
+
+```
+ pnpm add --save-dev @content-collections/core @content-collections/mdx @content-collections/next 
+```
+
+ [২
+
+## tsconfig.json আপডেট করুন](#update-tsconfigjson) এরপর, আপনার `tsconfig.json` ফাইলটি সামঞ্জস্য করে নিন:
+
+ tsconfig.json 
+
+```
+ { 
+ "compilerOptions" : { 
+ // ... 
+ "paths" : { 
+ "@/*" : [ "./*" ], 
+ "contentlayer/generated" : [ "./.contentlayer/generated" ], 
+ "content-collections" : [ "./.content-collections/generated" ] 
+ } 
+ } 
+ } 
+```
+
+ [৩
+
+## আপনার next.config.js আপডেট করুন](#update-your-nextconfigjs) এরপর, আপনার `next.config.js` ফাইলটি আপডেট করুন:
+
+ next.config.js 
+
+```
+ // import { withContentlayer } from "next-contentlayer"; 
+ import { withContentCollections } from "@content-collections/next" ; 
+
+ // export default withContentlayer(nextConfig); 
+ export default withContentCollections (nextConfig); 
+```
+
+ [৪
+
+## content-collections.ts ফাইল তৈরি করুন](#create-content-collectionsts-file) এরপর, আপনার প্রজেক্টের রুট ডিরেক্টরিতে একটি `content-collections.ts` ফাইল যোগ করুন। দেখতেই পাচ্ছেন, মূল পার্থক্য হলো স্কিমা ভ্যালিডেশনের জন্য [Zod](https://zod.dev)-এর ব্যবহার।
+
+ contentlayer.config.ts content-collections.ts 
+
+```
+ import { defineCollection, defineConfig } from "@content-collections/core" ; 
+
+ const BlogPost = defineCollection ({ 
+ name: "BlogPost" , 
+ directory: "content/blog" , 
+ include: "*.mdx" , 
+ schema : ( z ) => ({ 
+ title: z. string (), 
+ categories: z 
+ . array (z. enum ([ "company" , "engineering" , "education" , "customers" ])) 
+ . default ([ "company" ]), 
+ }), 
+ }); 
+
+ export default defineConfig ({ 
+ collections: [BlogPost], 
+ }); 
+```
+
+ আপনি যদি কোনো Remark বা Rehype প্লাগইন ব্যবহার করে থাকেন, তবে সেগুলোকে সেই অনুযায়ী আপডেট করতে হবে। যেহেতু Content Collections [ডিফল্টভাবে কন্টেন্ট কম্পাইল বা পার্স (parse) করে না](https://sdorra.dev/posts/2024-01-15-content-collections#content), তাই প্লাগইনগুলোকে কম্পাইলারে পাস করার জন্য আপনাকে `transform` অপশন ব্যবহার করতে হবে:
+
+ contentlayer.config.ts content-collections.ts 
+
+```
+ import { defineCollection, defineConfig } from "@content-collections/core" ; 
+ import { compileMDX } from "@content-collections/mdx" ; 
+ import { rehypeCode, remarkGfm } from "fumadocs-core/mdx-plugins" ; 
+
+ async function transformMDX ( document ) { 
+ const body = await compileMDX (context, document, { 
+ ... options, 
+ remarkPlugins: [remarkGfm], 
+ rehypePlugins: [[rehypeCode]], 
+ }); 
+ return { 
+ ... document, 
+ body, 
+ }; 
+ } 
+
+ const BlogPost = defineCollection ({ 
+ name: "BlogPost" , 
+ directory: "content/blog" , 
+ include: "*.mdx" , 
+ schema : ( z ) => ({ 
+ title: z. string (), 
+ categories: z 
+ . array (z. enum ([ "company" , "engineering" , "education" , "customers" ])) 
+ . default ([ "company" ]), 
+ }), 
+ transform: transformMDX, 
+ }); 
+
+ export default defineConfig ({ 
+ collections: [BlogPost], 
+ }); 
+
+```
+
+<Callout type="tip">
+Content Collections কেন ডিফল্টভাবে কন্টেন্ট পার্স বা কম্পাইল করে না তার মূল কারণ হলো নমনীয়তা (flexibility) — আপনি চাইলে আপনার পছন্দের যেকোনো Markdown ফরম্যাটার/লাইব্রেরি নিয়ে এসে তা Content Collections-এর সাথে ব্যবহার করতে পারেন।
+</Callout>
+
+ [৫
+
+## কন্টেন্ট ইমপোর্ট আপডেট করুন](#update-content-imports) অবশেষে, নতুন `content-collections` সোর্স ব্যবহার করার জন্য আপনার ইমপোর্টগুলো আপডেট করুন। এটি করার খুব সহজ উপায় হলো `CMD+SHIFT+F` প্রেস করা এবং `contentlayer/generated`-কে `content-collections` দিয়ে রিপ্লেস করে দেওয়া।
+
+ blog/page.tsx 
+
+```
+ // import { allBlogPosts } from "contentlayer/generated"; 
+ import { allBlogPosts } from "content-collections" ; 
+
+ export default function Blog () { 
+ const posts = allBlogPosts (); 
+ return ( 
+ div > 
+ {posts. map (( post ) => ( 
+ BlogPost post = {post} /> 
+ ))} 
+ div > 
+ ); 
+ } 
+```
+
+ আপনার MDX কম্পোনেন্টের `code` অ্যাট্রিবিউটটিও আপডেট করার প্রয়োজন হতে পারে:
+
+ blog/[slug]/page.tsx 
+
+```
+ import { MDX } from "@/components/mdx" ; 
+
+ export default function BlogPost ({ params } : { params : { slug : string } }) { 
+ const posts = allBlogPosts (); 
+ const post = posts. find (( post ) => post.slug === params.slug); 
+ return ( 
+ MDX 
+ // code={data.body.code} 
+ code = {data.body} 
+ /> 
+ ); 
+ } 
+```
+
+ [৬
+
+## Contentlayer ডিপেন্ডেন্সি ও ফাইলগুলো রিমুভ করুন](#remove-contentlayer-dependencies--files) সবশেষে, আপনার প্রজেক্ট থেকে সমস্ত Contentlayer ডিপেন্ডেন্সি এবং ফাইলগুলো মুছে ফেলুন।
+
+ npm pnpm yarn bun 
+
+```
+ pnpm remove contentlayer next-contentlayer 
+ rm -rf .contentlayer contentlayer.config.ts 
+```
+
+ ব্যস, হয়ে গেল! আপনি সফলভাবে আপনার প্রজেক্টটি Contentlayer থেকে Content Collections-এ মাইগ্রেট করে ফেলেছেন।
+
+## Content Collections-এর মাধ্যমে আপনার কন্টেন্ট পাইপলাইন স্কেল করুন
+
+Content Collections-এ এই মাইগ্রেশন Dub-এর জন্য নতুন কী কী সম্ভাবনার দুয়ার খুলে দিয়েছে, তা নিয়ে আমরা দারুণ রোমাঞ্চিত। Zod স্কিমা ভ্যালিডেশনের মাধ্যমে এটি আমাদের কেবল ডেভেলপমেন্ট অভিজ্ঞতাকেই বহুগুণ বাড়িয়ে দেয়নি, বরং দীর্ঘমেয়াদে আমাদের কন্টেন্ট পাইপলাইনকে আরও শক্তিশালী ও নির্ভরযোগ্য করতে সাহায্য করেছে।
+
+সবসময়কার মতোই, আমাদের কোডবেস সম্পূর্ণ ওপেন-সোর্স। তাই নির্দ্বিধায় তা দেখুন এবং [Dub](/)-এ আমরা যেসব সাম্প্রতিক টেকনোলজি ব্যবহার করছি সে সম্পর্কে বিস্তারিত জানুন:
+
+আর আপনি যদি Contentlayer-এর একটি আধুনিক ও নিয়মিত মেইনটেইন করা বিকল্প খুঁজে থাকেন, তবে আমরা আপনাকে Content Collections ব্যবহার করে দেখার জোর সুপারিশ করছি।

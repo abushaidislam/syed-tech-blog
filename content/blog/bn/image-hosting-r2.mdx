@@ -1,0 +1,327 @@
+---
+slug: "image-hosting-r2"
+title: "Cloudflare R2 দিয়ে একটি স্কেলেবল ও সাশ্রয়ী ইমেজ হোস্টিং পাইপলাইন তৈরি"
+summary: "সম্প্রতি আমরা আমাদের ইমেজ হোস্টিং Cloudinary থেকে Cloudflare R2-তে মাইগ্রেট করেছি। এই পোস্টে মাইগ্রেশনের পেছনের কারণ, Cloudflare R2-এর সুবিধা-অসুবিধা এবং আমাদের কোডবেসে কীভাবে এটি ইমপ্লিমেন্ট করেছি তা বিস্তারিত আলোচনা করা হয়েছে।"
+image: "https://assets.dub.co/cms/image-hosting-r2-2.png"
+dateIso: "2024-03-26T00:00:00.000Z"
+dateFormatted: "২৬ মার্চ, ২০২৪"
+category: "engineering"
+categoryName: "Engineering"
+authors:
+  - name: "Steven Tey"
+    image: "https://assets.dub.co/author/steventey.jpg"
+    title: "Core Engineering"
+---
+
+একটি [লিংক ম্যানেজমেন্ট](/help/article/what-is-dub) প্ল্যাটফর্ম হিসেবে, [Dub.co](/) ব্যবহারকারীদের তৈরি করা বিভিন্ন ইমেজ অ্যাসেট স্টোর করে:
+
+- আমাদের [কাস্টম লিংক প্রিভিউ](/help/article/custom-link-previews) ফিচারের ছবিসমূহ
+- প্রতিটি [Dub ওয়ার্কস্পেসের](/help/article/what-is-a-workspace) লোগো
+- ইউজার অ্যাভেটার
+
+আমাদের স্কেল বৃদ্ধির সাথে সাথে আমরা অনুধাবন করি যে, বিদ্যমান ইমেজ হোস্টিং সলিউশনটি খরচ এবং আমাদের ওপেন-সোর্স দর্শনের সাথে সামঞ্জস্যপূর্ণ ছিল না। আমরা Cloudinary ব্যবহার করছিলাম, যা একটি দুর্দান্ত সার্ভিস, তবে স্কেল বৃদ্ধির সাথে সাথে এটি অত্যন্ত ব্যয়বহুল হয়ে উঠছিল। পাশাপাশি এটি ওপেন-সোর্স না হওয়ায়, [সেলফ-হোস্টিংয়ের](/docs/self-hosting) জন্য খুব একটা উপযুক্ত ছিল না।
+
+তাই সম্প্রতি আমরা আমাদের ইমেজ হোস্টিং Cloudinary থেকে Cloudflare R2-তে মাইগ্রেট করেছি। এই ব্লগে আমরা আমাদের এই অভিজ্ঞতার কথা, Cloudflare R2-এর সুবিধা ও অসুবিধা এবং কীভাবে এটি কোডবেসে সেটআপ করেছি তা শেয়ার করব।
+
+## Cloudflare R2 কী?
+
+[Cloudflare R2](https://www.cloudflare.com/developer-platform/r2/) হলো এমন একটি স্টোরেজ সলিউশন যা একই সাথে স্কেলেবিলিটি এবং সাশ্রয়ী খরচের নিশ্চয়তা দেয়। এটি S3-কম্প্যাটিবল হিসেবে ডিজাইন করা হয়েছে, যা প্রথাগত AWS সার্ভিস থেকে মাইগ্রেট করতে চাওয়া ডেভেলপারদের জন্য একটি আকর্ষণীয় বিকল্প। এটি আমাদের ক্লাউডফ্লেয়ারের সার্ভিস ব্যবহার করার সুযোগ দেওয়ার পাশাপাশি যারা সেলফ-হোস্ট করতে চান এবং AWS ইকোসিস্টেমে থাকতে চান তাদের জন্য AWS সাপোর্ট বজায় রাখতে সাহায্য করে।
+
+## Cloudflare R2-এর সুবিধাসমূহ
+
+- **সহজ সেটআপ**: R2 দিয়ে কাজ শুরু করা অত্যন্ত সহজ, বিশেষ করে আপনি যদি আগে থেকেই Cloudflare সার্ভিস ব্যবহার করে থাকেন। শুধুমাত্র একটি বাকেট তৈরি করলেই কাজ শেষ। এটি অনেকটা S3 + Cloudfront-এর মতো এবং স্বয়ংক্রিয়ভাবে কনফিগার করা থাকে।
+- **S3 কম্প্যাটিবিলিটি**: এটি AWS থেকে মাইগ্রেশন করা অনেক সহজ করে তোলে এবং বিদ্যমান S3 টুলস ও লাইব্রেরিগুলো ব্যবহারের সুযোগ দেয়। আপনার শুধু S3 URL, Access Key এবং Secret Token আপডেট করতে হবে।
+- **প্রাইসিং**: Cloudflare R2 অত্যন্ত প্রতিযোগিতামূলক মূল্যে সার্ভিস প্রদান করে, বিশেষ করে ইগ্রেস ফি (egress fees)-র ক্ষেত্রে, যা অন্যান্য সার্ভিসে বেশ বড় অঙ্কের খরচ সৃষ্টি করে।
+
+## Cloudflare R2-এর অসুবিধাসমূহ
+
+- **ডোমেইনের বাধ্যবাধকতা**: আপনি যদি কাস্টম ডোমেইন বা সাবডোমেইনে R2 ব্যবহার করতে চান, তবে আপনার অ্যাপেক্স (apex) ডোমেইনটি অবশ্যই Cloudflare নেমসার্ভার দ্বারা পরিচালিত হতে হবে। আমাদের ক্ষেত্রে, যেহেতু মূল ডোমেইন `dub.co` ক্লাউডফ্লেয়ারে ছিল না, তাই আমরা `assets.dub.co`-এর মতো সাবডোমেইন ব্যবহার করতে পারিনি এবং এর পরিবর্তে `dubassets.com` ডোমেইন বেছে নিতে হয়েছিল।
+- **CORS সংক্রান্ত সমস্যা**: CORS-সংক্রান্ত বেশ কিছু চ্যালেঞ্জের কথা জানা গেছে, যা ওয়েব অ্যাপ্লিকেশনের জন্য ঝামেলার কারণ হতে পারে — আমরা [নিজেরাও এই সমস্যার মুখোমুখি হয়েছিলাম](#potential-gotcha-cors)।
+- **সিঙ্গেল-রিজিয়ন (Single-region)**: Cloudflare-এর অন্যান্য সার্ভিসের মতো R2 স্টোরেজ এজ লেভেলে ডিস্ট্রিবিউটেড নয়, বরং এটি সিঙ্গেল-রিজিয়ন ভিত্তিক, যা ল্যাটেন্সিতে কিছুটা প্রভাব ফেলতে পারে। তা সত্ত্বেও, এটি কিন্তু বেশ দ্রুত কাজ করে!
+
+ মজার বিষয় হলো, সাবডোমেইন (`assets.dub.co`) ব্যবহার করতে না পেরে `dubassets.com` বেছে নেওয়াটা আমাদের জন্য একধরনের ছদ্মবেশী আশীর্বাদ হয়ে দেখা দেয়। কারণ নিরাপত্তার খাতিরে ইউজার-জেনারেটেড অ্যাসেট আলাদা ডোমেইনে হোস্ট করাই সাধারণ নিয়ম অনুসারে ভালো চর্চা।
+
+ঠিক একই কারণে জেনারেটেড কন্টেন্টের জন্য GitHub ব্যবহার করে `githubusercontent.com`। এই [Reddit কমেন্টে](https://www.reddit.com/r/webdev/comments/lg9xnm/comment/gmsh06v) বিষয়টি সুন্দরভাবে ব্যাখ্যা করা হয়েছে।
+
+## ইমপ্লিমেন্টেশন (Implementation)
+
+নিচে সেই PR দেওয়া হলো যেখানে আমরা এই পরিবর্তনটি করেছিলাম:
+
+সংক্ষেপে, Cloudflare R2 ইমপ্লিমেন্ট করার জন্য আমরা নিচের ধাপগুলো অনুসরণ করেছি:
+
+1. [নতুন একটি R2 বাকেট সেটআপ করা](#step-1-set-up-a-new-r2-bucket)
+2. ছবি আপলোড ও ডিলিট করার জন্য একটি `storage` ক্লায়েন্ট তৈরি করা
+3. [ছবি আপলোডের সময় রিসাইজিং হ্যান্ডেল করা](#step-3-handle-image-resizing-on-upload)
+4. Cloudinary কোড সরিয়ে `storage` ক্লায়েন্ট দিয়ে প্রতিস্থাপন করা
+
+### ধাপ ১: নতুন একটি R2 বাকেট সেটআপ করা
+
+প্রথমেই, [এই ধাপগুলো](/docs/self-hosting#step-6-set-up-cloudflare-r2) অনুসরণ করে আমরা একটি নতুন R2 বাকেট তৈরি করি।
+
+আমরা আমাদের R2 বাকেটের নাম দিই `dubassets` এবং এটি `Eastern North America (ENAM)` রিজিয়নে তৈরি করি। এছাড়াও, আমাদের R2 বাকেটের এক্সেস ত্বরান্বিত করতে [Cloudflare Cache](https://developers.cloudflare.com/cache/)-এর সুবিধা নেওয়ার জন্য `dubassets.com`-কে পয়েন্ট করে একটি [কাস্টম ডোমেইন সেটআপ করি](https://developers.cloudflare.com/r2/buckets/public-buckets/#custom-domains)।
+
+### ধাপ ২: ইমেজ আপলোড ও ডিলিটের জন্য স্টোরেজ ক্লায়েন্ট তৈরি করা
+
+এরপর, আমরা একটি `storage` ক্লায়েন্ট তৈরি করি যা আমাদের ছবি আপলোড এবং ডিলিট করতে সাহায্য করবে:
+
+ storage.ts 
+
+```
+ import { AwsClient } from "aws4fetch" ; 
+
+ interface imageOptions { 
+ contentType ?: string ; 
+ width ?: number ; 
+ height ?: number ; 
+ } 
+
+ class StorageClient { 
+ private client : AwsClient ; 
+
+ constructor () { 
+ this .client = new AwsClient ({ 
+ accessKeyId: process.env. STORAGE_ACCESS_KEY_ID || "" , 
+ secretAccessKey: process.env. STORAGE_SECRET_ACCESS_KEY || "" , 
+ service: "s3" , 
+ region: "auto" , 
+ }); 
+ } 
+
+ async upload ( key : string , body : Blob | Buffer | string , opts ?: imageOptions ) { 
+ // ... helper functions to format the body 
+
+ const headers = { 
+ "Content-Length" : uploadBody.size. toString (), 
+ }; 
+ if (opts?.contentType) headers[ "Content-Type" ] = opts.contentType; 
+
+ try { 
+ await this .client. fetch ( `${ process . env . STORAGE_ENDPOINT }/${ key }` , { 
+ method: "PUT" , 
+ headers, 
+ body: uploadBody, 
+ }); 
+
+ return { 
+ url: `${ process . env . STORAGE_BASE_URL }/${ key }` , 
+ }; 
+ } catch (error) { 
+ throw new Error ( `Failed to upload file: ${ error . message }` ); 
+ } 
+ } 
+
+ async delete ( key : string ) { 
+ await this .client. fetch ( `${ process . env . STORAGE_ENDPOINT }/${ key }` , { 
+ method: "DELETE" , 
+ }); 
+
+ return { success: true }; 
+ } 
+ } 
+
+ export const storage = new StorageClient (); 
+```
+
+ নোট: আমাদের সমস্ত ইমেজ আপলোড সার্ভার-সাইডে প্রসেস করা হয়, তাই [প্রিসাইনড URL আপলোড](https://docs.aws.amazon.com/AmazonS3/latest/userguide/PresignedUrlUploadObject.html) নিয়ে আমাদের চিন্তা করতে হয়নি।
+
+আপনি হয়তো খেয়াল করেছেন যে আমরা `aws-sdk/client-s3` SDK-এর বদলে `aws4fetch` ব্যবহার করছি। এর পেছনে ২টি কারণ রয়েছে:
+
+1. **এজ-কম্প্যাটিবল (Edge-compatible)**: AWS S3 SDK ডাইরেক্টলি [এজ রানটাইমের](https://vercel.fyi/edge) সাথে কম্প্যাটিবল নয়, যেখানে `aws4fetch` পুরোপুরি সাপোর্টেড। এর কারণ হলো AWS SDK কিছু Node.js API ব্যবহার করে যেগুলো এজ রানটাইমে পাওয়া যায় না।
+2. **সহজ ইন্টারফেস**: `aws4fetch` রিকোয়েস্ট পাঠনোর জন্য বেশ সহজ একটি ইন্টারফেস প্রদান করে, যা আমাদের ব্যবহারের জন্য যথেষ্ট ছিল।
+
+আপনি আমাদের কোডবেসে [এখানে](https://github.com/dubinc/dub/blob/main/apps/web/lib/storage.ts) এই কোডটি দেখতে পারেন।
+
+### ধাপ ৩: আপলোডের সময়ে ইমেজের সাইজ পরিবর্তন (Resizing) হ্যান্ডেল করা
+
+R2-তে অপ্রয়োজনীয় বড় ছবি জমা হওয়া এড়াতে আমাদের আপলোডের সময় ইমেজের আকার ছোট বা রিসাইজ করার প্রয়োজন ছিল। যেহেতু বেশিরভাগ ওপেন গ্রাফ (OG) ইমেজ `1200` x `630` সাইজের হয়, তাই আমরা সব ছবিকে এই মাপে রিসাইজ করার সিদ্ধান্ত নিই।
+
+এটি করার জন্য, সার্ভারে আপলোড করার আগেই আমরা ক্লায়েন্ট-সাইডে ইমেজের সাইজ পরিবর্তন করে নিয়েছিলাম। এই কাজটির জন্য `canvas` API ব্যবহার করা হয়েছে।
+
+ resize-image.ts 
+
+```
+ export const resizeImage = ( 
+ file : File , 
+ opts : { 
+ width : number ; 
+ height : number ; 
+ quality : number ; 
+ } = { 
+ width: 1200 , // Desired output width 
+ height: 630 , // Desired output height 
+ quality: 1.0 , // Set quality to maximum 
+ }, 
+ ) : Promise string > => { 
+ return new Promise (( resolve , reject ) => { 
+ const reader = new FileReader (); 
+ reader. onload = ( e : ProgressEvent FileReader >) => { 
+ const img = new Image (); 
+ img.src = e.target?.result as string ; 
+ img. onload = () => { 
+ const targetWidth = opts.width; 
+ const targetHeight = opts.height; 
+ const canvas = document . createElement ( "canvas" ); 
+ canvas.width = targetWidth; 
+ canvas.height = targetHeight; 
+
+ const ctx = canvas. getContext ( "2d" ) as CanvasRenderingContext2D ; 
+ ctx.imageSmoothingQuality = "high" ; // Set image smoothing quality to high 
+
+ // Calculating the aspect ratio 
+ const sourceWidth = img.width; 
+ const sourceHeight = img.height; 
+ const sourceAspectRatio = sourceWidth / sourceHeight; 
+ const targetAspectRatio = targetWidth / targetHeight; 
+
+ let drawWidth : number ; 
+ let drawHeight : number ; 
+ let offsetX = 0 ; 
+ let offsetY = 0 ; 
+
+ // Adjust drawing sizes based on the aspect ratio 
+ if (sourceAspectRatio > targetAspectRatio) { 
+ // Source is wider 
+ drawHeight = sourceHeight; 
+ drawWidth = sourceHeight * targetAspectRatio; 
+ offsetX = (sourceWidth - drawWidth) / 2 ; 
+ } else { 
+ // Source is taller or has the same aspect ratio 
+ drawWidth = sourceWidth; 
+ drawHeight = sourceWidth / targetAspectRatio; 
+ offsetY = (sourceHeight - drawHeight) / 2 ; 
+ } 
+
+ // Draw the image onto the canvas 
+ ctx. drawImage ( 
+ img, 
+ offsetX, 
+ offsetY, 
+ drawWidth, 
+ drawHeight, 
+ 0 , 
+ 0 , 
+ targetWidth, 
+ targetHeight, 
+ ); 
+
+ // Convert the canvas to a base64 string 
+ const base64Image = canvas. toDataURL ( "image/jpeg" , opts.quality); 
+ resolve (base64Image); 
+ }; 
+ img. onerror = ( error ) => 
+ reject ( new Error ( "Image loading error: " + error)); 
+ }; 
+ reader. onerror = ( error ) => reject ( new Error ( "FileReader error: " + error)); 
+ reader. readAsDataURL (file); 
+ }); 
+ }; 
+```
+
+ আপনারা আমাদের কোডবেসের [এখানে](https://github.com/dubinc/dub/blob/main/apps/web/lib/images.ts) কোডটি দেখে নিতে পারেন।
+
+### ধাপ ৪: Cloudinary কোড সরিয়ে স্টোরেজ ক্লায়েন্ট রিপ্লেস করা
+
+সবকিছু ঠিকঠাক সেটআপ হওয়ার পর, আমরা Cloudinary-এর কোডটি সরিয়ে কেবল আমাদের নতুন `storage` ক্লায়েন্ট ব্যবহার শুরু করি।
+
+নিচের কোডের পরিবর্তে:
+
+ uploader.ts 
+
+```
+ cloudinary.v2.uploader. upload (image, { 
+ public_id: linkId, 
+ overwrite: true , 
+ invalidate: true , 
+ }); 
+```
+
+ আমরা এখন এক লাইনেই কাজ সারতে পারছি:
+
+ uploader.ts 
+
+```
+ storage. upload (linkId, image); 
+```
+
+## মাইগ্রেশন প্রসেস (Migration Process)
+
+ প্রোডাকশনে কোডের পরিবর্তনগুলো পুশ করার পর, Cloudinary-তে থাকা পুরোনো সব ইমেজ R2-তে সরানোর জন্য মাইগ্রেশন রান করার সময় আসে।
+
+আমাদের ব্যবহৃত মাইগ্রেশন স্ক্রিপ্টটি নিচে দেওয়া হলো:
+
+ migrate-images.ts 
+
+```
+ import prisma from "@/lib/prisma" ; 
+ import { storage } from "@/lib/storage" ; 
+ import "dotenv-flow/config" ; 
+
+ async function main () { 
+ const imagesToMigrate = await prisma.link. findMany ({ 
+ where: { 
+ proxy: true , 
+ image: { 
+ startsWith: "https://res.cloudinary.com" , 
+ }, 
+ }, 
+ select: { 
+ id: true , 
+ image: true , 
+ }, 
+ take: 30 , 
+ }); 
+
+ await Promise . allSettled ( 
+ imagesToMigrate. map ( async ( link ) => { 
+ const { url } = await storage. upload ( `images/${ link . id }` , link.image, { 
+ width: 1200 , 
+ height: 630 , 
+ }); 
+
+ await prisma.link. update ({ 
+ where: { 
+ id: link.id, 
+ }, 
+ data: { 
+ image: url, 
+ }, 
+ }); 
+ }), 
+ ); 
+ } 
+
+ main (); 
+```
+
+ রেট লিমিটের মুখোমুখি হওয়া এড়াতে আমরা একসাথে ৩০টি করে ইমেজের ব্যাচে মাইগ্রেশন সম্পন্ন করেছি। মাইগ্রেশনের সময়েও আমরা ছবিগুলোকে `1200` x `630` সাইজে রিসাইজ করেছি।
+
+## সম্ভাব্য সমস্যা: CORS
+
+> CORS: প্রতিটি ওয়েব ডেভেলপারের জীবনের এক পরম বিরক্তির নাম।
+
+মাইগ্রেশনের পর আমরা খেয়াল করলাম যে, ইমেজগুলোতে সরাসরি রিকোয়েস্ট পাঠালে সেগুলো সঠিকভাবে কাজ করলেও, আমাদের [QR কোডে](/help/article/custom-qr-codes) এমবেড করা অবস্থায় সেগুলো লোড হচ্ছিল না।
+
+কিছুটা ডিবাগিং করার পর আমরা বুঝতে পারি যে সমস্যাটির মূল কারণ ছিল CORS। যেহেতু আমরা একটি কাস্টম ডোমেইন ব্যবহার করছিলাম, তাই আমাদের ডোমেইন থেকে রিকোয়েস্ট অ্যালাউ করতে R2 বাকেটে একটি CORS রুল সেটআপ করতে হয়েছিল।
+
+এটি করতে আমাদের [এই গাইডটি](https://developers.cloudflare.com/r2/buckets/cors/) অনুসরন করে নিচের CORS কনফিগারেশন সেট করতে হয়েছে:
+
+```
+ [ 
+ { 
+ "AllowedOrigins" : [ "*" ], 
+ "AllowedMethods" : [ "GET" , "HEAD" ], 
+ "AllowedHeaders" : [ "*" ], 
+ "ExposeHeaders" : [] 
+ } 
+ ] 
+```
+
+ যদি এটিতেও কাজ না হয়, তবে রেসপন্সে `Access-Control-Allow-Origin` হেডার যোগ করার জন্য Cloudflare-এ একটি কাস্টম Transform Rule সেট করার প্রয়োজন হতে পারে ([Cloudflare ফোরামের](https://community.cloudflare.com/t/problem-with-settings-cors-policies-on-r2/432339/18) এই উত্তর অনুযায়ী)।
+
+## Cloudflare R2 দিয়ে স্কেলেবল ও ওপেন-সোর্স বান্ধব ইমেজ হোস্টিং
+
+Cloudflare R2-তে এই মাইগ্রেশনের মাধ্যমে Dub-এর জন্য নতুন যেসব সম্ভাবনার দ্বার উন্মোচিত হয়েছে, তা নিয়ে আমরা সত্যিই বেশ উৎসাহিত। দীর্ঘমেয়াদে খরচ বাঁচানোর পাশাপাশি, এটি আমাদের ওপেন-সোর্স নীতিমালার সাথে সামঞ্জস্যপূর্ণ এবং ব্যবহারকারীদের জন্য Dub সেলফ-হোস্ট করা আরও সহজ করে তোলে।
+
+আমাদের কোডবেস পুরোপুরি ওপেন-সোর্স, তাই নির্দ্বিধায় চেক করতে পারেন এবং কীভাবে আমরা Cloudflare R2 ইমপ্লিমেন্ট করেছি সে সম্পর্কে বিস্তারিত জেনে নিতে পারেন:
+
+আর আপনি যদি একটি সাশ্রয়ী ও স্কেলেবল ইমেজ হোস্টিং সলিউশন খুঁজে থাকেন, তবে আমরা Cloudflare R2 ট্রাই করে দেখার জোর সুপারিশ করছি।

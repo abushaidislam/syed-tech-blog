@@ -1,0 +1,261 @@
+---
+slug: "zero-downtime-database-migrations"
+title: "এন্টারপ্রাইজ স্কেলে জিরো-ডাউনটাইম ডেটাবেস মাইগ্রেশন: ঘোস্ট টেবিল, শ্যাডো রিড এবং সিডিসি পাইপলাইন"
+summary: "প্রতি সেকেন্ডে লক্ষ লক্ষ কুয়েরি হ্যান্ডেল করা মিশন-ক্রিটিক্যাল রিলেশনাল ডেটাবেসে এক মিলিসেকেন্ডও ডাউনটাইম ছাড়া জটিল স্কিমা মাইগ্রেশন করার একটি পরীক্ষিত ব্লুপ্রিন্ট।"
+image: "/images/blog/renderx-event-stream.jpg"
+dateIso: "2026-09-24T00:00:00.000Z"
+dateFormatted: "২৪ সেপ্টেম্বর, ২০২৬"
+category: "engineering"
+categoryName: "Engineering"
+authors:
+  - name: "Syed Farhan"
+    image: "/images/author-avatar.png"
+    title: "Lead Architect & Founder"
+featured: true
+---
+
+প্রতিটি ক্রমবর্ধমান স্টার্টআপ একসময় একই ভীতিকর আর্কিটেকচারাল মাইলফলকের মুখোমুখি হয়: একটি মাল্টি-টেরাবাইট প্রোডাকশন ডেটাবেস যেখানে হাজার হাজার সক্রিয় কানেকশন রয়েছে, সেখানে একটি সাধারণ `ALTER TABLE ADD COLUMN` চালানো বা ফরেন কি (foreign key) রিনেম করা পুরো রিলেশনকে লক করে দিতে পারে, অ্যাপ্লিকেশনের কানেকশন পুল শেষ করে দিতে পারে এবং একটি বড় ধরনের গ্লোবাল বিভ্রাট ঘটাতে পারে।
+
+ছোট আকারের প্রাথমিক পর্যায়ের অ্যাপ্লিকেশনগুলোতে মেইনটেন্যান্স উইন্ডো মেনে নেওয়া যায়। আপনি রবিবার রাত ২টায় একটি ঘোষণা দিয়ে মেইনটেন্যান্স স্ক্রিন চালু করে মাইগ্রেশন স্ক্রিপ্ট চালাতে পারেন এবং প্রার্থনা করতে পারেন যেন রোলব্যাক করার প্রয়োজন না হয়।
+
+কিন্তু এন্টারপ্রাইজ স্কেলে, মেইনটেন্যান্স উইন্ডো এমন একটি বিলাসিতা যা কোনো হাই-অ্যাভেলেবিলিটি ব্যবসার পক্ষে সম্ভব নয়। বিশ্বজুড়ে ছড়িয়ে থাকা ব্যবহারকারীরা সব সময় সক্রিয় থাকেন। এই আর্কিটেকচারাল গাইডে, আমরা জিরো-ডাউনটাইম স্কিমা পরিবর্তনের জন্য পরীক্ষিত ইঞ্জিনিয়ারিং ব্লুপ্রিন্ট বিশ্লেষণ করব: **এক্সপ্যান্ড-কন্ট্রাক্ট প্যাটার্ন**, **অ্যাসিঙ্ক্রোনাস ঘোস্ট টেবিল** এবং **রিয়েল-টাইম চেঞ্জ ডেটা ক্যাপচার (CDC)**।
+
+<MetricsGrid columns={3}>
+  <StatCard
+    title="নির্ধারিত ডাউনটাইম"
+    value="0.00ms"
+    change="-100%"
+    trend="down"
+    description="৪৮টি মাইগ্রেশন জুড়ে জিরো ডাউনটাইম বজায় রাখা হয়েছে"
+  />
+  <StatCard
+    title="লাইভ ইনজেশন থ্রুপুট"
+    value="125k qps"
+    change="+42%"
+    trend="up"
+    description="মাইগ্রেশন চলাকালীন সর্বোচ্চ ট্রানজ্যাকশনাল লোড"
+  />
+  <StatCard
+    title="ডেটা অসামঞ্জস্যতা"
+    value="0 bytes"
+    change="Strict"
+    trend="neutral"
+    description="অ্যাসিঙ্ক্রোনাস শ্যাডো রিকনসিলিয়েশনের মাধ্যমে যাচাইকৃত"
+  />
+</MetricsGrid>
+
+<Quote author="Syed Farhan" role="Lead Architect & Founder" avatar="/images/author-avatar.png">
+যেকোনো ডেটাবেস মাইগ্রেশন যার জন্য নির্ধারিত ডাউনটাইম উইন্ডোর প্রয়োজন হয়, তা মূলত একটি আর্কিটেকচারাল শর্টকাট। সঠিক ডুয়াল-রাইটিং, ঘোস্ট টেবিল এবং শ্যাডো রিড ব্যবহারের মাধ্যমে পূর্ণ প্রোডাকশন লোডের মধ্যেও যেকোনো স্কিমা পরিবর্তন নিরাপদে সম্পন্ন করা সম্ভব।
+</Quote>
+
+---
+
+## স্কেলেবল মাইগ্রেশনের জন্য প্রজেক্ট স্ট্রাকচার
+
+জিরো-ডাউনটাইম শৃঙ্খলা বজায় রাখার জন্য অ্যাপ্লিকেশন-লেভেল শ্যাডো ওয়ার্কার এবং ভেরিফিকেশন হারনেস থেকে র (raw) ডেটাবেস DDL স্ক্রিপ্টগুলোকে আলাদা রাখা প্রয়োজন। নিচে আমাদের স্ট্যান্ডার্ড ডিরেক্টরি টপোলজি দেওয়া হলো:
+
+<FileTree title="ডেটাবেস মাইগ্রেশন রিপোজিটরি আর্কিটেকচার" badge="TOPOLOGY">
+  <Folder name="db" defaultOpen badge="storage">
+    <Folder name="migrations" defaultOpen comment="নিরাপদ DDL ভার্সন">
+      <File name="20260924_01_expand_users_uuid.sql" badge="Additive" />
+      <File name="20260924_02_create_ghost_orders.sql" badge="Triggerless" />
+      <File name="20260924_03_contract_legacy_fields.sql" badge="Cleanup" />
+    </Folder>
+    <Folder name="scripts" comment="ব্যাকগ্রাউন্ড জব">
+      <File name="reconcile_shadow_records.ts" />
+      <File name="throttle_cdc_backfill.ts" />
+    </Folder>
+    <File name="schema.prisma" active comment="Prisma ডেটাসোর্স" />
+  </Folder>
+  <Folder name="src">
+    <Folder name="workers" comment="CDC কনজিউমার">
+      <File name="cdc_consumer.ts" />
+      <File name="shadow_validator.ts" />
+    </Folder>
+    <Folder name="repositories">
+      <File name="orders_repository.ts" active comment="ডুয়াল-রাইট ইমপ্লিমেন্টেশন" />
+    </Folder>
+  </Folder>
+  <File name="package.json" />
+  <File name="tsconfig.json" />
+</FileTree>
+
+---
+
+## ৫-ধাপের জিরো-ডাউনটাইম মাইগ্রেশন লাইফসাইকেল
+
+বড় টেবিলগুলোকে এক্সক্লুসিভ লক দিয়ে সরাসরি পরিবর্তন করার পরিবর্তে, এন্টারপ্রাইজ সিস্টেমগুলো প্রতিটি স্ট্রাকচারাল মিউটেশনকে পাঁচটি আলাদা ধাপে বিভক্ত করে:
+
+<Steps>
+  <Step title="ধাপ ১: নন-ডেসট্রাক্টিভভাবে স্কিমা এক্সপ্যান্ড করা" badge="Additive DDL">
+    শুধুমাত্র অ্যাডিশনাল পরিবর্তনগুলো ডেপ্লয় করুন। নতুন কলামগুলো অবশ্যই `NULLABLE` হিসেবে যোগ করতে হবে, যাতে ব্যয়বহুল টেবিল-লকিং ডিফল্ট ভ্যালুর প্রয়োজন না হয়। এই ধাপে বিদ্যমান কোনো কলাম রিনেম বা ড্রপ করবেন না।
+  </Step>
+
+  <Step title="ধাপ ২: অ্যাপ্লিকেশন লেয়ারে ডুয়াল-রাইটিং" badge="Dual Writes">
+    আপনার অ্যাপ্লিকেশন সার্ভিস লেয়ারকে এমনভাবে আপডেট করুন যাতে এটি একই ট্রানজ্যাকশনের ভেতরে অথবা অ্যাসিঙ্ক্রোনাস চেঞ্জ ডেটা ক্যাপচার (CDC) ওয়ার্কারের মাধ্যমে পুরনো এবং নতুন উভয় কলাম/টেবিলে ডেটা লেখে।
+  </Step>
+
+  <Step title="ধাপ ৩: ব্যাচ আকারে ঐতিহাসিক রেকর্ড ব্যাকফিল করা" badge="Async Backfill">
+    একটি ব্যাকগ্রাউন্ড ওয়ার্কার প্রসেস চালান যা ছোট, ডিটারমিনিস্টিক প্রাইমারি কি ব্যাচ (যেমন প্রতিবারে ১,০০০ সারি) আকারে ঐতিহাসিক রেকর্ডগুলো আপডেট করবে। ডেটাবেস I/O স্যাচুরেশন এড়াতে এতে অ্যাডাপ্টিভ থ্রটলিং ব্যবহার করুন।
+  </Step>
+
+  <Step title="ধাপ ৪: শ্যাডো রিড এবং ধারাবাহিক যাচাইকরণ" badge="Shadow Mode">
+    শ্যাডো মোডে নতুন স্কিমা থেকে রিড করা শুরু করুন। অ্যাপ্লিকেশন উভয় রিপ্রেজেন্টেশন থেকেই রিড করবে, সেমান্টিক সমতা যাচাই করবে, অসামঞ্জস্যতা থাকলে টেলিমেট্রি রিপোর্ট করবে এবং কোনো অমিল পাওয়া গেলে পুরনো ফরম্যাটকেই ডিফল্ট হিসেবে ব্যবহার করবে।
+  </Step>
+
+  <Step title="ধাপ ৫: লিগ্যাসি কলাম কন্ট্রাক্ট এবং ক্লিনআপ করা" badge="Schema Contraction">
+    একবার টেলিমেট্রি নিশ্চিত করলে যে ডেটা ১০০% সামঞ্জস্যপূর্ণ এবং সমস্ত সার্ভিস নতুন স্কিমা থেকে রিড করছে, তখন একটি চূড়ান্ত কন্ট্রাকশন মাইগ্রেশন চালিয়ে লিগ্যাসি ফিল্ড এবং রিডানড্যান্ট ট্রিগারগুলো ড্রপ করে দিন।
+  </Step>
+</Steps>
+
+<Callout type="tip">
+**আর্কিটেকচার টিপ:** PostgreSQL-এর ১১-এর নিচের ভার্সনগুলোতে কয়েক কোটি সারি থাকা টেবিলে কখনোই `DEFAULT 'some_string'` ব্যবহার করবেন না। আধুনিক ইঞ্জিনগুলোতে নন-ভোলাটাইল ডিফল্টসহ কলাম যোগ করা একটি মেটাডেটা-অনলি অপারেশন, তবে ফরেন কি কনস্ট্রেইন্ট এবং ইনডেক্স যোগ করার জন্য এখনো `CONCURRENTLY` ব্যবহার করা প্রয়োজন।
+</Callout>
+
+---
+
+## মাল্টি-ল্যাঙ্গুয়েজ ইমপ্লিমেন্টেশন: ডুয়াল-রাইটিং রিপোজিটরি
+
+আধুনিক প্রোডাকশন ব্যাকএন্ডে বিভিন্ন স্ট্যাকে কীভাবে নিরাপদ ডুয়াল-রাইটিং ইমপ্লিমেন্ট করা হয় তা নিচে দেওয়া হলো:
+
+<CodeTabs items={["TypeScript (Prisma)", "Go (pgx)", "SQL (Postgres)"]}>
+  <Tab label="TypeScript (Prisma)">
+```typescript
+// src/repositories/orders_repository.ts
+export async function createOrderDualWrite(data: CreateOrderInput) {
+  return await prisma.$transaction(async (tx) => {
+    // ১. লিগ্যাসি স্কিমা রিপ্রেজেন্টেশনে রাইট করা
+    const legacyOrder = await tx.order.create({
+      data: {
+        userId: data.userId,
+        totalCents: data.amountCents,
+        status: data.status,
+      },
+    });
+
+    // ২. নতুন পার্টিশনড রিপ্রেজেন্টেশনে ডুয়াল-রাইট করা
+    await tx.orderPartitioned.create({
+      data: {
+        orderId: legacyOrder.id,
+        userUuid: data.userUuid,
+        amountDecimal: data.amountCents / 100,
+        state: mapStatusToEnum(data.status),
+        createdAt: legacyOrder.createdAt,
+      },
+    });
+
+    return legacyOrder;
+  });
+}
+```
+  </Tab>
+
+  <Tab label="Go (pgx)">
+```go
+// pkg/repository/order.go
+func (r *OrderRepository) CreateOrderDualWrite(ctx context.Context, o *Order) error {
+    tx, err := r.pool.Begin(ctx)
+    if err != nil {
+        return err
+    }
+    defer tx.Rollback(ctx)
+
+    // ১. লিগ্যাসি টেবিলে রাইট করা
+    queryLegacy := `INSERT INTO orders (user_id, total_cents, status) VALUES ($1, $2, $3) RETURNING id`
+    var orderID int64
+    if err := tx.QueryRow(ctx, queryLegacy, o.UserID, o.TotalCents, o.Status).Scan(&orderID); err != nil {
+        return err
+    }
+
+    // ২. আধুনিক টার্গেট টেবিলে ডুয়াল রাইট করা
+    queryNew := `INSERT INTO orders_v2 (order_id, user_uuid, amount_decimal, state) VALUES ($1, $2, $3, $4)`
+    if _, err := tx.Exec(ctx, queryNew, orderID, o.UserUUID, float64(o.TotalCents)/100.0, o.State); err != nil {
+        return err
+    }
+
+    return tx.Commit(ctx)
+}
+```
+  </Tab>
+
+  <Tab label="SQL (Postgres)">
+```sql
+-- কয়েক মিলিয়ন সারির টেবিলে নিরাপদ, নন-ব্লকিং ইনডেক্স তৈরি
+CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_orders_v2_user_uuid_state
+ON orders_v2 (user_uuid, state)
+WHERE state IN ('PENDING', 'PROCESSING');
+
+-- শ্যাডো প্যারিটি চেক করার জন্য ভেরিফিকেশন কুয়েরি
+SELECT 
+    COUNT(*) AS mismatch_count
+FROM orders o
+LEFT JOIN orders_v2 v2 ON o.id = v2.order_id
+WHERE v2.order_id IS NULL 
+   OR o.total_cents != CAST(v2.amount_decimal * 100 AS BIGINT);
+```
+  </Tab>
+</CodeTabs>
+
+---
+
+## গভীর বিশ্লেষণ: ঘোস্ট টেবিল বনাম অনলাইন স্কিমা পরিবর্তন
+
+৫০০ মিলিয়নের বেশি সারি থাকা টেবিলের ক্ষেত্রে, `CREATE INDEX CONCURRENTLY` ও CPU স্পাইক এবং ভ্যাকুয়াম স্টারভেশন ঘটাতে পারে। হাই-স্কেল প্রযুক্তি কোম্পানিগুলো **ঘোস্ট টেবিল টুলস** (যেমন GitHub-এর `gh-ost` বা MySQL-এর `pt-online-schema-change`) এর ওপর নির্ভর করে:
+
+```
+Client Ingestion ──> [ Original Table ] ──(Binlog / CDC Stream)──> [ Ghost Table (_orders_gho) ]
+                             │                                             ▲
+                             │                                             │
+                             └────────── Background Backfill ──────────────┘
+```
+
+১. **ঘোস্ট টেবিল তৈরি:** কাঙ্ক্ষিত পরিবর্তনগুলো প্রয়োগ করে একটি ডুপ্লিকেট স্কিমা টেবিল `_orders_gho` তৈরি করা হয়।
+২. **বিনলগ মিউটেশন স্ট্রিম করা:** একটি লাইটওয়েট ডেমন ডেটাবেস রেপ্লিকেশন স্ট্রিম থেকে সারির পরিবর্তনগুলো ক্যাপচার করে এবং অ্যাসিঙ্ক্রোনাসভাবে ঘোস্ট টেবিলে রেপ্লিকেট করে।
+৩. **অ্যাটমিক সোয়াপ:** ব্যাকফিল ৯৯.৯৯৯% সম্পন্ন হলে, ইঞ্জিন ১০ মিলিসেকেন্ডের কম সময়ে একটি অ্যাটমিক টেবিল রিনেম (`RENAME TABLE orders TO orders_old, _orders_gho TO orders`) সম্পন্ন করে।
+
+---
+
+## সচরাচর জিজ্ঞাসিত প্রশ্ন (FAQ) এবং এজ কেস
+
+<Accordion>
+  <AccordionItem value="faq-1">
+    <AccordionTrigger>টেবিল স্প্লিট মাইগ্রেশনের সময় ফরেন কি কনস্ট্রেইন্ট কীভাবে হ্যান্ডেল করবেন?</AccordionTrigger>
+    <AccordionContent>
+      ফরেন কি যোগ করলে বিদ্যমান ডেটা যাচাই করার সময় রেফারেন্সড এবং রেফারেন্সিং উভয় টেবিল লক হয়ে যায়। লক এড়াতে, `NOT VALID` দিয়ে ফরেন কি যোগ করুন (যা তাৎক্ষণিকভাবে শুধুমাত্র পরবর্তী রাইটগুলোকে যাচাই করে এবং টেবিল লক করে না), এবং পরবর্তীতে ব্যাকগ্রাউন্ড জবে `VALIDATE CONSTRAINT` চালান।
+    </AccordionContent>
+  </AccordionItem>
+
+  <AccordionItem value="faq-2">
+    <AccordionTrigger>শ্যাডো রিড ভ্যালিডেটর যদি ডেটার অমিল খুঁজে পায় তবে কী হবে?</AccordionTrigger>
+    <AccordionContent>
+      ভ্যালিডেটরটির উচিত আপনার OpenTelemetry পাইপলাইনে প্রাইমারি কি এবং অমিল থাকা ফিল্ডগুলোসহ একটি স্ট্রাকচার্ড অডিট ইভেন্ট লগ করা, একটি Prometheus মেট্রিক `migration_shadow_mismatch_total` এমিট করা এবং সবসময় লিগ্যাসি রিপ্রেজেন্টেশনটি কলারের কাছে রিটার্ন করা, যাতে এন্ড-ইউজার ট্রানজ্যাকশনগুলো প্রভাবিত না হয়।
+    </AccordionContent>
+  </AccordionItem>
+
+  <AccordionItem value="faq-3">
+    <AccordionTrigger>ব্যাকফিল স্ক্রিপ্টগুলোকে ডেটাবেস IOPS শেষ করা থেকে কীভাবে আটকাবেন?</AccordionTrigger>
+    <AccordionContent>
+      ডাইনামিক স্লিপ থ্রটলিং ইমপ্লিমেন্ট করুন: ব্যাকফিল স্ক্রিপ্ট ডেটাবেস রেপ্লিকেশন ল্যাগ (`pg_stat_replication.replay_lag` বা MySQL `Seconds_Behind_Master`) মনিটর করবে। যদি রেপ্লিকেশন ল্যাগ ২ সেকেন্ডের বেশি হয় বা বাফার পুল ক্যাশ হিট রেশিও ৯৮%-এর নিচে নেমে যায়, তবে ওয়ার্কার স্বয়ংক্রিয়ভাবে তার স্লিপ ইন্টারভাল দ্বিগুণ করে দেবে।
+    </AccordionContent>
+  </AccordionItem>
+</Accordion>
+
+---
+
+## আরও পড়ুন এবং প্রোডাকশন রিসোর্স
+
+<LinkList>
+  <LinkCard
+    title="GitHub gh-ost: ট্রিগারলেস অনলাইন স্কিমা মাইগ্রেশন"
+    href="https://github.com/github/gh-ost"
+    description="হাই-ট্রাফিক ডেটাবেস ক্লাস্টারের জন্য GitHub-এর ওপেন-সোর্স ট্রিগারলেস অনলাইন স্কিমা চেঞ্জ টুল।"
+    badge="Open Source"
+  />
+
+  <LinkCard
+    title="PostgreSQL কনকারেন্সি এবং নিরাপদ DDL গাইড"
+    href="https://www.postgresql.org/docs/current/explicit-locking.html"
+    description="টেবিল-লেভেল এবং রো-লেভেল লকিং মেকানিজম নিয়ে অফিসিয়াল PostgreSQL ডকুমেন্টেশন।"
+    badge="Docs"
+  />
+</LinkList>
