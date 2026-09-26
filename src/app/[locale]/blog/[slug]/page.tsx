@@ -8,6 +8,7 @@ import {
   frontmatterToBlogPostMeta,
 } from "@/lib/blog";
 import { PostLayout } from "@/components/blog/post-layout";
+import { PageTransition } from "@/components/layout/page-transition";
 import { blogMdxComponents } from "@/components/blog/mdx-components";
 import { siteConfig } from "@/config/site";
 import {
@@ -147,71 +148,73 @@ export default async function BlogPostPage({
   });
 
   return (
-    <main className="min-h-screen bg-white">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify([
-            {
-              "@context": "https://schema.org",
-              "@type": "BlogPosting",
-              "@id": `${postUrl}#article`,
-              headline: post.title,
-              description: post.summary,
-              url: postUrl,
-              inLanguage: locale === "bn" ? "bn-BD" : "en-US",
-              articleSection: post.category.name,
-              keywords: [post.category.name, ...(post.keywords || []), ...(post.tags || [])].join(", "),
-              wordCount,
-              timeRequired: `PT${readingTimeMinutes}M`,
-              datePublished: post.dateIso,
-              dateModified: post.updatedAt || post.dateIso,
-              ...(imageUrl ? { image: [imageUrl] } : {}),
-              author: post.authors.map((author) => ({
-                "@type": "Person",
-                name: author.name,
-                ...(author.image
-                  ? { image: new URL(author.image, siteConfig.url).toString() }
-                  : {}),
-              })),
-              publisher: {
-                "@type": "Person",
-                name: siteConfig.author.name,
-                url: siteConfig.url,
-                logo: {
-                  "@type": "ImageObject",
-                  url: new URL(siteConfig.author.image, siteConfig.url).toString(),
+    <PageTransition>
+      <main className="min-h-screen bg-white">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify([
+              {
+                "@context": "https://schema.org",
+                "@type": "BlogPosting",
+                "@id": `${postUrl}#article`,
+                headline: post.title,
+                description: post.summary,
+                url: postUrl,
+                inLanguage: locale === "bn" ? "bn-BD" : "en-US",
+                articleSection: post.category.name,
+                keywords: [post.category.name, ...(post.keywords || []), ...(post.tags || [])].join(", "),
+                wordCount,
+                timeRequired: `PT${readingTimeMinutes}M`,
+                datePublished: post.dateIso,
+                dateModified: post.updatedAt || post.dateIso,
+                ...(imageUrl ? { image: [imageUrl] } : {}),
+                author: post.authors.map((author) => ({
+                  "@type": "Person",
+                  name: author.name,
+                  ...(author.image
+                    ? { image: new URL(author.image, siteConfig.url).toString() }
+                    : {}),
+                })),
+                publisher: {
+                  "@type": "Person",
+                  name: siteConfig.author.name,
+                  url: siteConfig.url,
+                  logo: {
+                    "@type": "ImageObject",
+                    url: new URL(siteConfig.author.image, siteConfig.url).toString(),
+                  },
+                },
+                mainEntityOfPage: {
+                  "@type": "WebPage",
+                  "@id": postUrl,
                 },
               },
-              mainEntityOfPage: {
-                "@type": "WebPage",
-                "@id": postUrl,
+              {
+                "@context": "https://schema.org",
+                "@type": "BreadcrumbList",
+                itemListElement: [
+                  { "@type": "ListItem", position: 1, name: "Home", item: `${siteConfig.url}/${locale}` },
+                  { "@type": "ListItem", position: 2, name: "Blog", item: `${siteConfig.url}/${locale}/blog` },
+                  {
+                    "@type": "ListItem",
+                    position: 3,
+                    name: post.category.name,
+                    item: `${siteConfig.url}/${locale}/blog/category/${post.category.slug}`,
+                  },
+                  { "@type": "ListItem", position: 4, name: post.title, item: postUrl },
+                ],
               },
-            },
-            {
-              "@context": "https://schema.org",
-              "@type": "BreadcrumbList",
-              itemListElement: [
-                { "@type": "ListItem", position: 1, name: "Home", item: `${siteConfig.url}/${locale}` },
-                { "@type": "ListItem", position: 2, name: "Blog", item: `${siteConfig.url}/${locale}/blog` },
-                {
-                  "@type": "ListItem",
-                  position: 3,
-                  name: post.category.name,
-                  item: `${siteConfig.url}/${locale}/blog/category/${post.category.slug}`,
-                },
-                { "@type": "ListItem", position: 4, name: post.title, item: postUrl },
-              ],
-            },
-          ]),
-        }}
-      />
-      <PostLayout
-        post={post}
-        relatedPosts={relatedPosts}
-        mdxContent={mdxContent}
-        postUrl={postUrl}
-      />
-    </main>
+            ]),
+          }}
+        />
+        <PostLayout
+          post={post}
+          relatedPosts={relatedPosts}
+          mdxContent={mdxContent}
+          postUrl={postUrl}
+        />
+      </main>
+    </PageTransition>
   );
 }

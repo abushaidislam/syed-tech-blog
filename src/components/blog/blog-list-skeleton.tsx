@@ -1,6 +1,16 @@
+"use client";
+
+import { motion } from "motion/react";
+
 export function BlogListSkeleton() {
   return (
-    <main className="min-h-screen bg-white">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.18, ease: "easeOut" }}
+      className="w-full"
+    >
+      <main className="min-h-screen bg-white">
       {/* Blog Header Skeleton with Grid Pattern */}
       <div className="grid-section relative overflow-clip border-b border-grid-border px-4">
         <div className="relative z-0 mx-auto max-w-grid-width border-x border-grid-border px-4 py-16 sm:px-12">
@@ -139,5 +149,6 @@ export function BlogListSkeleton() {
         <div className="relative z-0 mx-auto h-12 max-w-grid-width border-x border-grid-border sm:h-20" />
       </div>
     </main>
+    </motion.div>
   );
 }

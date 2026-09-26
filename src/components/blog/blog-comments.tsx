@@ -78,17 +78,19 @@ export function BlogComments({
           {mounted ? (
             <Giscus
               id="blog-comments"
+              key={postSlug}
               repo={repo}
               repoId={repoId}
               category={category}
               categoryId={categoryId}
-              mapping="pathname"
+              mapping="specific"
+              term={`blog/${postSlug}`}
               strict="0"
               reactionsEnabled="1"
               emitMetadata="0"
               inputPosition="top"
               theme={themeUrl}
-              lang={locale === "bn" ? "bn" : "en"}
+              lang="en"
               loading="lazy"
             />
           ) : (

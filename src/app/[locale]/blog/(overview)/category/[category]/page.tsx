@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { BlogHeader } from "@/components/blog/blog-header";
 import { BlogGrid } from "@/components/blog/blog-grid";
 import { BlogBottomCTA } from "@/components/blog/blog-bottom-cta";
+import { PageTransition } from "@/components/layout/page-transition";
 import { siteConfig } from "@/config/site";
 import {
   BLOG_CATEGORIES,
@@ -126,28 +127,30 @@ export default async function BlogCategoryPage({
   const categoryUrl = `${siteConfig.url}/${locale}/blog/category/${category.slug}`;
 
   return (
-    <main className="min-h-screen bg-white">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "BreadcrumbList",
-            itemListElement: [
-              { "@type": "ListItem", position: 1, name: "Home", item: `${siteConfig.url}/${locale}` },
-              { "@type": "ListItem", position: 2, name: "Blog", item: `${siteConfig.url}/${locale}/blog` },
-              { "@type": "ListItem", position: 3, name: displayName, item: categoryUrl },
-            ],
-          }),
-        }}
-      />
-      <BlogHeader
-        title={displayName}
-        description={displayDesc}
-        activeCategory={category.slug}
-      />
-      <BlogGrid posts={posts} />
-      <BlogBottomCTA />
-    </main>
+    <PageTransition>
+      <main className="min-h-screen bg-white">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "BreadcrumbList",
+              itemListElement: [
+                { "@type": "ListItem", position: 1, name: "Home", item: `${siteConfig.url}/${locale}` },
+                { "@type": "ListItem", position: 2, name: "Blog", item: `${siteConfig.url}/${locale}/blog` },
+                { "@type": "ListItem", position: 3, name: displayName, item: categoryUrl },
+              ],
+            }),
+          }}
+        />
+        <BlogHeader
+          title={displayName}
+          description={displayDesc}
+          activeCategory={category.slug}
+        />
+        <BlogGrid posts={posts} />
+        <BlogBottomCTA />
+      </main>
+    </PageTransition>
   );
 }
