@@ -1,0 +1,128 @@
+---
+slug: "the-basel-problem-eulers-solution"
+title: "The Basel Problem: Euler's Ingenious Solution"
+summary: "How a 28-year-old Leonhard Euler solved one of the most famous open mathematical questions of the 18th century by connecting infinite series of reciprocal squares to pi."
+image: "/images/blog/the-basel-problem-eulers-solution.jpg"
+dateIso: "2024-08-15T00:00:00.000Z"
+dateFormatted: "August 15, 2024"
+category: "mathematics"
+categoryName: "Mathematics"
+authors:
+  - name: "Syed Farhan"
+    image: "/images/author-avatar.png"
+    title: "Lead Architect & Founder"
+---
+
+In 1650, the Italian mathematician Pietro Mengoli posed a deceptively simple question that would baffle the brightest minds in Europe for nearly a century:
+
+**What is the exact sum of the reciprocals of the squares of all positive integers?**
+
+In mathematical terms, what is the value of the infinite series:
+
+$$1 + \frac{1}{4} + \frac{1}{9} + \frac{1}{16} + \frac{1}{25} + \dots = \sum_{n=1}^{\infty} \frac{1}{n^2}$$
+
+This challenge became known as the **Basel Problem**, named after Basel, Switzerland—the hometown of the illustrious Bernoulli family of mathematicians. Despite their fierce intellectual rivalries and immense mathematical genius, Jacob, Johann, and Daniel Bernoulli could not find the exact closed form. Jacob Bernoulli famously wrote in 1689: *"If anyone finds and communicates to us that which has hitherto eluded our efforts, great will be our gratitude."*
+
+Then, in 1734, a 28-year-old Swiss mathematician named **Leonhard Euler** delivered a breathtaking solution that stunned the scientific world.
+
+---
+
+## The Mystery Behind the Series
+
+It was already proven by Pietro Mengoli and Jacob Bernoulli that the series converges to a finite number less than 2 (specifically between 1.5 and 1.7). Numerical approximations could estimate the value accurately (around $1.644934\dots$), but no one could determine the *exact* mathematical expression behind it.
+
+Why was it so difficult? Most known series summation methods at the time relied on telescoping series or geometric series. The reciprocal square series resisted all conventional techniques.
+
+When Euler published his paper *De summis serierum reciprocarum* ("On the sums of series of reciprocals"), he didn't just solve the problem—he revealed an astounding connection between the discrete counting numbers and the geometry of circles:
+
+$$\sum_{n=1}^{\infty} \frac{1}{n^2} = \frac{\pi^2}{6}$$
+
+Where did $\pi$ come from in a problem about basic numbers and squares?
+
+---
+
+## Euler’s Brilliant Insight: Polynomials to Infinite Series
+
+Euler’s original proof was bold, audacious, and wildly creative. He treated infinite polynomial-like functions (Taylor series) with the same rules that govern finite algebra and polynomial roots.
+
+### Step 1: The Taylor Series of $\sin(x)$
+
+Recall the Taylor series expansion for the sine function:
+
+$$\sin(x) = x - \frac{x^3}{3!} + \frac{x^5}{5!} - \frac{x^7}{7!} + \dots$$
+
+Euler divided both sides by $x$ to create a new function:
+
+$$\frac{\sin(x)}{x} = 1 - \frac{x^2}{3!} + \frac{x^4}{5!} - \frac{x^6}{7!} + \dots$$
+
+Notice that when $x \to 0$, $\frac{\sin(x)}{x} \to 1$.
+
+### Step 2: Roots of the Equation
+
+Next, Euler asked: *Where is $\frac{\sin(x)}{x} = 0$?*
+
+Since $\sin(x) = 0$ at $x = \pm \pi, \pm 2\pi, \pm 3\pi, \dots$ (excluding $x = 0$ because we divided by $x$), the roots of $\frac{\sin(x)}{x} = 0$ are precisely:
+
+$$x = \pm \pi, \pm 2\pi, \pm 3\pi, \dots$$
+
+### Step 3: Factoring like a Finite Polynomial
+
+In algebra, if a polynomial $P(x)$ has roots $r_1, r_2, \dots, r_n$ and $P(0) = 1$, it can be factored as:
+
+$$P(x) = \left(1 - \frac{x}{r_1}\right)\left(1 - \frac{x}{r_2}\right)\dots\left(1 - \frac{x}{r_n}\right)$$
+
+Euler boldly extended this finite rule to the infinite polynomial $\frac{\sin(x)}{x}$. Paired with roots $+k\pi$ and $-k\pi$, each term becomes:
+
+$$\left(1 - \frac{x}{k\pi}\right)\left(1 + \frac{x}{k\pi}\right) = \left(1 - \frac{x^2}{k^2\pi^2}\right)$$
+
+Factoring over all roots $k = 1, 2, 3, \dots$, Euler wrote:
+
+$$\frac{\sin(x)}{x} = \left(1 - \frac{x^2}{\pi^2}\right)\left(1 - \frac{x^2}{4\pi^2}\right)\left(1 - \frac{x^2}{9\pi^2}\right)\dots$$
+
+---
+
+## Step 4: Comparing Coefficients
+
+Now Euler had two different expressions for $\frac{\sin(x)}{x}$:
+
+1. **Taylor Series Expansion:**
+   $$\frac{\sin(x)}{x} = 1 - \frac{x^2}{6} + \frac{x^4}{120} - \dots$$
+
+2. **Infinite Product Expansion:**
+   $$\frac{\sin(x)}{x} = \left(1 - \frac{x^2}{\pi^2}\right)\left(1 - \frac{x^2}{4\pi^2}\right)\left(1 - \frac{x^2}{9\pi^2}\right)\dots$$
+
+If you expand the infinite product, the coefficient of the $x^2$ term comes from picking $- \frac{x^2}{k^2\pi^2}$ from one factor and $1$ from all the rest. Thus, the coefficient of $x^2$ in the product is:
+
+$$-\left(\frac{1}{\pi^2} + \frac{1}{4\pi^2} + \frac{1}{9\pi^2} + \dots\right) = -\frac{1}{\pi^2} \sum_{n=1}^{\infty} \frac{1}{n^2}$$
+
+Comparing this directly to the coefficient of $x^2$ in the Taylor series (which is $-\frac{1}{6}$):
+
+$$-\frac{1}{\pi^2} \sum_{n=1}^{\infty} \frac{1}{n^2} = -\frac{1}{6}$$
+
+Multiply both sides by $-\pi^2$:
+
+$$\sum_{n=1}^{\infty} \frac{1}{n^2} = \frac{\pi^2}{6}$$
+
+---
+
+## Historical Impact and Rigor
+
+While Euler's heuristic step of treating infinite series as infinite polynomials was not fully rigorous by 19th-century standards (it required Weierstrass's Factorization Theorem to formalize over a century later), it was unmistakably correct.
+
+Later in 1741, Euler provided a completely rigorous second proof using double integrals, silencing all remaining skeptics.
+
+Furthermore, Euler didn't stop at $n=2$. He went on to find the sums for all even powers:
+
+$$\sum_{n=1}^{\infty} \frac{1}{n^4} = \frac{\pi^4}{90}$$
+
+$$\sum_{n=1}^{\infty} \frac{1}{n^6} = \frac{\pi^6}{945}$$
+
+This discovery laid the groundwork for the **Riemann Zeta Function**, $\zeta(s) = \sum_{n=1}^{\infty} \frac{1}{n^s}$, which remains one of the most vital areas of modern number theory and quantum physics today.
+
+---
+
+## Conclusion
+
+The Basel Problem is a triumph of mathematical intuition and elegance. Euler saw beyond the limits of contemporary techniques, linking integer arithmetic with circle geometry in a single stroke of genius.
+
+The result, $\frac{\pi^2}{6}$, stands as a timeless reminder of the surprising, interconnected beauty hidden within mathematics.
