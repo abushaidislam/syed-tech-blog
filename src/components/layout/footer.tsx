@@ -50,7 +50,7 @@ interface StatusBadgeProps {
 }
 
 export function LiveStatusBadge({ className }: StatusBadgeProps) {
-  const { locale } = useLocale();
+  const { locale, dict } = useLocale();
   return (
     <Link
       href={`/${locale}/blog`}
@@ -64,7 +64,7 @@ export function LiveStatusBadge({ className }: StatusBadgeProps) {
         <span className="relative inline-flex size-2 rounded-full bg-emerald-500" />
       </div>
       <p className="text-xs font-medium leading-none text-neutral-700 transition-colors group-hover:text-neutral-900">
-        Fresh writing, thoughtfully published
+        {dict.footer.freshWriting}
       </p>
     </Link>
   );
@@ -97,54 +97,59 @@ const navigation = {
   product: [
     {
       name: "Engineering",
+      translationKey: "engineering",
       href: "/blog/category/engineering",
       icon: Terminal,
       color: "bg-blue-50 text-blue-600 border-blue-200",
     },
     {
       name: "Architecture",
+      translationKey: "architecture",
       href: "/blog/category/engineering",
       icon: Cpu,
       color: "bg-purple-50 text-purple-600 border-purple-200",
     },
     {
       name: "Cloud Edge",
+      translationKey: "cloudEdge",
       href: "/blog/category/engineering",
       icon: Layers,
       color: "bg-emerald-50 text-emerald-600 border-emerald-200",
     },
     {
       name: "AI & Automation",
+      translationKey: "aiAutomation",
       href: "/blog/category/company",
       icon: Sparkles,
       color: "bg-amber-50 text-amber-600 border-amber-200",
     },
   ],
   categories: [
-    { name: "Company News", href: "/blog/category/company" },
-    { name: "Education", href: "/blog/category/education" },
-    { name: "Engineering", href: "/blog/category/engineering" },
-    { name: "Customer Stories", href: "/blog/category/customers" },
-    { name: "All Articles", href: "/blog" },
+    { name: "Company News", translationKey: "companyNews", href: "/blog/category/company" },
+    { name: "Education", translationKey: "education", href: "/blog/category/education" },
+    { name: "Engineering", translationKey: "engineering", href: "/blog/category/engineering" },
+    { name: "Customer Stories", translationKey: "customers", href: "/blog/category/customers" },
+    { name: "All Articles", translationKey: "allArticles", href: "/blog" },
   ],
   resources: [
-    { name: "Tutorials & Guides", href: "/blog/category/education" },
-    { name: "Changelog", href: "/blog" },
-    { name: "Tech Stack", href: "/blog" },
-    { name: "Documentation", href: "/blog" },
+    { name: "Tutorials & Guides", translationKey: "tutorials", href: "/blog/category/education" },
+    { name: "Changelog", translationKey: "changelog", href: "/blog" },
+    { name: "Tech Stack", translationKey: "techStack", href: "/blog" },
+    { name: "Documentation", translationKey: "documentation", href: "/blog" },
     {
       name: "Source Code",
+      translationKey: "sourceCode",
       href: siteConfig.links.github,
       external: true,
     },
   ],
   company: [
-    { name: "About Syed Blog", href: "/blog" },
-    { name: "Authors & Team", href: "/blog" },
-    { name: "Careers", href: "/blog" },
-    { name: "Contact", href: "/blog" },
-    { name: "Privacy Policy", href: "/blog" },
-    { name: "Terms of Service", href: "/blog" },
+    { name: "About Syed Blog", translationKey: "about", href: "/blog" },
+    { name: "Authors & Team", translationKey: "authors", href: "/blog" },
+    { name: "Careers", translationKey: "careers", href: "/blog" },
+    { name: "Contact", translationKey: "contact", href: "/blog" },
+    { name: "Privacy Policy", translationKey: "privacy", href: "/blog" },
+    { name: "Terms of Service", translationKey: "terms", href: "/blog" },
   ],
 };
 
@@ -154,7 +159,7 @@ const linkItemClass =
   "group flex items-center gap-2 text-sm text-neutral-500 transition-colors hover:text-neutral-900 focus-visible:rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900 focus-visible:ring-offset-2";
 
 export function Footer() {
-  const { locale } = useLocale();
+  const { locale, dict } = useLocale();
   const toLocaleHref = (href: string) => (href.startsWith("http") ? href : `/${locale}${href}`);
 
   return (
@@ -248,7 +253,7 @@ export function Footer() {
               <div className="grid grid-cols-2 lg:col-span-8 sm:grid-cols-4">
                 {/* Topics */}
                 <div className="border-b border-r border-grid-border bg-white/35 p-6 sm:border-b sm:p-8">
-                  <h3 className={linkHeaderClass}>{locale === "bn" ? "বিষয়সমূহ" : "Topics"}</h3>
+                  <h3 className={linkHeaderClass}>{dict.footer.topics}</h3>
                   <ul role="list" className={linkListClass}>
                     {navigation.product.map((item) => {
                       const Icon = item.icon;
@@ -263,7 +268,7 @@ export function Footer() {
                             >
                               <Icon className="size-3" />
                             </span>
-                            <span>{item.name}</span>
+                            <span>{dict.footer.links[item.translationKey as keyof typeof dict.footer.links]}</span>
                           </Link>
                         </li>
                       );
@@ -273,12 +278,12 @@ export function Footer() {
 
                 {/* Categories */}
                 <div className="border-b border-grid-border bg-white/35 p-6 sm:border-r sm:p-8">
-                  <h3 className={linkHeaderClass}>{locale === "bn" ? "ক্যাটাগরি" : "Categories"}</h3>
+                  <h3 className={linkHeaderClass}>{dict.footer.categories}</h3>
                   <ul role="list" className={linkListClass}>
                     {navigation.categories.map((item) => (
                       <li key={item.name}>
                         <Link href={toLocaleHref(item.href)} className={linkItemClass}>
-                          {item.name}
+                          {dict.footer.links[item.translationKey as keyof typeof dict.footer.links]}
                         </Link>
                       </li>
                     ))}
@@ -287,7 +292,7 @@ export function Footer() {
 
                 {/* Resources */}
                 <div className="border-b border-r border-grid-border bg-white/35 p-6 sm:border-b-0 sm:p-8">
-                  <h3 className={linkHeaderClass}>{locale === "bn" ? "রিসোর্স" : "Resources"}</h3>
+                  <h3 className={linkHeaderClass}>{dict.footer.resources}</h3>
                   <ul role="list" className={linkListClass}>
                     {navigation.resources.map((item) => (
                       <li key={item.name}>
@@ -297,7 +302,7 @@ export function Footer() {
                           rel={item.external ? "noreferrer" : undefined}
                           className={linkItemClass}
                         >
-                          <span>{item.name}</span>
+                          <span>{dict.footer.links[item.translationKey as keyof typeof dict.footer.links]}</span>
                           {item.external && (
                             <ArrowUpRight className="size-3.5 opacity-60 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:opacity-100" />
                           )}
@@ -309,12 +314,12 @@ export function Footer() {
 
                 {/* Company */}
                 <div className="border-b border-grid-border bg-white/35 p-6 sm:border-b-0 sm:p-8">
-                  <h3 className={linkHeaderClass}>{locale === "bn" ? "কোম্পানি" : "Company"}</h3>
+                  <h3 className={linkHeaderClass}>{dict.footer.company}</h3>
                   <ul role="list" className={linkListClass}>
                     {navigation.company.map((item) => (
                       <li key={item.name}>
                         <Link href={toLocaleHref(item.href)} className={linkItemClass}>
-                          {item.name}
+                          {dict.footer.links[item.translationKey as keyof typeof dict.footer.links]}
                         </Link>
                       </li>
                     ))}
@@ -369,7 +374,7 @@ export function Footer() {
                     </text>
                   </svg>
                   <span className="text-[11px] font-medium text-neutral-600">
-                    Made for builders
+                    {dict.footer.builtForBuilders}
                   </span>
                 </div>
               </div>
@@ -377,7 +382,7 @@ export function Footer() {
               {/* Copyright */}
               <div className="p-5 sm:px-8">
                 <p className="text-xs text-neutral-400 sm:text-right">
-                  © {new Date().getFullYear()} Syed Blog. {locale === "bn" ? "সর্বস্বত্ব সংরক্ষিত।" : "All rights reserved."}
+                  © {new Date().getFullYear()} Syed Blog. {dict.footer.copyright}
                 </p>
               </div>
             </div>

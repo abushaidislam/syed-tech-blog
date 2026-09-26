@@ -34,7 +34,8 @@
     "copied": "Copied!",
     "backToArticles": "Back to all articles",
     "readingTime": "Reading time",
-    "articleFallbackNotice": "This article is currently displayed in English. Bengali translation will be available soon."
+    "articleFallbackNotice": "This article is currently displayed in English. Bengali translation will be available soon.",
+    "articleFallbackDetails": "We are adding Bengali versions of all articles. For now, you can read the original English version."
   },
   "cta": {
     "title": "Ready to build something extraordinary?",
@@ -43,6 +44,33 @@
   },
   "footer": {
     "copyright": "All rights reserved.",
-    "builtWith": "Crafted with Next.js, Tailwind CSS & MDX."
+    "builtWith": "Crafted with Next.js, Tailwind CSS & MDX.",
+    "freshWriting": "Fresh writing, thoughtfully published",
+    "builtForBuilders": "Made for builders",
+    "topics": "Topics",
+    "categories": "Categories",
+    "resources": "Resources",
+    "company": "Company",
+    "links": {
+      "engineering": "Engineering",
+      "architecture": "Architecture",
+      "cloudEdge": "Cloud Edge",
+      "aiAutomation": "AI & Automation",
+      "companyNews": "Company News",
+      "education": "Education",
+      "customers": "Customer Stories",
+      "allArticles": "All Articles",
+      "tutorials": "Tutorials & Guides",
+      "changelog": "Changelog",
+      "techStack": "Tech Stack",
+      "documentation": "Documentation",
+      "sourceCode": "Source Code",
+      "about": "About Syed Blog",
+      "authors": "Authors & Team",
+      "careers": "Careers",
+      "contact": "Contact",
+      "privacy": "Privacy Policy",
+      "terms": "Terms of Service"
+    }
   }
 }

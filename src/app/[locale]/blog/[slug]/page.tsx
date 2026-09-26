@@ -53,7 +53,7 @@ export async function generateMetadata({
   }
 
   const post = frontmatterToBlogPostMeta(postMdx.frontmatter, locale);
-  const relativeOgUrl = post.image || `/blog/${post.slug}/opengraph-image`;
+  const relativeOgUrl = post.image || `/${locale}/blog/${post.slug}/opengraph-image`;
   const absoluteOgUrl = new URL(relativeOgUrl, siteConfig.url).toString();
   const canonicalUrl = `${siteConfig.url}/${locale}/blog/${post.slug}`;
   const truncatedSummary = truncateDescription(post.summary);

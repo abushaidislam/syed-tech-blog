@@ -4,10 +4,8 @@ on:
   push:
     branches:
       - main
-      - 'feature/**'
     paths:
       - 'content/blog/**'
-  workflow_dispatch:
 
 concurrency:
   group: auto-translate-${{ github.ref }}

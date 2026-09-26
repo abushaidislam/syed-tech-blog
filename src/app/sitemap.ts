@@ -9,21 +9,25 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const latestDate = new Date();
 
   const blogPostRoutes: MetadataRoute.Sitemap = slugs.flatMap((slug) => {
-    const postEn = getBlogPostBySlug(slug, "en");
+    const localizedPosts = LOCALES.flatMap((locale) => {
+      const post = getBlogPostBySlug(slug, locale);
+      return post && !post.isFallback ? [{ locale, post }] : [];
+    });
+    const postEn = localizedPosts.find(({ locale }) => locale === "en")?.post;
     const lastMod = postEn
       ? new Date(postEn.frontmatter.updatedAt || postEn.frontmatter.dateIso)
       : latestDate;
+    const availableLanguages = Object.fromEntries(
+      localizedPosts.map(({ locale }) => [locale, `${siteConfig.url}/${locale}/blog/${slug}`]),
+    );
 
-    return LOCALES.map((locale) => ({
+    return localizedPosts.map(({ locale }) => ({
       url: `${siteConfig.url}/${locale}/blog/${slug}`,
       lastModified: lastMod,
       changeFrequency: "weekly",
       priority: 0.8,
       alternates: {
-        languages: {
-          en: `${siteConfig.url}/en/blog/${slug}`,
-          bn: `${siteConfig.url}/bn/blog/${slug}`,
-        },
+        languages: availableLanguages,
       },
     }));
   });

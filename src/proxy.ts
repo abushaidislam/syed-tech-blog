@@ -59,7 +59,7 @@ function detectLocaleFromRequest(request: NextRequest): Locale {
   return DEFAULT_LOCALE;
 }
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const { pathname, search } = request.nextUrl;
 
   // Skip public assets, Next.js internal paths, and static files

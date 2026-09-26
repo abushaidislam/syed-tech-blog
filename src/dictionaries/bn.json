@@ -34,7 +34,8 @@
     "copied": "কপি সম্পন্ন!",
     "backToArticles": "সকল প্রবন্ধে ফিরে যান",
     "readingTime": "পড়ার সময়",
-    "articleFallbackNotice": "এই প্রবন্ধটি বর্তমানে মূল ইংরেজি সংস্করণে প্রদর্শিত হচ্ছে।"
+    "articleFallbackNotice": "এই প্রবন্ধটি বর্তমানে মূল ইংরেজি সংস্করণে প্রদর্শিত হচ্ছে।",
+    "articleFallbackDetails": "আমরা সমস্ত প্রবন্ধের বাংলা সংস্করণ যুক্ত করছি। আপাতত মূল ইংরেজি সংস্করণটি পড়তে পারেন।"
   },
   "cta": {
     "title": "নতুন কিছু অসাধারণ তৈরি করতে প্রস্তুত?",
@@ -43,6 +44,33 @@
   },
   "footer": {
     "copyright": "সর্বস্বত্ব সংরক্ষিত।",
-    "builtWith": "Next.js, Tailwind CSS ও MDX দিয়ে নির্মিত।"
+    "builtWith": "Next.js, Tailwind CSS ও MDX দিয়ে নির্মিত।",
+    "freshWriting": "যত্নসহকারে প্রকাশিত নতুন লেখা",
+    "builtForBuilders": "নির্মাতাদের জন্য তৈরি",
+    "topics": "বিষয়সমূহ",
+    "categories": "ক্যাটাগরি",
+    "resources": "রিসোর্স",
+    "company": "কোম্পানি",
+    "links": {
+      "engineering": "ইঞ্জিনিয়ারিং",
+      "architecture": "আর্কিটেকচার",
+      "cloudEdge": "ক্লাউড এজ",
+      "aiAutomation": "এআই ও অটোমেশন",
+      "companyNews": "কোম্পানি সংবাদ",
+      "education": "শিক্ষা",
+      "customers": "গ্রাহকদের গল্প",
+      "allArticles": "সকল প্রবন্ধ",
+      "tutorials": "টিউটোরিয়াল ও গাইড",
+      "changelog": "পরিবর্তনের তালিকা",
+      "techStack": "টেক স্ট্যাক",
+      "documentation": "ডকুমেন্টেশন",
+      "sourceCode": "সোর্স কোড",
+      "about": "সাঈদ ব্লগ সম্পর্কে",
+      "authors": "লেখক ও টিম",
+      "careers": "ক্যারিয়ার",
+      "contact": "যোগাযোগ",
+      "privacy": "প্রাইভেসি পলিসি",
+      "terms": "সেবার শর্তাবলি"
+    }
   }
 }

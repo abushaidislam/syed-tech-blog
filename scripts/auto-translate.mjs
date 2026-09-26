@@ -1,5 +1,6 @@
 import fs from "fs";
 import path from "path";
+import matter from "gray-matter";
 
 // Load .env.local or .env if running locally
 const envLocalPath = path.join(process.cwd(), ".env.local");
@@ -39,11 +40,8 @@ const delay = (ms) => new Promise((res) => setTimeout(res, ms));
 async function callGemini(prompt, content) {
   // Try supported Gemini model names in order of recommendation and speed
   const models = [
-    "gemini-3.8-flash",
-    "gemini-3.6-flash",
-    "gemini-3.5-flash",
-    "gemini-flash-latest",
     "gemini-2.5-flash",
+    "gemini-flash-latest",
     "gemini-pro-latest",
   ];
 
@@ -152,6 +150,46 @@ CRITICAL RULES:
   return callGemini(prompt, fileContent);
 }
 
+function validateTranslatedContent(sourceContent, translatedContent) {
+  if (!translatedContent?.trim()) {
+    throw new Error("Translation returned empty content.");
+  }
+
+  const source = matter(sourceContent);
+  const translated = matter(translatedContent);
+  const protectedFields = [
+    "slug",
+    "image",
+    "dateIso",
+    "category",
+    "categoryName",
+    "authors",
+    "featured",
+    "tags",
+    "keywords",
+    "updatedAt",
+  ];
+  const requiredFields = ["slug", "title", "summary", "dateFormatted"];
+
+  for (const field of requiredFields) {
+    if (typeof translated.data[field] !== "string" || !translated.data[field].trim()) {
+      throw new Error(`Translation is missing required frontmatter field: ${field}`);
+    }
+  }
+
+  for (const field of protectedFields) {
+    if (field in source.data && JSON.stringify(source.data[field]) !== JSON.stringify(translated.data[field])) {
+      throw new Error(`Translation changed protected frontmatter field: ${field}`);
+    }
+  }
+
+  if (translated.data.slug !== source.data.slug) {
+    throw new Error("Translation changed the article slug.");
+  }
+
+  return translatedContent.trim();
+}
+
 async function main() {
   console.log("==========================================");
   console.log("🌐 Syed / Sayeed Blog Auto-Translator");
@@ -176,6 +214,8 @@ async function main() {
     process.exit(0);
   }
 
+  let failures = 0;
+
   // 1. Translate EN -> BN
   if (missingInBn.length > 0) {
     console.log(`\n📝 Found ${missingInBn.length} article(s) in 'en/' missing in 'bn/':`);
@@ -186,10 +226,14 @@ async function main() {
         const destPath = path.join(BLOG_BN_DIR, filename);
         const content = fs.readFileSync(srcPath, "utf-8");
 
-        const translated = await translateEnglishToBengali(content);
+        const translated = validateTranslatedContent(
+          content,
+          await translateEnglishToBengali(content),
+        );
         fs.writeFileSync(destPath, translated, "utf-8");
         console.log(`   ✨ Saved: content/blog/bn/${filename}`);
       } catch (err) {
+        failures++;
         console.error(`   ❌ Failed to translate ${filename}:`, err.message);
       }
       await delay(3000); // Respect Gemini API free-tier 15 RPM rate limit
@@ -206,13 +250,21 @@ async function main() {
         const destPath = path.join(BLOG_EN_DIR, filename);
         const content = fs.readFileSync(srcPath, "utf-8");
 
-        const translated = await translateBengaliToEnglish(content);
+        const translated = validateTranslatedContent(
+          content,
+          await translateBengaliToEnglish(content),
+        );
         fs.writeFileSync(destPath, translated, "utf-8");
         console.log(`   ✨ Saved: content/blog/en/${filename}`);
       } catch (err) {
+        failures++;
         console.error(`   ❌ Failed to translate ${filename}:`, err.message);
       }
     }
+  }
+
+  if (failures > 0) {
+    throw new Error(`${failures} translation(s) failed.`);
   }
 
   console.log("\n🎉 Auto-translation completed successfully!");

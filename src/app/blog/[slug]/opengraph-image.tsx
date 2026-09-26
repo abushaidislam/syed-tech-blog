@@ -27,7 +27,11 @@ function decodeHtmlEntities(text: string) {
 function getFileBase64(relPath: string): string {
   try {
     const cleanPath = relPath.replace(/^\//, "");
-    const fullPath = path.join(process.cwd(), "public", cleanPath);
+    const publicRoot = path.resolve(process.cwd(), "public");
+    const fullPath = path.resolve(publicRoot, cleanPath);
+    if (fullPath !== publicRoot && !fullPath.startsWith(`${publicRoot}${path.sep}`)) {
+      return "";
+    }
     if (fs.existsSync(fullPath)) {
       const buf = fs.readFileSync(fullPath);
       const ext = path.extname(fullPath).toLowerCase();

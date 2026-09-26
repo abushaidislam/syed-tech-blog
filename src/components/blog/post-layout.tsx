@@ -43,7 +43,7 @@ export function PostLayout({ post, relatedPosts, mdxContent, postUrl }: PostLayo
   const canonicalUrl = postUrl || `${siteConfig.url}/${locale}/blog/${post.slug}`;
   const decodedTitle = decodeEntities(post.title);
   const decodedSummary = decodeEntities(post.summary);
-  const previewImage = post.image || `/blog/${post.slug}/opengraph-image`;
+  const previewImage = post.image || `/${locale}/blog/${post.slug}/opengraph-image`;
 
   return (
     <div>
@@ -130,7 +130,7 @@ export function PostLayout({ post, relatedPosts, mdxContent, postUrl }: PostLayo
                         {dict.blog.articleFallbackNotice}
                       </p>
                       <p className="mt-0.5 text-xs text-amber-700">
-                        আমরা দ্রুততম সময়ে সমস্ত আর্টিকেলের বাংলা সংস্করণ যুক্ত করছি। আপাতত মূল ইংরেজি সংস্করণটি পাঠ করতে পারছেন।
+                        {dict.blog.articleFallbackDetails}
                       </p>
                     </div>
                   </div>
