@@ -1,4 +1,6 @@
 import type { BlogAuthor } from "@/types/blog";
+import { type Locale, DEFAULT_LOCALE } from "@/config/i18n";
+import { getDictionary } from "@/lib/dictionary";
 
 export interface AuthorProfile extends BlogAuthor {
   quote: string;
@@ -58,35 +60,65 @@ export const AUTHOR_PROFILES: Record<string, AuthorProfile> = {
 
 /**
  * Resolves full author details by merging frontmatter author data
- * with predefined profiles or graceful dynamic fallbacks.
+ * with predefined profiles or graceful dynamic fallbacks and localized content.
  */
-export function resolveAuthorDetails(author?: BlogAuthor): AuthorProfile {
-  if (!author) {
-    return AUTHOR_PROFILES.syed;
-  }
-
-  const normalizedName = (author.name || "").trim().toLowerCase();
+export function resolveAuthorDetails(
+  author?: BlogAuthor,
+  locale: Locale = DEFAULT_LOCALE,
+): AuthorProfile {
+  const normalizedName = (author?.name || "syed").trim().toLowerCase();
   const matched =
     AUTHOR_PROFILES[normalizedName] ||
     Object.entries(AUTHOR_PROFILES).find(([key]) =>
       normalizedName.includes(key) || key.includes(normalizedName),
+    )?.[1] ||
+    AUTHOR_PROFILES.syed;
+
+  const dict = getDictionary(locale);
+  const authorDict = dict.author;
+  const profiles = (authorDict?.profiles || {}) as Record<
+    string,
+    { name?: string; title?: string; quote?: string }
+  >;
+  const localizedMatched =
+    profiles[normalizedName] ||
+    Object.entries(profiles).find(([key]) =>
+      normalizedName.includes(key) || key.includes(normalizedName),
     )?.[1];
 
+  const localizedQuote = localizedMatched?.quote || matched?.quote || authorDict?.defaultQuote;
+
   const defaultQuote =
-    author.quote ||
-    matched?.quote ||
+    (locale === "bn" ? localizedQuote : author?.quote) ||
+    author?.quote ||
+    localizedQuote ||
     `Empowering modern engineering teams with high-scale architecture, thoughtful systems design, and actionable technical deep dives.`;
 
+  const localizedName =
+    (locale === "bn" ? localizedMatched?.name : author?.name) ||
+    author?.name ||
+    localizedMatched?.name ||
+    matched?.name ||
+    "Syed Farhan";
+
+  const localizedTitle =
+    (locale === "bn" ? localizedMatched?.title : author?.title) ||
+    author?.title ||
+    localizedMatched?.title ||
+    matched?.title ||
+    authorDict?.defaultTitle ||
+    "Engineering & Architecture";
+
   return {
-    name: author.name || matched?.name || "Syed Farhan",
-    image: author.image || matched?.image || "/images/author-avatar.png",
-    title: author.title || matched?.title || "Engineering & Architecture",
-    company: author.company || matched?.company || "Syed Blog",
+    name: localizedName,
+    image: author?.image || matched?.image || "/images/author-avatar.png",
+    title: localizedTitle,
+    company: author?.company || matched?.company || "Syed Blog",
     quote: defaultQuote,
-    storyUrl: author.storyUrl || matched?.storyUrl || "/blog",
-    bio: author.bio || matched?.bio,
-    twitter: author.twitter || matched?.twitter,
-    github: author.github || matched?.github,
-    linkedin: author.linkedin || matched?.linkedin,
+    storyUrl: author?.storyUrl || matched?.storyUrl || "/blog",
+    bio: author?.bio || matched?.bio,
+    twitter: author?.twitter || matched?.twitter,
+    github: author?.github || matched?.github,
+    linkedin: author?.linkedin || matched?.linkedin,
   };
 }

@@ -80,5 +80,33 @@
       "privacy": "Privacy Policy",
       "terms": "Terms of Service"
     }
+  },
+  "author": {
+    "ariaLabel": "Author Note",
+    "writtenBy": "Written by",
+    "defaultTitle": "Engineering & Architecture",
+    "defaultQuote": "Empowering modern engineering teams with high-scale architecture, thoughtful systems design, and actionable technical deep dives.",
+    "profiles": {
+      "syed": {
+        "name": "Syed Farhan",
+        "title": "Lead Architect & Founder",
+        "quote": "Great work rarely happens by accident. When teams have the right environment, modern tools, and **architectural freedom**, they build **resilient systems** that empower human potential."
+      },
+      "steven tey": {
+        "name": "Steven Tey",
+        "title": "Founder & CEO, Dub",
+        "quote": "Dub is the **ultimate partner infrastructure** for every startup. If you're looking to 10x your community / product-led growth – I cannot recommend building a **partner program** with Dub enough."
+      },
+      "anzhelika tey": {
+        "name": "Anzhelika Tey",
+        "title": "Head of Infrastructure, RenderX",
+        "quote": "Resilient edge architecture isn't just about raw speed — it's about **predictable consistency**, fault tolerance, and **zero-downtime reliability** at global scale."
+      },
+      "koen bok": {
+        "name": "Koen Bok",
+        "title": "CEO, Framer",
+        "quote": "Dub is the **ultimate partner infrastructure** for every startup. If you're looking to 10x your community / product-led growth – I cannot recommend building a **partner program** with Dub enough."
+      }
+    }
   }
 }

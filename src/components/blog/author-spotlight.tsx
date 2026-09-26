@@ -1,10 +1,13 @@
 import Image from "next/image";
 import type { BlogAuthor } from "@/types/blog";
 import { resolveAuthorDetails } from "@/config/authors";
+import { type Locale, DEFAULT_LOCALE } from "@/config/i18n";
+import { getDictionary } from "@/lib/dictionary";
 
 interface AuthorSpotlightProps {
   author?: BlogAuthor;
   className?: string;
+  locale?: Locale;
 }
 
 /**
@@ -36,12 +39,17 @@ function FormattedQuote({ text }: { text: string }) {
  * Direct matching background, no outer box/card/shadows, no company logo or read story button.
  * Sits naturally at the end of every blog post with author's note, prominent avatar, name, and role.
  */
-export function AuthorSpotlight({ author, className = "" }: AuthorSpotlightProps) {
-  const profile = resolveAuthorDetails(author);
+export function AuthorSpotlight({
+  author,
+  className = "",
+  locale = DEFAULT_LOCALE,
+}: AuthorSpotlightProps) {
+  const profile = resolveAuthorDetails(author, locale);
+  const dict = getDictionary(locale);
 
   return (
     <div
-      aria-label="Author Note"
+      aria-label={dict.author?.ariaLabel || "Author Note"}
       className={`px-5 pt-6 pb-14 sm:px-12 text-center ${className}`}
     >
       <div className="mx-auto max-w-2xl flex flex-col items-center">

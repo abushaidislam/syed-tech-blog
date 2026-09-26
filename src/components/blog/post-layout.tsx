@@ -14,6 +14,7 @@ import { AuthorSpotlight } from "./author-spotlight";
 import { BlogComments } from "./blog-comments";
 import { useLocale } from "@/components/layout/locale-provider";
 import { Info } from "lucide-react";
+import { resolveAuthorDetails } from "@/config/authors";
 
 interface PostLayoutProps {
   post: BlogPost;
@@ -39,6 +40,7 @@ export function PostLayout({ post, relatedPosts, mdxContent, postUrl }: PostLayo
     image: "/images/author-avatar.png",
     title: "Engineering & Architecture",
   };
+  const authorProfile = resolveAuthorDetails(primaryAuthor, locale);
 
   const canonicalUrl = postUrl || `${siteConfig.url}/${locale}/blog/${post.slug}`;
   const decodedTitle = decodeEntities(post.title);
@@ -157,7 +159,7 @@ export function PostLayout({ post, relatedPosts, mdxContent, postUrl }: PostLayo
                 </div>
 
                 {/* Author Note & Spotlight Component */}
-                <AuthorSpotlight author={primaryAuthor} />
+                <AuthorSpotlight author={primaryAuthor} locale={locale} />
 
                 {/* Comments Section */}
                 <BlogComments postSlug={post.slug} postTitle={decodedTitle} />
@@ -216,13 +218,13 @@ export function PostLayout({ post, relatedPosts, mdxContent, postUrl }: PostLayo
               {/* Author Profile */}
               <div className="flex flex-col gap-y-3 pb-6">
                 <p className="text-xs font-semibold uppercase tracking-wider text-neutral-400">
-                  {locale === "bn" ? "লেখক" : "Written by"}
+                  {dict.author?.writtenBy || (locale === "bn" ? "লেখক" : "Written by")}
                 </p>
                 <div className="flex items-center space-x-3">
                   <div className="relative size-10 shrink-0 overflow-hidden rounded-full border border-neutral-200">
                     <Image
-                      src={primaryAuthor.image}
-                      alt={primaryAuthor.name}
+                      src={authorProfile.image}
+                      alt={authorProfile.name}
                       width={40}
                       height={40}
                       className="size-full object-cover"
@@ -230,10 +232,10 @@ export function PostLayout({ post, relatedPosts, mdxContent, postUrl }: PostLayo
                   </div>
                   <div className="flex flex-col">
                     <p className="text-sm font-semibold text-neutral-800">
-                      {primaryAuthor.name}
+                      {authorProfile.name}
                     </p>
                     <p className="text-xs text-neutral-500">
-                      {primaryAuthor.title || "Author, Syed Blog"}
+                      {authorProfile.title}
                     </p>
                   </div>
                 </div>
