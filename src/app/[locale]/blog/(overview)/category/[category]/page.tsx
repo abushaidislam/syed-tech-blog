@@ -61,18 +61,21 @@ export async function generateMetadata({
     : (category.description || `Articles and engineering insights in ${category.name} from Syed Blog.`);
 
   const title = isBn
-    ? `${displayName} ক্যাটাগরি | সাঈদ ব্লগ`
-    : `${category.name} Category | ${siteConfig.name}`;
+    ? `${displayName} আর্টিকেলের তালিকা | সাঈদ ব্লগ`
+    : `${category.name} Articles & Software Engineering Tutorials | ${siteConfig.name}`;
   const canonicalUrl = `${siteConfig.url}/${locale}/blog/category/${category.slug}`;
 
   return {
-    title: displayName,
+    title: {
+      absolute: title,
+    },
     description: displayDesc,
     alternates: {
       canonical: canonicalUrl,
       languages: {
         "en-US": `${siteConfig.url}/en/blog/category/${category.slug}`,
         "bn-BD": `${siteConfig.url}/bn/blog/category/${category.slug}`,
+        "x-default": `${siteConfig.url}/en/blog/category/${category.slug}`,
       },
     },
     openGraph: {
@@ -130,15 +133,30 @@ export default async function BlogCategoryPage({
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "BreadcrumbList",
-            itemListElement: [
-              { "@type": "ListItem", position: 1, name: "Home", item: `${siteConfig.url}/${locale}` },
-              { "@type": "ListItem", position: 2, name: "Blog", item: `${siteConfig.url}/${locale}/blog` },
-              { "@type": "ListItem", position: 3, name: displayName, item: categoryUrl },
-            ],
-          }),
+          __html: JSON.stringify([
+            {
+              "@context": "https://schema.org",
+              "@type": "BreadcrumbList",
+              itemListElement: [
+                { "@type": "ListItem", position: 1, name: "Home", item: `${siteConfig.url}/${locale}` },
+                { "@type": "ListItem", position: 2, name: "Blog", item: `${siteConfig.url}/${locale}/blog` },
+                { "@type": "ListItem", position: 3, name: displayName, item: categoryUrl },
+              ],
+            },
+            {
+              "@context": "https://schema.org",
+              "@type": "CollectionPage",
+              "@id": `${categoryUrl}#webpage`,
+              url: categoryUrl,
+              name: displayName,
+              description: displayDesc,
+              inLanguage: locale === "bn" ? "bn-BD" : "en-US",
+              isPartOf: {
+                "@type": "WebSite",
+                "@id": `${siteConfig.url}/#website`,
+              },
+            },
+          ]),
         }}
       />
       <BlogHeader

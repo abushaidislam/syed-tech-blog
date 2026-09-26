@@ -20,10 +20,12 @@ import {
 import { getDictionary } from "@/lib/dictionary";
 import { LocaleProvider } from "@/components/layout/locale-provider";
 
+const absoluteOgImage = new URL(siteConfig.ogImage, siteConfig.url).toString();
+
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
   title: {
-    default: siteConfig.name,
+    default: siteConfig.defaultTitle,
     template: `%s | ${siteConfig.name}`,
   },
   description: siteConfig.description,
@@ -31,9 +33,10 @@ export const metadata: Metadata = {
     "Software Engineering",
     "System Architecture",
     "Web Development",
-    "Next.js",
+    "Next.js Tutorials",
     "Programming Tutorials",
     "High Scale Architecture",
+    "Distributed Systems",
     "Syed Blog",
   ],
   authors: [{ name: siteConfig.author.name, url: siteConfig.url }],
@@ -52,18 +55,23 @@ export const metadata: Metadata = {
   },
   alternates: {
     canonical: siteConfig.url,
+    languages: {
+      "en-US": `${siteConfig.url}/en`,
+      "bn-BD": `${siteConfig.url}/bn`,
+      "x-default": siteConfig.url,
+    },
     types: {
       "application/rss+xml": `${siteConfig.url}/feed.xml`,
     },
   },
   openGraph: {
-    title: siteConfig.name,
+    title: siteConfig.defaultTitle,
     description: siteConfig.description,
     url: siteConfig.url,
     siteName: siteConfig.name,
     images: [
       {
-        url: siteConfig.ogImage,
+        url: absoluteOgImage,
         width: 1200,
         height: 630,
         alt: siteConfig.name,
@@ -74,9 +82,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: siteConfig.name,
+    title: siteConfig.defaultTitle,
     description: siteConfig.description,
-    images: [siteConfig.ogImage],
+    images: [absoluteOgImage],
   },
   verification: {
     google: "googleb16df7cb15127c88",
@@ -127,20 +135,39 @@ export default async function RootLayout({
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "WebSite",
-              "@id": `${siteConfig.url}/#website`,
-              name: siteConfig.name,
-              url: siteConfig.url,
-              description: siteConfig.description,
-              publisher: {
-                "@type": "Person",
-                name: siteConfig.author.name,
+            __html: JSON.stringify([
+              {
+                "@context": "https://schema.org",
+                "@type": "WebSite",
+                "@id": `${siteConfig.url}/#website`,
+                name: siteConfig.name,
                 url: siteConfig.url,
-                image: new URL(siteConfig.author.image, siteConfig.url).toString(),
+                description: siteConfig.description,
+                publisher: {
+                  "@type": "Organization",
+                  "@id": `${siteConfig.url}/#organization`,
+                  name: siteConfig.name,
+                  url: siteConfig.url,
+                  logo: {
+                    "@type": "ImageObject",
+                    url: new URL(siteConfig.author.image, siteConfig.url).toString(),
+                  },
+                },
               },
-            }),
+              {
+                "@context": "https://schema.org",
+                "@type": "Organization",
+                "@id": `${siteConfig.url}/#organization`,
+                name: siteConfig.name,
+                url: siteConfig.url,
+                logo: new URL(siteConfig.author.image, siteConfig.url).toString(),
+                sameAs: [
+                  siteConfig.links.github,
+                  siteConfig.links.twitter,
+                  siteConfig.links.linkedin,
+                ],
+              },
+            ]),
           }}
         />
         <LocaleProvider locale={locale} dict={dict}>

@@ -26,11 +26,11 @@ export async function generateMetadata({
 
   const isBn = locale === "bn";
   const title = isBn
-    ? "সাঈদ ব্লগ | প্রযুক্তি, সিস্টেম আর্কিটেকচার ও ইঞ্জিনিয়ারিং অন্তর্দৃষ্টি"
-    : "Syed Blog | Insights, Engineering & Technology";
+    ? "সাঈদ ব্লগ | সফটওয়্যার ইঞ্জিনিয়ারিং, সিস্টেম আর্কিটেকচার ও ক্লাউড টিউটোরিয়াল"
+    : "Syed Blog | High-Scale Software Engineering & Architecture";
   const description = isBn
-    ? "সাঈদ ব্লগের সাম্প্রতিক সফটওয়্যার ইঞ্জিনিয়ারিং, ক্লাউড আর্কিটেকচার এবং টেক আপডেটের সাথে যুক্ত থাকুন।"
-    : "Stay informed with the latest updates, engineering insights, and tech articles from Syed Blog.";
+    ? "সাঈদ ব্লগের ইন-ডেপথ সফটওয়্যার ইঞ্জিনিয়ারিং গাইড, ক্লাউড আর্কিটেকচার বিশ্লেষণ এবং নেক্সট.জেএস টিউটোরিয়াল থেকে শিখুন।"
+    : "Explore in-depth software engineering tutorials, high-scale system architecture insights, Next.js guides, and developer tools curated by Syed.";
 
   return {
     title: {
@@ -42,6 +42,7 @@ export async function generateMetadata({
       languages: {
         "en-US": `${siteConfig.url}/en`,
         "bn-BD": `${siteConfig.url}/bn`,
+        "x-default": `${siteConfig.url}/en`,
       },
     },
     openGraph: {
@@ -83,8 +84,34 @@ export default async function HomePage({
   const locale = rawLocale as Locale;
   const posts = getAllBlogPosts(locale);
 
+  const isBn = locale === "bn";
+  const title = isBn
+    ? "সাঈদ ব্লগ | সফটওয়্যার ইঞ্জিনিয়ারিং, সিস্টেম আর্কিটেকচার ও ক্লাউড টিউটোরিয়াল"
+    : "Syed Blog | High-Scale Software Engineering & Architecture";
+  const description = isBn
+    ? "সাঈদ ব্লগের ইন-ডেপথ সফটওয়্যার ইঞ্জিনিয়ারিং গাইড, ক্লাউড আর্কিটেকচার বিশ্লেষণ এবং নেক্সট.জেএস টিউটোরিয়াল থেকে শিখুন।"
+    : "Explore in-depth software engineering tutorials, high-scale system architecture insights, Next.js guides, and developer tools curated by Syed.";
+
   return (
     <main className="min-h-screen bg-white">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "CollectionPage",
+            "@id": `${siteConfig.url}/${locale}#webpage`,
+            url: `${siteConfig.url}/${locale}`,
+            name: title,
+            description,
+            inLanguage: isBn ? "bn-BD" : "en-US",
+            isPartOf: {
+              "@type": "WebSite",
+              "@id": `${siteConfig.url}/#website`,
+            },
+          }),
+        }}
+      />
       <BlogHeader activeCategory="overview" />
       <BlogGrid posts={posts} />
       <BlogBottomCTA />

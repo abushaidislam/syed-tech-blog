@@ -34,7 +34,9 @@ function truncateDescription(text: string, maxLength = 155): string {
   if (!text) return "";
   const cleaned = text.replace(/\s+/g, " ").trim();
   if (cleaned.length <= maxLength) return cleaned;
-  return cleaned.slice(0, maxLength - 3).trim() + "...";
+  const truncated = cleaned.slice(0, maxLength - 3);
+  const lastSpace = truncated.lastIndexOf(" ");
+  return (lastSpace > 0 ? truncated.slice(0, lastSpace) : truncated) + "...";
 }
 
 export async function generateMetadata({
@@ -70,6 +72,7 @@ export async function generateMetadata({
       languages: {
         "en-US": `${siteConfig.url}/en/blog/${post.slug}`,
         "bn-BD": `${siteConfig.url}/bn/blog/${post.slug}`,
+        "x-default": `${siteConfig.url}/en/blog/${post.slug}`,
       },
     },
     openGraph: {
@@ -128,6 +131,8 @@ export default async function BlogPostPage({
 
   const relatedPosts = getRelatedPosts(slug, 4, locale);
   const postUrl = new URL(`/${locale}/blog/${post.slug}`, siteConfig.url).toString();
+  const relativeOgUrl = post.image || `/${locale}/blog/${post.slug}/opengraph-image`;
+  const absoluteOgUrl = new URL(relativeOgUrl, siteConfig.url).toString();
   const imageUrl = post.image
     ? new URL(post.image, siteConfig.url).toString()
     : undefined;
@@ -166,7 +171,7 @@ export default async function BlogPostPage({
               timeRequired: `PT${readingTimeMinutes}M`,
               datePublished: post.dateIso,
               dateModified: post.updatedAt || post.dateIso,
-              ...(imageUrl ? { image: [imageUrl] } : {}),
+              image: [imageUrl || absoluteOgUrl],
               author: post.authors.map((author) => ({
                 "@type": "Person",
                 name: author.name,
@@ -175,8 +180,9 @@ export default async function BlogPostPage({
                   : {}),
               })),
               publisher: {
-                "@type": "Person",
-                name: siteConfig.author.name,
+                "@type": "Organization",
+                "@id": `${siteConfig.url}/#organization`,
+                name: siteConfig.name,
                 url: siteConfig.url,
                 logo: {
                   "@type": "ImageObject",

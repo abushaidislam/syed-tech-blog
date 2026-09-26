@@ -26,11 +26,11 @@ export async function generateMetadata({
 
   const isBn = locale === "bn";
   const title = isBn
-    ? "সকল প্রবন্ধ | সাঈদ ব্লগ"
-    : "All Articles | Syed Blog";
+    ? "সকল প্রবন্ধ ও গাইড | সাঈদ ব্লগ"
+    : "All Software Engineering Articles & Architecture Guides | Syed Blog";
   const description = isBn
-    ? "সাঈদ ব্লগের সাম্প্রতিক সফটওয়্যার ইঞ্জিনিয়ারিং, ক্লাউড আর্কিটেকচার এবং টেক আপডেটের সমস্ত নিবন্ধ।"
-    : "Stay informed with the latest updates, engineering insights, and tech articles from Syed Blog.";
+    ? "সাঈদ ব্লগের সমস্ত টেকনিক্যাল নিবন্ধ, ক্লাউড আর্কিটেকচার গাইড, ওয়েব ডেভেলপমেন্ট ও সিস্টেম ডিজাইন টিউটোরিয়াল ব্রাউজ করুন।"
+    : "Browse all technical articles, high-scale architecture guides, Next.js tutorials, and software engineering insights on Syed Blog.";
 
   return {
     title: {
@@ -42,6 +42,7 @@ export async function generateMetadata({
       languages: {
         "en-US": `${siteConfig.url}/en/blog`,
         "bn-BD": `${siteConfig.url}/bn/blog`,
+        "x-default": `${siteConfig.url}/en/blog`,
       },
     },
     openGraph: {
@@ -83,19 +84,42 @@ export default async function BlogOverviewPage({
   const locale = rawLocale as Locale;
   const posts = getAllBlogPosts(locale);
 
+  const isBn = locale === "bn";
+  const title = isBn
+    ? "সকল প্রবন্ধ ও গাইড | সাঈদ ব্লগ"
+    : "All Software Engineering Articles & Architecture Guides | Syed Blog";
+  const description = isBn
+    ? "সাঈদ ব্লগের সমস্ত টেকনিক্যাল নিবন্ধ, ক্লাউড আর্কিটেকচার গাইড, ওয়েব ডেভেলপমেন্ট ও সিস্টেম ডিজাইন টিউটোরিয়াল ব্রাউজ করুন।"
+    : "Browse all technical articles, high-scale architecture guides, Next.js tutorials, and software engineering insights on Syed Blog.";
+
   return (
     <main className="min-h-screen bg-white">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "BreadcrumbList",
-            itemListElement: [
-              { "@type": "ListItem", position: 1, name: "Home", item: `${siteConfig.url}/${locale}` },
-              { "@type": "ListItem", position: 2, name: "Blog", item: `${siteConfig.url}/${locale}/blog` },
-            ],
-          }),
+          __html: JSON.stringify([
+            {
+              "@context": "https://schema.org",
+              "@type": "BreadcrumbList",
+              itemListElement: [
+                { "@type": "ListItem", position: 1, name: "Home", item: `${siteConfig.url}/${locale}` },
+                { "@type": "ListItem", position: 2, name: "Blog", item: `${siteConfig.url}/${locale}/blog` },
+              ],
+            },
+            {
+              "@context": "https://schema.org",
+              "@type": "CollectionPage",
+              "@id": `${siteConfig.url}/${locale}/blog#webpage`,
+              url: `${siteConfig.url}/${locale}/blog`,
+              name: title,
+              description,
+              inLanguage: isBn ? "bn-BD" : "en-US",
+              isPartOf: {
+                "@type": "WebSite",
+                "@id": `${siteConfig.url}/#website`,
+              },
+            },
+          ]),
         }}
       />
       <BlogHeader activeCategory="overview" />
