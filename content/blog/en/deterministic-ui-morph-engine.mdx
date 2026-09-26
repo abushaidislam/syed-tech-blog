@@ -33,37 +33,17 @@ And it does all of this locked to a **120 BPM musical beat grid**, driven by an 
 
 Below is the live, zero-dependency engine rendered in real time.
 
-<div className="relative my-8 overflow-hidden rounded-2xl border border-neutral-800 bg-[#0D0D0E] shadow-2xl">
-  <div className="flex items-center justify-between border-b border-neutral-800/80 px-4 py-2.5 bg-neutral-900/60 backdrop-blur">
-    <div className="flex items-center gap-2">
-      <div className="h-3 w-3 rounded-full bg-red-500/80" />
-      <div className="h-3 w-3 rounded-full bg-yellow-500/80" />
-      <div className="h-3 w-3 rounded-full bg-green-500/80" />
-      <span className="ml-2 font-mono text-xs text-neutral-400">ui-morph-engine.mp4 (120 BPM • Real-time Recording)</span>
-    </div>
-    <a
-      href="/artifacts/ui-morph-engine.html"
-      target="_blank"
-      rel="noopener noreferrer"
-      className="text-xs font-medium text-neutral-400 hover:text-white transition-colors"
-    >
-      Open Interactive HTML ↗
-    </a>
-  </div>
-  <div className="relative aspect-square w-full max-w-[720px] mx-auto overflow-hidden bg-[#0D0D0E]">
-    <video
-      autoPlay
-      loop
-      muted
-      playsInline
-      controls
-      className="h-full w-full object-contain"
-    >
-      <source src="/videos/ui-morph-engine.mp4" type="video/mp4" />
-      Your browser does not support the video tag.
-    </video>
-  </div>
-</div>
+<video
+  src="/videos/ui-morph-engine.mp4"
+  autoPlay
+  loop
+  muted
+  playsInline
+  controls
+  className="w-full my-8 rounded-xl shadow-lg"
+>
+  <source src="/videos/ui-morph-engine.mp4" type="video/mp4" />
+</video>
 
 In this article, we dissect how this artifact was conceived, the prompt engineering framework that guided the AI to generate it, the mathematical physics powering its motion, and how to integrate such deterministic systems into production web applications.
 
