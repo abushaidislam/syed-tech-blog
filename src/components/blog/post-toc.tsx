@@ -20,11 +20,19 @@ function decodeEntities(text: string) {
     .replace(/&#39;/g, "'");
 }
 
+// ⚡ Bolt Optimization: Cache rendered KaTeX titles to avoid expensive regex parsing and KaTeX render calls during scroll re-renders.
+const titleMathCache = new Map<string, React.ReactNode>();
+
 function renderTitleWithMath(rawTitle: string): React.ReactNode {
+  if (titleMathCache.has(rawTitle)) {
+    return titleMathCache.get(rawTitle)!;
+  }
+
   const decoded = decodeEntities(rawTitle);
   const mathRegex = /\$\$([\s\S]+?)\$\$|\$([^\$\n]+?)\$/g;
 
   if (!mathRegex.test(decoded)) {
+    titleMathCache.set(rawTitle, decoded);
     return decoded;
   }
 
@@ -64,7 +72,9 @@ function renderTitleWithMath(rawTitle: string): React.ReactNode {
     elements.push(decoded.slice(lastIndex));
   }
 
-  return <>{elements}</>;
+  const result = <>{elements}</>;
+  titleMathCache.set(rawTitle, result);
+  return result;
 }
 
 export function PostTOC({ headings }: PostTOCProps) {
