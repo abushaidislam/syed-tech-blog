@@ -11,12 +11,12 @@ function escapeXml(unsafe: string): string {
 }
 
 export async function GET() {
-  const posts = getAllBlogPosts();
+  const posts = getAllBlogPosts("en");
   const buildDate = new Date().toUTCString();
 
   const itemsXml = posts
     .map((post) => {
-      const postUrl = `${siteConfig.url}/blog/${post.slug}`;
+      const postUrl = `${siteConfig.url}/en/blog/${post.slug}`;
       const pubDate = new Date(post.dateIso).toUTCString();
       const author = post.authors[0]?.name || siteConfig.author.name;
       const category = post.category.name;

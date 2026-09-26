@@ -33,6 +33,8 @@ export interface BlogPostMeta {
   tags?: string[];
   keywords?: string[];
   updatedAt?: string;
+  isFallback?: boolean;
+  locale?: string;
 }
 
 export interface BlogPostHeading {

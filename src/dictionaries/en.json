@@ -1,0 +1,84 @@
+{
+  "nav": {
+    "allArticles": "All Articles",
+    "engineering": "Engineering",
+    "company": "Company",
+    "education": "Education",
+    "customers": "Customer Stories",
+    "explore": "Explore",
+    "language": "Language",
+    "menu": "Menu"
+  },
+  "header": {
+    "title": "Syed Blog",
+    "description": "Latest news, architecture, and engineering updates from Syed Blog",
+    "all": "All",
+    "searchPlaceholder": "Search articles..."
+  },
+  "categories": {
+    "overview": "Overview",
+    "company": "Company News",
+    "education": "Education",
+    "engineering": "Engineering",
+    "customers": "Customer Stories"
+  },
+  "blog": {
+    "minRead": "min read",
+    "published": "Published",
+    "updated": "Updated",
+    "by": "By",
+    "tableOfContents": "Table of Contents",
+    "relatedArticles": "Related Articles",
+    "shareArticle": "Share this article",
+    "copyLink": "Copy link",
+    "copied": "Copied!",
+    "backToArticles": "Back to all articles",
+    "readingTime": "Reading time",
+    "articleFallbackNotice": "This article is currently displayed in English. Bengali translation will be available soon.",
+    "articleFallbackDetails": "We are adding Bengali versions of all articles. For now, you can read the original English version."
+  },
+  "comments": {
+    "ariaLabel": "Discussion and Comments",
+    "title": "Discussion & Comments",
+    "realtime": "GitHub Realtime",
+    "description": "Comments and replies sync live with GitHub Discussions",
+    "markdown": "Markdown supported",
+    "loading": "Loading discussion from GitHub..."
+  },
+  "cta": {
+    "title": "Ready to build something extraordinary?",
+    "description": "Explore technical deep dives and practical architectures for modern applications.",
+    "button": "Explore Engineering"
+  },
+  "footer": {
+    "copyright": "All rights reserved.",
+    "builtWith": "Crafted with Next.js, Tailwind CSS & MDX.",
+    "freshWriting": "Fresh writing, thoughtfully published",
+    "builtForBuilders": "Made for builders",
+    "topics": "Topics",
+    "categories": "Categories",
+    "resources": "Resources",
+    "company": "Company",
+    "links": {
+      "engineering": "Engineering",
+      "architecture": "Architecture",
+      "cloudEdge": "Cloud Edge",
+      "aiAutomation": "AI & Automation",
+      "companyNews": "Company News",
+      "education": "Education",
+      "customers": "Customer Stories",
+      "allArticles": "All Articles",
+      "tutorials": "Tutorials & Guides",
+      "changelog": "Changelog",
+      "techStack": "Tech Stack",
+      "documentation": "Documentation",
+      "sourceCode": "Source Code",
+      "about": "About Syed Blog",
+      "authors": "Authors & Team",
+      "careers": "Careers",
+      "contact": "Contact",
+      "privacy": "Privacy Policy",
+      "terms": "Terms of Service"
+    }
+  }
+}

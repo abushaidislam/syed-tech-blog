@@ -1,3 +1,5 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import type { BlogPost, BlogPostMeta } from "@/types/blog";
@@ -10,6 +12,8 @@ import { BlogBottomCTA } from "./blog-bottom-cta";
 import { SkyAnimation } from "./sky-animation";
 import { AuthorSpotlight } from "./author-spotlight";
 import { BlogComments } from "./blog-comments";
+import { useLocale } from "@/components/layout/locale-provider";
+import { Info } from "lucide-react";
 
 interface PostLayoutProps {
   post: BlogPost;
@@ -29,16 +33,17 @@ function decodeEntities(text: string) {
 }
 
 export function PostLayout({ post, relatedPosts, mdxContent, postUrl }: PostLayoutProps) {
+  const { locale, dict } = useLocale();
   const primaryAuthor = post.authors[0] || {
     name: "Syed",
     image: "/images/author-avatar.png",
     title: "Engineering & Architecture",
   };
 
-  const canonicalUrl = postUrl || `${siteConfig.url}/blog/${post.slug}`;
+  const canonicalUrl = postUrl || `${siteConfig.url}/${locale}/blog/${post.slug}`;
   const decodedTitle = decodeEntities(post.title);
   const decodedSummary = decodeEntities(post.summary);
-  const previewImage = post.image || `/blog/${post.slug}/opengraph-image`;
+  const previewImage = post.image || `/${locale}/blog/${post.slug}/opengraph-image`;
 
   return (
     <div>
@@ -51,13 +56,13 @@ export function PostLayout({ post, relatedPosts, mdxContent, postUrl }: PostLayo
           <div className="relative z-10 max-w-screen-sm">
             <div className="flex items-center space-x-4">
               <Link
-                href={`/blog/category/${post.category.slug}`}
+                href={`/${locale}/blog/category/${post.category.slug}`}
                 className="rounded-lg border border-neutral-200 bg-white px-4 py-1.5 text-sm font-medium text-neutral-600 shadow-sm backdrop-blur transition-all hover:border-neutral-300 hover:bg-white/80"
               >
                 {post.category.name}
               </Link>
               <span className="text-sm text-neutral-500">
-                Last updated •{" "}
+                {locale === "bn" ? "সর্বশেষ হালনাগাদ" : "Last updated"} •{" "}
                 <time dateTime={post.dateIso}>{post.dateFormatted}</time>
               </span>
             </div>
@@ -117,6 +122,20 @@ export function PostLayout({ post, relatedPosts, mdxContent, postUrl }: PostLayo
                   )}
                 </div>
 
+                {post.isFallback && locale === "bn" && (
+                  <div className="mx-5 sm:mx-12 mt-6 flex items-start gap-3 rounded-xl border border-amber-200/90 bg-amber-50/90 p-4 text-xs sm:text-sm text-amber-900 shadow-2xs">
+                    <Info className="size-5 shrink-0 text-amber-600 mt-0.5" />
+                    <div>
+                      <p className="font-semibold text-amber-950">
+                        {dict.blog.articleFallbackNotice}
+                      </p>
+                      <p className="mt-0.5 text-xs text-amber-700">
+                        {dict.blog.articleFallbackDetails}
+                      </p>
+                    </div>
+                  </div>
+                )}
+
                 <article className="prose prose-neutral max-w-none px-5 pt-10 pb-6 transition-all prose-headings:relative prose-headings:scroll-mt-20 prose-headings:font-display prose-a:font-medium prose-a:text-neutral-600 prose-a:underline-offset-4 hover:prose-a:text-black sm:px-12">
                   {mdxContent ? (
                     mdxContent
@@ -148,13 +167,13 @@ export function PostLayout({ post, relatedPosts, mdxContent, postUrl }: PostLayo
               {relatedPosts.length > 0 && (
                 <div className="border-t border-grid-border bg-neutral-50/50 p-6 sm:p-10">
                   <p className="py-2 font-display text-xl font-medium text-neutral-900">
-                    Read more
+                    {locale === "bn" ? "সম্পর্কিত অন্যান্য প্রবন্ধ" : "Read more"}
                   </p>
                   <ul className="mt-4 flex flex-col gap-y-6">
                     {relatedPosts.map((related) => (
                       <li key={related.slug}>
                         <Link
-                          href={`/blog/${related.slug}`}
+                          href={`/${locale}/blog/${related.slug}`}
                           className="group flex flex-col items-start gap-4 sm:flex-row"
                         >
                           <div className="relative aspect-video w-full shrink-0 overflow-hidden rounded-lg border border-neutral-200 bg-neutral-100 sm:w-[200px]">
@@ -197,7 +216,7 @@ export function PostLayout({ post, relatedPosts, mdxContent, postUrl }: PostLayo
               {/* Author Profile */}
               <div className="flex flex-col gap-y-3 pb-6">
                 <p className="text-xs font-semibold uppercase tracking-wider text-neutral-400">
-                  Written by
+                  {locale === "bn" ? "লেখক" : "Written by"}
                 </p>
                 <div className="flex items-center space-x-3">
                   <div className="relative size-10 shrink-0 overflow-hidden rounded-full border border-neutral-200">
@@ -226,22 +245,21 @@ export function PostLayout({ post, relatedPosts, mdxContent, postUrl }: PostLayo
                   <PostTOC headings={post.headings} />
                 )}
 
-                {/* Sidebar Quick Share */}
-                <SocialShare
-                  url={canonicalUrl}
-                  title={decodedTitle}
-                  summary={decodedSummary}
-                  category={post.category.name}
-                  image={previewImage}
-                  layout="sidebar"
-                />
-
                 <PostSidebarCTA />
               </div>
             </div>
           </div>
         </div>
       </div>
+
+      <SocialShare
+        url={canonicalUrl}
+        title={decodedTitle}
+        summary={decodedSummary}
+        category={post.category.name}
+        image={previewImage}
+        layout="floating"
+      />
 
       {/* Bottom Signature Dub Curved Dark Glow Banner */}
       <BlogBottomCTA />

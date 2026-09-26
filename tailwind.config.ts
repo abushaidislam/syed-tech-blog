@@ -20,8 +20,9 @@ const config: Config = {
         "grid-width": "76rem",
       },
       fontFamily: {
-        display: ["var(--font-satoshi)", "system-ui", "sans-serif"],
-        default: ["var(--font-inter)", "system-ui", "sans-serif"],
+        display: ["var(--font-satoshi)", "var(--font-hind-siliguri)", "system-ui", "sans-serif"],
+        default: ["var(--font-inter)", "var(--font-hind-siliguri)", "system-ui", "sans-serif"],
+        bangla: ["var(--font-hind-siliguri)", "system-ui", "sans-serif"],
         mono: ["var(--font-geist-mono, ui-monospace)", "ui-monospace", "monospace"],
         rowan: ["Georgia", "Times New Roman", "serif"],
       },

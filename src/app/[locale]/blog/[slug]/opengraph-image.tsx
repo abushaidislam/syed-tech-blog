@@ -2,6 +2,7 @@ import fs from "fs";
 import path from "path";
 import { ImageResponse } from "next/og";
 import { getBlogPostBySlug, frontmatterToBlogPostMeta } from "@/lib/blog";
+import { isSupportedLocale, DEFAULT_LOCALE, type Locale } from "@/config/i18n";
 
 export const runtime = "nodejs";
 
@@ -49,7 +50,6 @@ function getFileBase64(relPath: string): string {
   return "";
 }
 
-// Pre-load background data URI
 function getBackgroundUri(): string {
   const pngUri = getFileBase64("images/og-background.png");
   if (pngUri) return pngUri;
@@ -73,13 +73,14 @@ const bgDataUri = getBackgroundUri();
 export default async function OpenGraphImage({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ locale: string; slug: string }>;
 }) {
-  const { slug } = await params;
-  const postMdx = getBlogPostBySlug(slug);
+  const { locale: rawLocale, slug } = await params;
+  const locale: Locale = isSupportedLocale(rawLocale) ? rawLocale : DEFAULT_LOCALE;
+  const postMdx = getBlogPostBySlug(slug, locale);
 
   const rawPost = postMdx
-    ? frontmatterToBlogPostMeta(postMdx.frontmatter)
+    ? frontmatterToBlogPostMeta(postMdx.frontmatter, locale)
     : {
         slug,
         title: "Engineering & Architecture Insights",
@@ -119,7 +120,6 @@ export default async function OpenGraphImage({
           position: "relative",
         }}
       >
-        {/* 1. Full-bleed background image */}
         {bgDataUri ? (
           <img
             src={bgDataUri}
@@ -135,7 +135,6 @@ export default async function OpenGraphImage({
           />
         ) : null}
 
-        {/* 2. Top Header (Brand + Category) */}
         <div
           style={{
             display: "flex",
@@ -144,7 +143,6 @@ export default async function OpenGraphImage({
             width: "100%",
           }}
         >
-          {/* Brand logo + wordmark */}
           <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
             <svg
               viewBox="0 0 36 36"
@@ -196,7 +194,6 @@ export default async function OpenGraphImage({
             </div>
           </div>
 
-          {/* Category Pill */}
           <div
             style={{
               display: "flex",
@@ -231,7 +228,6 @@ export default async function OpenGraphImage({
           </div>
         </div>
 
-        {/* 3. Middle Section: Title + Summary */}
         <div
           style={{
             display: "flex",
@@ -268,7 +264,6 @@ export default async function OpenGraphImage({
           ) : null}
         </div>
 
-        {/* 4. Footer Section: Author Photo + Author Info + Domain Badge */}
         <div
           style={{
             display: "flex",
@@ -279,7 +274,6 @@ export default async function OpenGraphImage({
             paddingTop: 24,
           }}
         >
-          {/* Author details with actual picture */}
           <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
             {authorImageUri ? (
               <img
@@ -329,7 +323,6 @@ export default async function OpenGraphImage({
             </div>
           </div>
 
-          {/* Domain Badge */}
           <div
             style={{
               display: "flex",
