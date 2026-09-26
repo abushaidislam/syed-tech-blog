@@ -51,7 +51,6 @@ export const metadata: Metadata = {
     },
   },
   alternates: {
-    canonical: siteConfig.url,
     types: {
       "application/rss+xml": `${siteConfig.url}/feed.xml`,
     },
@@ -135,10 +134,13 @@ export default async function RootLayout({
               url: siteConfig.url,
               description: siteConfig.description,
               publisher: {
-                "@type": "Person",
-                name: siteConfig.author.name,
+                "@type": "Organization",
+                name: siteConfig.name,
                 url: siteConfig.url,
-                image: new URL(siteConfig.author.image, siteConfig.url).toString(),
+                logo: {
+                  "@type": "ImageObject",
+                  url: new URL("/brand-icon.svg", siteConfig.url).toString(),
+                },
               },
             }),
           }}
