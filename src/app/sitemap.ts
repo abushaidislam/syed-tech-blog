@@ -17,9 +17,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
     const lastMod = postEn
       ? new Date(postEn.frontmatter.updatedAt || postEn.frontmatter.dateIso)
       : latestDate;
-    const availableLanguages = Object.fromEntries(
-      localizedPosts.map(({ locale }) => [locale, `${siteConfig.url}/${locale}/blog/${slug}`]),
-    );
+    const languageEntries = localizedPosts.map(({ locale }) => [locale, `${siteConfig.url}/${locale}/blog/${slug}`]);
+    const availableLanguages = Object.fromEntries([
+      ...languageEntries,
+      ["x-default", `${siteConfig.url}/en/blog/${slug}`],
+    ]);
 
     return localizedPosts.map(({ locale }) => ({
       url: `${siteConfig.url}/${locale}/blog/${slug}`,
@@ -42,6 +44,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
         languages: {
           en: `${siteConfig.url}/en/blog/category/${cat.slug}`,
           bn: `${siteConfig.url}/bn/blog/category/${cat.slug}`,
+          "x-default": `${siteConfig.url}/en/blog/category/${cat.slug}`,
         },
       },
     })),
@@ -57,6 +60,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
         languages: {
           en: `${siteConfig.url}/en`,
           bn: `${siteConfig.url}/bn`,
+          "x-default": `${siteConfig.url}/en`,
         },
       },
     },
