@@ -1,0 +1,95 @@
+{
+  "version": 1,
+  "entries": {
+    "2024": {
+      "enHash": "0ebfdbf58327d2f13ee210e5e1dfa51eaad789e489dee81a2191d40fb793b149",
+      "bnHash": "fbf51f9013bdcc2f5ca2b3703fee88ff0aa77075b6d8d7ac7083691eae256ce0",
+      "lastTranslatedAt": "2026-09-26T13:34:56.020Z"
+    },
+    "10m-payouts": {
+      "enHash": "2fbabfeaf06ecc7831c07d3e052650f91b75fdcd287891b2bc19c015a4948e1a",
+      "bnHash": "5bc9fcd1c9a10176572fd63cd0935103a53e6582f576e9851b7fa85198a764a7",
+      "lastTranslatedAt": "2026-09-26T13:34:56.017Z"
+    },
+    "301-vs-302-redirect": {
+      "enHash": "4d6bb422a116904a5319e9706c6bf77692c2fd5dd112e051cbce50118f21d7a8",
+      "bnHash": "f69c4d5be721c5418a7bcbae5ba3a8c137bd2b15d1eed42fe35134209e751d7c",
+      "lastTranslatedAt": "2026-09-26T13:34:56.021Z"
+    },
+    "advanced-link-management": {
+      "enHash": "728f343b9840b0c85163ddbd709032745dbf890e580157bb6fd296bc1a28ba9f",
+      "bnHash": "c7c11d0d59160dfcfce505717c29b7aa09f9177d40f9d3158c3b34f4d5b4e1e2",
+      "lastTranslatedAt": "2026-09-26T13:34:56.022Z"
+    },
+    "announcing-dub-api": {
+      "enHash": "d99c4526ee7e988727fa405322094c1294a23f353d2437ede1e404992c739560",
+      "bnHash": "e81e45e9e5350fe1b491382f5647adb58afca7a201a12399f5d833c241b648c1",
+      "lastTranslatedAt": "2026-09-26T13:34:56.028Z"
+    },
+    "architecting-resilient-distributed-systems": {
+      "enHash": "44dc76d2daa47608dd639846843bc3f956e6be8f72dd8efbfb885ecfee9f6e59",
+      "bnHash": "2a8ab27c9b165d1feeb5c5f0619bdf76865606d02ee14743c58191b0621516cf",
+      "lastTranslatedAt": "2026-09-26T13:34:56.030Z"
+    },
+    "best-link-management-tools": {
+      "enHash": "ee5b715a2e139b3967c6c4ee20e3f6366bd7ebfa267ac9a4a7da20ae1c73335b",
+      "bnHash": "d5df5e693cc870d838efed93eb3a2153c4c0d454e37892f5f9b61bd9c5642a51",
+      "lastTranslatedAt": "2026-09-26T13:34:56.031Z"
+    },
+    "bitly-vs-rebrandly": {
+      "enHash": "d8fad3a83ef6f44c70fdca9f0df1c20a7d0cca5615b51124c56eb9c714b1dfa4",
+      "bnHash": "996e1a798ca63aa39e463bcc9226b2d8a8b80d3cdf8fd74ce36b35fbf6b6c7c7",
+      "lastTranslatedAt": "2026-09-26T13:34:56.033Z"
+    },
+    "bitly-vs-tinyurl": {
+      "enHash": "867ce5c44389878c5250488f5d36582acf1714eb260244e225c5d03ea1fb15ff",
+      "bnHash": "53cfa7f35a8e5495af29a7437bfff32fd8de1a43f10da83c5723b6a925e2bb2e",
+      "lastTranslatedAt": "2026-09-26T13:34:56.036Z"
+    },
+    "company": {
+      "enHash": "96a9cec29467fdeaea82713a53f38cc29c70122d5222fc16856eacf8c2d87e84",
+      "bnHash": "7d486c7d9bc1df28ac04cf8cc55fd06052abd65cc61e9f1a5c8f481a53c57e6f",
+      "lastTranslatedAt": "2026-09-26T13:34:56.038Z"
+    },
+    "content-collections": {
+      "enHash": "d2087bb6b6f37aa42b8e47cfe433a419cdbb29592dd1f2e1a75daf7b2531f6ce",
+      "bnHash": "4cdacad6a7f7d6013d499f7f872c145115d6be8253c71608ca0116c8c0e528c8",
+      "lastTranslatedAt": "2026-09-26T13:34:56.041Z"
+    },
+    "designing-the-future-of-work-how-modern-workspaces-drive-culture-innovation-and-growth": {
+      "enHash": "3127f05f6c6ddf4618fabf2991ccccc873a4f1b2211581f0c2c10f7e2bcab763",
+      "bnHash": "d4f7b26aa77226977176d3c78d548f6209f4e3954065e519e983cf6ee0d3578c",
+      "lastTranslatedAt": "2026-09-26T13:34:56.046Z"
+    },
+    "dreaming-of-becoming-a-scientist-in-a-commerce-college": {
+      "enHash": "59e79e924159426f266576b4fc3ae3075b085d8d8472f0d1e58a426ac6c71a5a",
+      "bnHash": "52e2321e1720c9e377fb44123f9b95614d163fbd20d5142160a4610965eff240",
+      "lastTranslatedAt": "2026-09-26T13:34:56.049Z"
+    },
+    "engineering-work-strategy": {
+      "enHash": "925e60b600be547ff98138805fd40a2f1d3ef45544ffa89fc7ecc2b1b0f4acae",
+      "bnHash": "1ef0fc6df95fc66bd0e7e073e0415778c32ddd902ddf2a2549496a1b828f94d2",
+      "lastTranslatedAt": "2026-09-26T13:34:56.051Z"
+    },
+    "image-hosting-r2": {
+      "enHash": "ee288244eb811e0208b47c412177b39d62a2f0cbc764bd66eaad92643780cd5b",
+      "bnHash": "c27832a07be3f37e3f9e32ff0bb390581847002d5d7e085aa0ce38b7cec76699",
+      "lastTranslatedAt": "2026-09-26T13:34:56.052Z"
+    },
+    "the-basel-problem-eulers-solution": {
+      "enHash": "9e66a020229342003364aea181919d3b395875b95ef83641e42d425f073bee40",
+      "bnHash": "afbdcc090b535cbe54bd6e5922ab77c6f096521785f4487fa8c3ae9beb714bbd",
+      "lastTranslatedAt": "2026-09-26T13:34:56.054Z"
+    },
+    "the-evolution-of-frontend-rendering": {
+      "enHash": "38dc2b01a150477080860364827aa7df23a5e9e3d82286b55d5af41cf142972f",
+      "bnHash": "a2ad68c45a41cefa0e7ac0c16d7a2c17b57f345fdeb18cbcf1c2d5e43b8118ee",
+      "lastTranslatedAt": "2026-09-26T13:34:56.055Z"
+    },
+    "zero-downtime-database-migrations": {
+      "enHash": "6b607c80ec44301d2c76893a7eecca853bd6564902797e11001272f80ea7b9fe",
+      "bnHash": "1e221dfe7467229e8f1bce86fe11d1658e3ca00d4b60c7695e51f6d3d95d6cbf",
+      "lastTranslatedAt": "2026-09-26T13:34:56.060Z"
+    }
+  }
+}

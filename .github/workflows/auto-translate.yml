@@ -34,7 +34,7 @@ jobs:
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
-          node scripts/auto-translate.mjs
+          node scripts/auto-translate.mjs --sync
 
       - name: Commit and Push Translated Articles
         run: |

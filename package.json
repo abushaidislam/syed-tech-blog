@@ -9,7 +9,9 @@
     "start": "next start",
     "lint": "tsc --noEmit",
     "optimize:images": "node scripts/optimize-images.mjs",
-    "translate": "node scripts/auto-translate.mjs"
+    "translate": "node scripts/auto-translate.mjs --sync",
+    "translate:dry": "node scripts/auto-translate.mjs --sync --dry-run",
+    "translate:force": "node scripts/auto-translate.mjs --force"
   },
   "dependencies": {
     "@base-ui-components/react": "1.0.0-rc.0",
