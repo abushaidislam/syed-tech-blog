@@ -71,7 +71,13 @@ export function getAllBlogPostSlugs(): string[] {
  * Read and parse a single blog post MDX file by slug.
  */
 export function getBlogPostBySlug(slug: string): BlogPostMdx | null {
+  // Security: Sanitize slug to prevent path traversal vulnerabilities
+  if (!slug || typeof slug !== "string" || !/^[a-zA-Z0-9_-]+$/.test(slug)) {
+    return null;
+  }
+
   const filePath = path.join(BLOG_DIR, `${slug}.mdx`);
+  if (!filePath.startsWith(BLOG_DIR + path.sep)) return null;
   if (!fs.existsSync(filePath)) return null;
 
   const raw = fs.readFileSync(filePath, "utf-8");
