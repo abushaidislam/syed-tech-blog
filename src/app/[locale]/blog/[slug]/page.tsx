@@ -61,8 +61,12 @@ export async function generateMetadata({
     new Set([post.category.name, ...(post.keywords || []), ...(post.tags || [])]),
   );
 
+  const titleWithBrand = `${post.title} | ${siteConfig.name}`;
+
   return {
-    title: post.title,
+    title: {
+      absolute: titleWithBrand,
+    },
     description: truncatedSummary,
     keywords,
     alternates: {
@@ -175,12 +179,12 @@ export default async function BlogPostPage({
                   : {}),
               })),
               publisher: {
-                "@type": "Person",
-                name: siteConfig.author.name,
+                "@type": "Organization",
+                name: siteConfig.name,
                 url: siteConfig.url,
                 logo: {
                   "@type": "ImageObject",
-                  url: new URL(siteConfig.author.image, siteConfig.url).toString(),
+                  url: new URL("/brand-icon.svg", siteConfig.url).toString(),
                 },
               },
               mainEntityOfPage: {
