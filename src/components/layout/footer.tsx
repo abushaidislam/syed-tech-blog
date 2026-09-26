@@ -248,13 +248,6 @@ export function Footer() {
                     </a>
                   ))}
                 </div>
-
-                <div className="flex items-center justify-between gap-3 border-t border-neutral-200/70 pt-4">
-                  <span className="text-xs font-medium text-neutral-500">
-                    {locale === "bn" ? "ভাষা" : "Language"}
-                  </span>
-                  <LanguageSwitcher />
-                </div>
               </div>
 
               {/* Right Cols: Navigation Links Grid — 4 columns with grid-line borders */}
@@ -387,8 +380,9 @@ export function Footer() {
                 </div>
               </div>
 
-              {/* Copyright */}
-              <div className="p-5 sm:px-8">
+              {/* Language Switcher & Copyright */}
+              <div className="flex flex-col gap-3.5 p-5 sm:flex-row sm:items-center sm:justify-end sm:gap-4 sm:px-8">
+                <LanguageSwitcher />
                 <p className="text-xs text-neutral-400 sm:text-right">
                   © {new Date().getFullYear()} Syed Blog. {dict.footer.copyright}
                 </p>
