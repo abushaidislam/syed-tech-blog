@@ -1,0 +1,79 @@
+---
+slug: "announcing-dub-api"
+title: "Dub API-এর জেনারেল অ্যাভেইলেবিলিটি (GA) ঘোষণা"
+summary: "আমরা আনন্দের সাথে জানাচ্ছি যে Dub API এখন সবার জন্য উন্মুক্ত (Generally Available), সাথে থাকছে আপনার পছন্দের বিভিন্ন ভাষায় নেটিভ SDK।"
+image: "https://assets.dub.co/cms/dub-api-2.jpg"
+dateIso: "2024-07-09T00:00:00.000Z"
+dateFormatted: "৯ জুলাই, ২০২৪"
+category: "engineering"
+categoryName: "Engineering"
+authors:
+  - name: "Kiran Krishnan"
+    image: "https://assets.dub.co/author/tokirankrishnan.jpg"
+    title: "Core Engineering"
+  - name: "Steven Tey"
+    image: "https://assets.dub.co/author/steventey.jpg"
+    title: "Core Engineering"
+---
+
+কয়েক মাস আগে আমাদের [API](/docs/api-reference/introduction) সফট লঞ্চ করার পর থেকেই, আমরা এর স্ট্যাবিলিটি এবং ডেভেলপার এক্সপেরিয়েন্স (DX) উন্নত করতে নিরলসভাবে কাজ করে যাচ্ছি। উল্লেখযোগ্য কিছু উন্নতির মধ্যে রয়েছে:
+
+1. **Workspace API keys**: কি-গুলো (keys) ওয়ার্কস্পেস লেভেলে নিয়ে আসার মাধ্যমে আমরা API DX আরও সহজ করেছি।
+2. **Restricted scopes**: এখন আপনি আপনার API key-এর জন্য নিখুঁত পারমিশন স্কোপ (fine-grained permission scopes) নির্ধারণ করতে পারবেন।
+3. **Machine users**: API key-এর সাথে যুক্ত করার জন্য আপনি এখন মেশিন ইউজারও তৈরি করতে পারবেন।
+
+আমাদের API ইনফ্রাস্ট্রাকচার বেশ কয়েক মাস ধরেই প্রোডাকশন-রেডি ছিল, কিন্তু API সিনট্যাক্স এবং কার্যকারিতা আরও পরিমার্জিত করার জন্য আমরা এটিকে "beta" লেবেলেই রেখেছিলাম।
+
+ 10M+
+
+প্রতি মাসে তৈরিকৃত লিঙ্ক
+
+ 300M+
+
+প্রতি মাসে ট্র্যাক করা ইভেন্ট
+
+প্রকৃতপক্ষে, [Raycast](/customers/raycast), [Opensauced](/customers/opensauced), [Midday](/customers/midday) এবং [Whop](http://whop.com/)-এর মতো কোম্পানিগুলো প্রোগ্রামেটিক্যালি লিঙ্ক শর্ট করার জন্য ইতোমধ্যেই প্রোডাকশনে আমাদের API ব্যবহার করছে। আমাদের সবচেয়ে সক্রিয় API ব্যবহারকারীদের মধ্যে কেউ কেউ বর্তমানে প্রতিদিন *হাজার হাজার* লিঙ্ক তৈরি করছেন।
+
+আজ আমরা যেকোনো প্রোডাকশন-লেভেলের লিঙ্ক ম্যানেজমেন্টের প্রয়োজনীয়তা পূরণে সম্পূর্ণ আত্মবিশ্বাসী। আপনি *মিলিয়ন মিলিয়ন* শর্ট লিঙ্ক নিয়ে SMS ক্যাম্পেইন চালান কিংবা *বিলিয়ন বিলিয়ন* ক্লিকের কোনো অ্যাড ক্যাম্পেইন—সবকিছুর জন্যই আমরা প্রস্তুত।
+
+<Quote author="Thomas Paul Mann" role="CEO & Co-Founder" avatar="https://assets.dub.co/customers/raycast-thomas.jpeg">
+Dub-এর লিঙ্ক ইনফ্রাস্ট্রাকচার ও অ্যানালিটিক্স Ray.so-এর লিঙ্ক শেয়ারিংয়ের ব্যবহার সম্পর্কে গুরুত্বপূর্ণ অন্তর্দৃষ্টি পেতে আমাদের সাহায্য করেছে। আর এ সবকিছুই করা গেছে মাত্র কয়েক লাইন কোডের মাধ্যমে।
+</Quote>
+
+## ৪টি ভাষায় নেটিভ SDK
+
+এই GA লঞ্চের সাথে সাথে আমরা ৪টি ভিন্ন ভাষায় নেটিভ SDK উন্মোচন করতে পেরে অত্যন্ত আনন্দিত:
+
+ [Pythonpip install dub](/sdks/python)[Gogo get github.com/dub...](/sdks/go)[Rubygem install dub](/sdks/ruby)[PHPcomposer require dub/dub-php](/sdks/php) 
+ এর ফলে ডেভেলপারদের নিজ নিজ এনভায়রনমেন্টে আলাদা আলাদা fetch লাইব্রেরি খোঁজার প্রয়োজন ছাড়াই তাদের অ্যাপ্লিকেশনে Dub-এর লিঙ্ক ইনফ্রাস্ট্রাকচার ইন্টিগ্রেট করা আরও অনেক সহজ হয়ে যাবে।
+
+আপনাদের শুরু করতে সহায়তার জন্য আমরা এই প্রতিটি ভাষার জন্য [কুইকস্টার্ট গাইড](/docs/quickstart/typescript) এবং [কোড উদাহরণ](https://github.com/dubinc/examples) তৈরি করেছি। উদাহরণস্বরূপ, TypeScript, Python, Ruby এবং Go-তে যেভাবে একটি লিঙ্ক তৈরি করতে পারেন:
+
+ TypeScript Python Ruby Go 
+
+```
+ import { Dub } from "dub" 
+
+ const dub = new Dub ({ token: "DUB_API_KEY" }) 
+
+ const { shortLink } = await dub.links. create ({ url: "https://dub.co" }) 
+```
+
+## উদাহরণ অ্যাপ্লিকেশনসমূহ
+
+Dub-এর সম্ভাবনা তুলে ধরতে আমরা কিছু [ওপেন-সোর্স উদাহরণের](/docs/examples) সংকলন তৈরি করেছি।
+
+উদাহরণস্বরূপ, আমরা সম্প্রতি [OSS Gallery](https://oss.gallery) তৈরি করেছি, যা দেখায় কীভাবে তাৎক্ষণিকভাবে (on the fly) শর্ট লিঙ্ক তৈরি করা যায় এবং সরাসরি আপনার অ্যাপ্লিকেশনের ভেতরেই সেই লিঙ্কগুলোর রিয়েল-টাইম ক্লিক অ্যানালিটিক্স প্রদর্শন করা যায়:
+
+[Raycast](/customers/raycast)-ও সম্প্রতি [Ray.so](https://ray.so)-কে ওপেন-সোর্স করেছে, যেখানে তারা সহজে শেয়ার ও অ্যানালিটিক্সের সুবিধার্থে শর্ট লিঙ্ক তৈরি করতে Dub ব্যবহার করে:
+
+## এরপর কী আসছে?
+
+আমরা দারুণভাবে উন্মুখ হয়ে আছি আপনারা যেন নতুন [Dub API](/docs/api-reference/introduction) এবং [SDKs](/docs/sdks/overview) ব্যবহার করে দেখেন।
+
+এটি কেবল শুরু। ভবিষ্যতে আমরা যেসব ফিচার নিয়ে কাজ করছি তার কয়েকটি নিচে দেওয়া হলো:
+
+- **OAuth Flow**: আমরা বর্তমানে একটি OAuth ফ্লো নিয়ে কাজ করছি যাতে আপনারা সহজেই Dub-এর সাথে ইন্টিগ্রেশন তৈরি করতে পারেন—ম্যানুয়ালি API key তৈরি করে তা অ্যাপ্লিকেশনে বসানোর পরিবর্তে ব্যবহারকারীরা মাত্র এক ক্লিকেই "Sign in with Dub" করতে পারবেন।
+- **Integrations Marketplace**: আপনার ইন্টিগ্রেশন তৈরি হয়ে গেলে, তা Dub কমিউনিটির সাথে শেয়ার করতে Dub Integrations Marketplace-এ সাবমিট করতে পারবেন।
+
+আমরা আপনাদের প্রতিক্রিয়া জানার জন্য অপেক্ষায় রইলাম—যেকোনো প্রয়োজনে আমাদের সাথে [যোগাযোগ করুন](/contact/support) অথবা টুইটারে [টুইট করুন](https://twitter.com/dubdotco)!
