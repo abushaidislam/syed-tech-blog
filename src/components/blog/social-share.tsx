@@ -70,7 +70,7 @@ export function SocialShare({
         >
           <div className="relative flex items-center justify-between gap-3">
             <div>
-              <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-neutral-400">
+              <p className="text-2xs font-semibold uppercase tracking-[0.18em] text-neutral-400">
                 Share this article
               </p>
               <p className="mt-1 text-xs text-neutral-500">Send it to your team</p>
