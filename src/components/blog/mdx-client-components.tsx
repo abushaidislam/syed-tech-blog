@@ -82,7 +82,7 @@ export function CodeBlock({
                 {filename}
               </span>
             ) : (
-              <span className="rounded-md bg-neutral-800/80 px-2 py-0.5 font-mono text-[10px] font-medium uppercase tracking-wider text-neutral-400">
+              <span className="rounded-md bg-neutral-800/80 px-2 py-0.5 font-mono text-2xs font-medium uppercase tracking-wider text-neutral-400">
                 {language}
               </span>
             )}

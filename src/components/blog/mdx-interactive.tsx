@@ -81,7 +81,7 @@ export function Step({ title, step = 1, badge, children, className }: StepProps)
           {title}
         </h3>
         {badge && (
-          <span className="inline-flex items-center rounded-full border border-neutral-200/90 bg-neutral-50 px-2.5 py-0.5 text-[11px] font-medium tracking-tight text-neutral-600 shadow-2xs">
+          <span className="inline-flex items-center rounded-full border border-neutral-200/90 bg-neutral-50 px-2.5 py-0.5 text-2xs font-medium tracking-tight text-neutral-600 shadow-2xs">
             {badge}
           </span>
         )}
@@ -312,7 +312,7 @@ export function FileTree({ children, className, title, badge = "EXPLORER" }: Fil
           </div>
         </div>
 
-        <span className="rounded-md border border-neutral-200/80 bg-white px-2 py-0.5 font-mono text-[10px] font-medium uppercase tracking-wider text-neutral-500 shadow-2xs dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-400">
+        <span className="rounded-md border border-neutral-200/80 bg-white px-2 py-0.5 font-mono text-2xs font-medium uppercase tracking-wider text-neutral-500 shadow-2xs dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-400">
           {badge}
         </span>
       </div>
@@ -362,7 +362,7 @@ export function Folder({
         </div>
 
         {comment && (
-          <span className="text-[11px] font-sans italic text-neutral-400 dark:text-neutral-500 truncate shrink-0">
+          <span className="text-2xs font-sans italic text-neutral-400 dark:text-neutral-500 truncate shrink-0">
             {comment}
           </span>
         )}
@@ -441,7 +441,7 @@ export function File({ name, comment, badge, active }: FileProps) {
           </span>
         )}
         {comment && (
-          <span className="text-[11px] font-sans italic text-neutral-400 dark:text-neutral-500 truncate">
+          <span className="text-2xs font-sans italic text-neutral-400 dark:text-neutral-500 truncate">
             {comment}
           </span>
         )}
@@ -516,13 +516,13 @@ export function StatCard({
       />
 
       <div className="flex items-center justify-between gap-2">
-        <span className="font-mono text-[11px] font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
+        <span className="font-mono text-2xs font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
           {title}
         </span>
         {change && (
           <span
             className={cn(
-              "inline-flex items-center gap-1 rounded-full border px-2 py-0.5 font-mono text-[11px] font-semibold tracking-tight shadow-2xs",
+              "inline-flex items-center gap-1 rounded-full border px-2 py-0.5 font-mono text-2xs font-semibold tracking-tight shadow-2xs",
               trendColor
             )}
           >
@@ -716,7 +716,7 @@ export function LinkCard({
               {title}
             </h4>
             {badge && (
-              <span className="inline-flex items-center rounded-full border border-neutral-200/80 bg-neutral-100/80 px-2 py-0.5 font-mono text-[10px] font-medium text-neutral-600 dark:border-neutral-700/80 dark:bg-neutral-800 dark:text-neutral-400">
+              <span className="inline-flex items-center rounded-full border border-neutral-200/80 bg-neutral-100/80 px-2 py-0.5 font-mono text-2xs font-medium text-neutral-600 dark:border-neutral-700/80 dark:bg-neutral-800 dark:text-neutral-400">
                 {badge}
               </span>
             )}

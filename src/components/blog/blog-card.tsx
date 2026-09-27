@@ -44,7 +44,7 @@ export function BlogCard({ post, priority = false }: BlogCardProps) {
           {isFeatured && (
             <div className="absolute top-3 left-3 z-10 inline-flex items-center gap-1.5 rounded-full border border-neutral-200/90 bg-white/95 px-2.5 py-1 text-xs font-medium text-neutral-700 shadow-sm backdrop-blur-md select-none">
               <Sparkles className="size-3 text-neutral-600 stroke-[1.75]" aria-hidden="true" />
-              <span className="text-[11px] font-medium tracking-tight text-neutral-800">
+              <span className="text-2xs font-medium tracking-tight text-neutral-800">
                 Featured
               </span>
             </div>
@@ -72,7 +72,7 @@ export function BlogCard({ post, priority = false }: BlogCardProps) {
                 <div className="flex size-12 items-center justify-center rounded-2xl border border-neutral-200/80 bg-white/95 shadow-md backdrop-blur-md transition-transform duration-300 group-hover:scale-110">
                   <SyedBlogLogo className="size-6 text-neutral-900" />
                 </div>
-                <span className="mt-2.5 rounded-full border border-neutral-200/90 bg-white/90 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-neutral-800 shadow-sm backdrop-blur">
+                <span className="mt-2.5 rounded-full border border-neutral-200/90 bg-white/90 px-2.5 py-0.5 text-2xs font-semibold uppercase tracking-wider text-neutral-800 shadow-sm backdrop-blur">
                   {post.category?.name || "Article"}
                 </span>
               </div>
@@ -124,7 +124,7 @@ export function BlogCard({ post, priority = false }: BlogCardProps) {
         </div>
 
         {post.category && (
-          <span className="text-[11px] font-medium uppercase tracking-wider text-neutral-400 transition-colors group-hover:text-neutral-600">
+          <span className="text-2xs font-medium uppercase tracking-wider text-neutral-400 transition-colors group-hover:text-neutral-600">
             {post.category.name}
           </span>
         )}
