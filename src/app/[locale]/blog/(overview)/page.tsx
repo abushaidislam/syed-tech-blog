@@ -27,11 +27,11 @@ export async function generateMetadata({
 
   const isBn = locale === "bn";
   const title = isBn
-    ? "সকল প্রবন্ধ | সাঈদ ব্লগ"
-    : "All Articles | Syed Blog";
+    ? "সকল প্রযুক্তি ও ইঞ্জিনিয়ারিং নিবন্ধ | সাঈদ ব্লগ"
+    : "All Engineering & Tech Articles | Syed Blog";
   const description = isBn
-    ? "সাঈদ ব্লগের সাম্প্রতিক সফটওয়্যার ইঞ্জিনিয়ারিং, ক্লাউড আর্কিটেকচার এবং টেক আপডেটের সমস্ত নিবন্ধ।"
-    : "Stay informed with the latest updates, engineering insights, and tech articles from Syed Blog.";
+    ? "সাঈদ ব্লগের সকল সফটওয়্যার ইঞ্জিনিয়ারিং, ক্লাউড আর্কিটেকচার, ডিস্ট্রিবিউটেড সিস্টেম এবং প্রোগ্রামিং টিউটোরিয়াল দেখুন।"
+    : "Browse all technical articles, engineering deep dives, system design guides, and developer tutorials on Syed Blog.";
 
   return {
     title: {
@@ -43,6 +43,7 @@ export async function generateMetadata({
       languages: {
         "en-US": `${siteConfig.url}/en/blog`,
         "bn-BD": `${siteConfig.url}/bn/blog`,
+        "x-default": `${siteConfig.url}/en/blog`,
       },
     },
     openGraph: {
@@ -94,8 +95,18 @@ export default async function BlogOverviewPage({
               "@context": "https://schema.org",
               "@type": "BreadcrumbList",
               itemListElement: [
-                { "@type": "ListItem", position: 1, name: "Home", item: `${siteConfig.url}/${locale}` },
-                { "@type": "ListItem", position: 2, name: "Blog", item: `${siteConfig.url}/${locale}/blog` },
+                {
+                  "@type": "ListItem",
+                  position: 1,
+                  name: locale === "bn" ? "হোম" : "Home",
+                  item: `${siteConfig.url}/${locale}`,
+                },
+                {
+                  "@type": "ListItem",
+                  position: 2,
+                  name: locale === "bn" ? "ব্লগ" : "Blog",
+                  item: `${siteConfig.url}/${locale}/blog`,
+                },
               ],
             }),
           }}

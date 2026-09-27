@@ -74,6 +74,7 @@ export async function generateMetadata({
       languages: {
         "en-US": `${siteConfig.url}/en/blog/category/${category.slug}`,
         "bn-BD": `${siteConfig.url}/bn/blog/category/${category.slug}`,
+        "x-default": `${siteConfig.url}/en/blog/category/${category.slug}`,
       },
     },
     openGraph: {
@@ -136,8 +137,18 @@ export default async function BlogCategoryPage({
               "@context": "https://schema.org",
               "@type": "BreadcrumbList",
               itemListElement: [
-                { "@type": "ListItem", position: 1, name: "Home", item: `${siteConfig.url}/${locale}` },
-                { "@type": "ListItem", position: 2, name: "Blog", item: `${siteConfig.url}/${locale}/blog` },
+                {
+                  "@type": "ListItem",
+                  position: 1,
+                  name: locale === "bn" ? "হোম" : "Home",
+                  item: `${siteConfig.url}/${locale}`,
+                },
+                {
+                  "@type": "ListItem",
+                  position: 2,
+                  name: locale === "bn" ? "ব্লগ" : "Blog",
+                  item: `${siteConfig.url}/${locale}/blog`,
+                },
                 { "@type": "ListItem", position: 3, name: displayName, item: categoryUrl },
               ],
             }),

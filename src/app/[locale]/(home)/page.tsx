@@ -27,11 +27,11 @@ export async function generateMetadata({
 
   const isBn = locale === "bn";
   const title = isBn
-    ? "সাঈদ ব্লগ | প্রযুক্তি, সিস্টেম আর্কিটেকচার ও ইঞ্জিনিয়ারিং অন্তর্দৃষ্টি"
-    : "Syed Blog | Insights, Engineering & Technology";
+    ? "সাঈদ ব্লগ — সফটওয়্যার আর্কিটেকচার ও টেক টিউটোরিয়াল"
+    : "Syed Blog — Engineering Insights & System Architecture";
   const description = isBn
-    ? "সাঈদ ব্লগের সাম্প্রতিক সফটওয়্যার ইঞ্জিনিয়ারিং, ক্লাউড আর্কিটেকচার এবং টেক আপডেটের সাথে যুক্ত থাকুন।"
-    : "Stay informed with the latest updates, engineering insights, and tech articles from Syed Blog.";
+    ? "সাঈদ ব্লগে সফটওয়্যার ইঞ্জিনিয়ারিং, ক্লাউড আর্কিটেকচার, নেক্সট-জেএস এবং ওয়েব ডেভেলপমেন্ট নিয়ে সেরা টেক নিবন্ধ ও গাইড দেখুন।"
+    : "Explore expert engineering insights, high-scale system architecture patterns, Next.js tutorials, and modern web development practices on Syed Blog.";
 
   return {
     title: {
@@ -43,6 +43,7 @@ export async function generateMetadata({
       languages: {
         "en-US": `${siteConfig.url}/en`,
         "bn-BD": `${siteConfig.url}/bn`,
+        "x-default": `${siteConfig.url}/en`,
       },
     },
     openGraph: {
