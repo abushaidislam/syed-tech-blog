@@ -349,15 +349,27 @@ export const blogMdxComponents = {
     ...props
   }: React.AnchorHTMLAttributes<HTMLAnchorElement>) => {
     if (!href) return <span>{children}</span>;
+
+    // Security: Block dangerous URI protocols (XSS via javascript:, data:, vbscript:)
+    const sanitizedHref = href.trim();
+    const isUnsafeProtocol = /^(javascript|data|vbscript):/i.test(sanitizedHref);
+    if (isUnsafeProtocol) {
+      return (
+        <span className="font-medium text-neutral-800 underline decoration-neutral-300 underline-offset-4">
+          {children}
+        </span>
+      );
+    }
+
     const isExternal =
-      href.startsWith("http://") ||
-      href.startsWith("https://") ||
-      href.startsWith("//");
+      sanitizedHref.startsWith("http://") ||
+      sanitizedHref.startsWith("https://") ||
+      sanitizedHref.startsWith("//");
 
     if (isExternal) {
       return (
         <a
-          href={href}
+          href={sanitizedHref}
           target="_blank"
           rel="noopener noreferrer"
           className="font-medium text-neutral-800 underline decoration-neutral-300 underline-offset-4 transition-colors hover:text-black hover:decoration-neutral-800"
@@ -370,7 +382,7 @@ export const blogMdxComponents = {
     }
     return (
       <Link
-        href={href}
+        href={sanitizedHref}
         className="font-medium text-neutral-800 underline decoration-neutral-300 underline-offset-4 transition-colors hover:text-black hover:decoration-neutral-800"
         {...props}
       >
