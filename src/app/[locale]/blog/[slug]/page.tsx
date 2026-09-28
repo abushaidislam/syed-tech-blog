@@ -57,13 +57,16 @@ export async function generateMetadata({
   const relativeOgUrl = post.image || `/${locale}/blog/${post.slug}/opengraph-image`;
   const absoluteOgUrl = new URL(relativeOgUrl, siteConfig.url).toString();
   const canonicalUrl = `${siteConfig.url}/${locale}/blog/${post.slug}`;
-  const truncatedSummary = truncateDescription(post.summary);
+  const truncatedSummary = truncateDescription(post.summary, 155);
+  const formattedTitle = post.title.includes("|") || post.title.includes("—")
+    ? post.title
+    : `${post.title} | ${siteConfig.name}`;
   const keywords = Array.from(
     new Set([post.category.name, ...(post.keywords || []), ...(post.tags || [])]),
   );
 
   return {
-    title: post.title,
+    title: formattedTitle,
     description: truncatedSummary,
     keywords,
     alternates: {
@@ -75,7 +78,7 @@ export async function generateMetadata({
       },
     },
     openGraph: {
-      title: post.title,
+      title: formattedTitle,
       description: truncatedSummary,
       url: canonicalUrl,
       siteName: siteConfig.name,
@@ -96,7 +99,7 @@ export async function generateMetadata({
     },
     twitter: {
       card: "summary_large_image",
-      title: post.title,
+      title: formattedTitle,
       description: truncatedSummary,
       images: [absoluteOgUrl],
     },
@@ -136,6 +139,8 @@ export default async function BlogPostPage({
 
   const wordCount = postMdx.content.trim().split(/\s+/).length;
   const readingTimeMinutes = Math.max(1, Math.ceil(wordCount / 200));
+  const defaultOgImageAbsolute = new URL(siteConfig.ogImage, siteConfig.url).toString();
+  const articleImages = imageUrl ? [imageUrl, defaultOgImageAbsolute] : [defaultOgImageAbsolute];
 
   const { content: mdxContent } = await compileMDX({
     source: postMdx.content,
@@ -169,7 +174,7 @@ export default async function BlogPostPage({
                 timeRequired: `PT${readingTimeMinutes}M`,
                 datePublished: post.dateIso,
                 dateModified: post.updatedAt || post.dateIso,
-                ...(imageUrl ? { image: [imageUrl] } : {}),
+                image: articleImages,
                 author: post.authors.map((author) => ({
                   "@type": "Person",
                   name: author.name,
@@ -183,7 +188,7 @@ export default async function BlogPostPage({
                   url: siteConfig.url,
                   logo: {
                     "@type": "ImageObject",
-                    url: new URL(siteConfig.ogImage, siteConfig.url).toString(),
+                    url: defaultOgImageAbsolute,
                   },
                 },
                 mainEntityOfPage: {
