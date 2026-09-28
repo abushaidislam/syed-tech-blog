@@ -116,11 +116,15 @@ export function ShareModal({
     const height = 560;
     const left = window.screen.width / 2 - width / 2;
     const top = window.screen.height / 2 - height / 2;
-    window.open(
+    // Security enhancement: include noopener,noreferrer to prevent window.opener tampering (reverse tabnabbing)
+    const win = window.open(
       shareUrl,
       "_blank",
-      `toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=${width},height=${height},top=${top},left=${left}`
+      `noopener,noreferrer,toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=${width},height=${height},top=${top},left=${left}`
     );
+    if (win) {
+      win.opener = null;
+    }
   }, []);
 
   const handleNativeShare = useCallback(async () => {
