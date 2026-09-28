@@ -127,20 +127,39 @@ export default async function RootLayout({
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "WebSite",
-              "@id": `${siteConfig.url}/#website`,
-              name: siteConfig.name,
-              url: siteConfig.url,
-              description: siteConfig.description,
-              publisher: {
-                "@type": "Person",
-                name: siteConfig.author.name,
+            __html: JSON.stringify([
+              {
+                "@context": "https://schema.org",
+                "@type": "WebSite",
+                "@id": `${siteConfig.url}/#website`,
+                name: siteConfig.name,
                 url: siteConfig.url,
-                image: new URL(siteConfig.author.image, siteConfig.url).toString(),
+                description: siteConfig.description,
+                publisher: {
+                  "@type": "Organization",
+                  name: siteConfig.name,
+                  url: siteConfig.url,
+                  logo: {
+                    "@type": "ImageObject",
+                    url: new URL(siteConfig.ogImage, siteConfig.url).toString(),
+                  },
+                },
               },
-            }),
+              {
+                "@context": "https://schema.org",
+                "@type": "Organization",
+                "@id": `${siteConfig.url}/#organization`,
+                name: siteConfig.name,
+                url: siteConfig.url,
+                logo: new URL(siteConfig.ogImage, siteConfig.url).toString(),
+                sameAs: [
+                  siteConfig.links.twitter,
+                  siteConfig.links.github,
+                  siteConfig.links.linkedin,
+                  siteConfig.links.youtube,
+                ].filter(Boolean),
+              },
+            ]),
           }}
         />
         <LocaleProvider locale={locale} dict={dict}>
