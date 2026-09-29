@@ -63,7 +63,7 @@ export const metadata: Metadata = {
     siteName: siteConfig.name,
     images: [
       {
-        url: siteConfig.ogImage,
+        url: new URL(siteConfig.ogImage, siteConfig.url).toString(),
         width: 1200,
         height: 630,
         alt: siteConfig.name,
@@ -76,7 +76,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: siteConfig.name,
     description: siteConfig.description,
-    images: [siteConfig.ogImage],
+    images: [new URL(siteConfig.ogImage, siteConfig.url).toString()],
   },
   verification: {
     google: "googleb16df7cb15127c88",
