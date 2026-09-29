@@ -673,9 +673,14 @@ export function LinkCard({
   className,
 }: LinkCardProps) {
   const isInsideList = React.useContext(LinkListContext);
-  const isExternal = href.startsWith("http://") || href.startsWith("https://");
 
-  const hrefLower = href.toLowerCase();
+  // Security: Block dangerous URI protocols (XSS via javascript:, data:, vbscript:)
+  const sanitizedHref = (href || "").trim();
+  const isUnsafeProtocol = /^(javascript|data|vbscript):/i.test(sanitizedHref);
+  const isExternal =
+    sanitizedHref.startsWith("http://") || sanitizedHref.startsWith("https://");
+
+  const hrefLower = sanitizedHref.toLowerCase();
   const badgeLower = badge?.toLowerCase() || "";
   const isGitHub =
     hrefLower.includes("github.com") ||
@@ -742,10 +747,14 @@ export function LinkCard({
     ? "block w-full no-underline"
     : "not-prose my-4 block w-full no-underline";
 
+  if (isUnsafeProtocol) {
+    return <div className={containerClasses}>{Content}</div>;
+  }
+
   if (isExternal) {
     return (
       <a
-        href={href}
+        href={sanitizedHref}
         target="_blank"
         rel="noopener noreferrer"
         className={containerClasses}
@@ -756,7 +765,7 @@ export function LinkCard({
   }
 
   return (
-    <Link href={href} className={containerClasses}>
+    <Link href={sanitizedHref} className={containerClasses}>
       {Content}
     </Link>
   );
