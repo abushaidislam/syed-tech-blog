@@ -29,12 +29,12 @@
    - **Findings & Fixes**:
      - *Overview Page*: `Syed Blog — Engineering Insights & System Architecture` (English) / `সাঈদ ব্লগ — সফটওয়্যার আর্কিটেকচার ও টেক টিউটোরিয়াল` (Bengali).
      - *Category Page*: `Engineering Category | Syed Blog` / `ইঞ্জিনিয়ারিং ক্যাটাগরি | সাঈদ ব্লগ`.
-     - *Post Page*: Formatted via `generateMetadata` to include brand fallback (`[Article Title] | Syed Blog`) while respecting pre-formatted custom titles.
+     - *Post Page*: Formatted via `generateMetadata` to include brand fallback (`[Article Title] | Syed Blog`) while respecting pre-formatted custom titles. Entity decoding is applied to eliminate unescaped quotes or apostrophes (`&#x27;`, `&quot;`).
 
 2. **Meta Descriptions (`<meta name="description">`)**:
    - **Target standard**: 120–160 characters, action-oriented CTR copy, truncated cleanly without breaking mid-sentence or mid-word.
    - **Findings & Fixes**:
-     - Added helper function `truncateDescription(post.summary, 155)` to truncate longer frontmatter summaries dynamically to 155 characters max with ellipsis.
+     - Added helper function `truncateDescription(post.summary, 155)` to truncate longer frontmatter summaries dynamically to 155 characters max with ellipsis and entity decoding.
 
 3. **Canonical Links & Multilingual `hreflang`**:
    - **Target standard**: Absolute HTTPS canonical URL matching current route, plus localized alternate language links (`en-US`, `bn-BD`, `x-default`).
@@ -70,8 +70,8 @@
    - Verified required Schema.org fields:
      - `@type`: `"BlogPosting"`
      - `@id`: `https://blog.flinkeo.online/{locale}/blog/{slug}#article`
-     - `headline`: Article title
-     - `description`: Clean summary
+     - `headline`: Article title (decoded)
+     - `description`: Clean summary (decoded)
      - `url`: Canonical article URL
      - `inLanguage`: `"en-US"` or `"bn-BD"`
      - `articleSection`: Post category name
@@ -111,8 +111,8 @@
 | Feature | Audit Standard | Previous State | Updated Codebase State |
 | :--- | :--- | :--- | :--- |
 | **Root OG Image URL** | Absolute `https://` | Relative `/images/...` | Absolute URL via `siteConfig.url` |
-| **Meta Description Length** | 120–160 chars | Unbounded text string | Truncated to max 155 chars |
-| **Article Title Tag** | 50–60 chars w/ Brand | Variable title | Formatted with brand fallback |
+| **Meta Description Length** | 120–160 chars | Unbounded text string | Truncated to max 155 chars with entity decoding |
+| **Article Title Tag** | 50–60 chars w/ Brand | Variable title | Formatted with brand fallback & decoded HTML entities |
 | **Schema `image` Array** | Absolute array of images | Optional array or missing | Guaranteed absolute image array |
 | **Schema `publisher.logo`** | Absolute ImageObject URL | Absolute URL | Standardized absolute URL |
 
@@ -121,6 +121,6 @@
 ## 4. Summary of Code Changes Applied
 
 1. **`src/app/layout.tsx`**: Updated `openGraph` and `twitter` image configurations to construct absolute URLs.
-2. **`src/app/[locale]/blog/[slug]/page.tsx`**: Truncated meta descriptions to 155 chars, formatted article title tags with brand names, enriched `BlogPosting` JSON-LD schema images and publisher logos.
+2. **`src/app/[locale]/blog/[slug]/page.tsx`**: Truncated meta descriptions to 155 chars, formatted article title tags with brand names, decoded HTML entities, and enriched `BlogPosting` JSON-LD schema images, author avatars, and publisher logos.
 3. **`src/components/blog/post-layout.tsx`**, **`src/components/blog/blog-card.tsx`**, **`src/components/blog/blog-header.tsx`**: Verified single H1 heading hierarchy and checked image `alt` text and aspect ratios.
 4. **`docs/seo-audit-report.md`**: Created full technical SEO audit document.

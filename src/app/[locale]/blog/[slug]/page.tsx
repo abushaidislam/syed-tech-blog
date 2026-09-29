@@ -31,9 +31,20 @@ export function generateStaticParams() {
   );
 }
 
+function decodeEntities(text: string): string {
+  if (!text) return "";
+  return text
+    .replace(/&#x27;/g, "'")
+    .replace(/&quot;/g, '"')
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&#39;/g, "'");
+}
+
 function truncateDescription(text: string, maxLength = 155): string {
   if (!text) return "";
-  const cleaned = text.replace(/\s+/g, " ").trim();
+  const cleaned = decodeEntities(text).replace(/\s+/g, " ").trim();
   if (cleaned.length <= maxLength) return cleaned;
   return cleaned.slice(0, maxLength - 3).trim() + "...";
 }
@@ -54,13 +65,14 @@ export async function generateMetadata({
   }
 
   const post = frontmatterToBlogPostMeta(postMdx.frontmatter, locale);
+  const decodedTitle = decodeEntities(post.title);
   const relativeOgUrl = post.image || `/${locale}/blog/${post.slug}/opengraph-image`;
   const absoluteOgUrl = new URL(relativeOgUrl, siteConfig.url).toString();
   const canonicalUrl = `${siteConfig.url}/${locale}/blog/${post.slug}`;
   const truncatedSummary = truncateDescription(post.summary, 155);
-  const formattedTitle = post.title.includes("|") || post.title.includes("—")
-    ? post.title
-    : `${post.title} | ${siteConfig.name}`;
+  const formattedTitle = decodedTitle.includes("|") || decodedTitle.includes("—")
+    ? decodedTitle
+    : `${decodedTitle} | ${siteConfig.name}`;
   const keywords = Array.from(
     new Set([post.category.name, ...(post.keywords || []), ...(post.tags || [])]),
   );
@@ -164,8 +176,8 @@ export default async function BlogPostPage({
                 "@context": "https://schema.org",
                 "@type": "BlogPosting",
                 "@id": `${postUrl}#article`,
-                headline: post.title,
-                description: post.summary,
+                headline: decodeEntities(post.title),
+                description: decodeEntities(post.summary),
                 url: postUrl,
                 inLanguage: locale === "bn" ? "bn-BD" : "en-US",
                 articleSection: post.category.name,
@@ -179,7 +191,7 @@ export default async function BlogPostPage({
                   "@type": "Person",
                   name: author.name,
                   ...(author.image
-                    ? { image: new URL(author.image, siteConfig.url).toString() }
+                    ? { image: author.image.startsWith("http") ? author.image : new URL(author.image, siteConfig.url).toString() }
                     : {}),
                 })),
                 publisher: {
@@ -218,7 +230,7 @@ export default async function BlogPostPage({
                     name: post.category.name,
                     item: `${siteConfig.url}/${locale}/blog/category/${post.category.slug}`,
                   },
-                  { "@type": "ListItem", position: 4, name: post.title, item: postUrl },
+                  { "@type": "ListItem", position: 4, name: decodeEntities(post.title), item: postUrl },
                 ],
               },
             ]),
