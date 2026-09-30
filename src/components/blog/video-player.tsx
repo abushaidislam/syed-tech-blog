@@ -22,6 +22,16 @@ function formatTime(seconds: number): string {
   return `${mins}:${secs.toString().padStart(2, "0")}`;
 }
 
+// Security: Prevent XSS and protocol smuggling via unsafe media URLs (javascript:, data:, vbscript:)
+function sanitizeMediaUrl(url?: string): string | undefined {
+  if (!url) return undefined;
+  const trimmed = url.trim();
+  if (/^(javascript|data|vbscript):/i.test(trimmed)) {
+    return undefined;
+  }
+  return trimmed;
+}
+
 export function VideoPlayer({
   src,
   poster,
@@ -40,23 +50,26 @@ export function VideoPlayer({
   const progressTrackRef = useRef<HTMLDivElement>(null);
 
   // Extract resolved src from children if not on props
-  let resolvedSrc = src;
-  if (!resolvedSrc && children) {
+  let rawSrc = src;
+  if (!rawSrc && children) {
     if (React.isValidElement(children)) {
       const p = children.props as { src?: string };
-      if (p.src) resolvedSrc = p.src;
+      if (p.src) rawSrc = p.src;
     } else if (Array.isArray(children)) {
       for (const child of children) {
         if (React.isValidElement(child)) {
           const p = child.props as { src?: string };
           if (p.src) {
-            resolvedSrc = p.src;
+            rawSrc = p.src;
             break;
           }
         }
       }
     }
   }
+
+  const resolvedSrc = sanitizeMediaUrl(rawSrc);
+  const sanitizedPoster = sanitizeMediaUrl(poster);
 
   const [isPlaying, setIsPlaying] = useState(autoPlay);
   const [isMuted, setIsMuted] = useState(initialMuted);
@@ -193,7 +206,7 @@ export function VideoPlayer({
         <video
           ref={videoRef}
           src={resolvedSrc}
-          poster={poster}
+          poster={sanitizedPoster}
           autoPlay={autoPlay}
           loop={loop}
           muted={isMuted}
