@@ -7,6 +7,8 @@ const nextConfig: NextConfig = {
         source: "/(.*)",
         headers: [
           // Security headers to enhance defense-in-depth against clickjacking, MIME sniffing, and info leaks
+          { key: "X-DNS-Prefetch-Control", value: "off" },
+          { key: "Cross-Origin-Opener-Policy", value: "same-origin" },
           { key: "X-Frame-Options", value: "DENY" },
           { key: "X-Content-Type-Options", value: "nosniff" },
           { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
