@@ -94,6 +94,13 @@ export function getBlogPostBySlug(
   slug: string,
   locale: Locale = "en",
 ): BlogPostMdx | null {
+  if (!slug || typeof slug !== "string") return null;
+
+  // Security: Reject slugs with path traversal characters or path separators
+  if (slug.includes("..") || slug.includes("/") || slug.includes("\\")) {
+    return null;
+  }
+
   const bnCandidates = [
     path.join(BLOG_DIR, "bn", `${slug}.mdx`),
     path.join(BLOG_DIR, `${slug}.bn.mdx`),
@@ -132,6 +139,16 @@ export function getBlogPostBySlug(
   }
 
   if (!targetPath) return null;
+
+  // Security: Ensure resolved candidate file path stays strictly within BLOG_DIR
+  const resolvedBlogDir = path.resolve(BLOG_DIR);
+  const resolvedTarget = path.resolve(targetPath);
+  if (
+    resolvedTarget !== resolvedBlogDir &&
+    !resolvedTarget.startsWith(`${resolvedBlogDir}${path.sep}`)
+  ) {
+    return null;
+  }
 
   const raw = fs.readFileSync(targetPath, "utf-8");
   const { data, content } = matter(raw);
