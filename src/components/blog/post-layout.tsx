@@ -96,7 +96,7 @@ export function PostLayout({ post, relatedPosts, mdxContent, postUrl }: PostLayo
                   {post.image ? (
                     <Image
                       src={post.image}
-                      alt={post.title}
+                      alt={decodedTitle || "Syed Blog Post Cover"}
                       width={1200}
                       height={630}
                       priority
@@ -107,7 +107,7 @@ export function PostLayout({ post, relatedPosts, mdxContent, postUrl }: PostLayo
                     <div className="relative aspect-[1200/630] flex size-full flex-col items-center justify-center overflow-hidden bg-neutral-900 select-none">
                       <Image
                         src="/renderx_background_VECTOR_DOTS_AND_LINES.svg"
-                        alt={post.title}
+                        alt={decodedTitle || "Syed Blog Post Cover Graphic"}
                         fill
                         priority
                         className="object-cover"
