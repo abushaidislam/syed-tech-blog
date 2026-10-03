@@ -190,6 +190,8 @@ export default async function BlogPostPage({
                 author: post.authors.map((author) => ({
                   "@type": "Person",
                   name: author.name,
+                  jobTitle: author.title || "Senior Software Architect",
+                  url: siteConfig.url,
                   ...(author.image
                     ? { image: author.image.startsWith("http") ? author.image : new URL(author.image, siteConfig.url).toString() }
                     : {}),

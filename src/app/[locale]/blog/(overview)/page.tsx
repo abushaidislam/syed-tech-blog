@@ -27,11 +27,11 @@ export async function generateMetadata({
 
   const isBn = locale === "bn";
   const title = isBn
-    ? "সকল প্রযুক্তি ও ইঞ্জিনিয়ারিং নিবন্ধ | সাঈদ ব্লগ"
-    : "All Engineering & Tech Articles | Syed Blog";
+    ? "সকল সফটওয়্যার ইঞ্জিনিয়ারিং ও সিস্টেম আর্কিটেকচার নিবন্ধ | সাঈদ ব্লগ"
+    : "All Software Engineering & Architecture Articles | Syed Blog";
   const description = isBn
-    ? "সাঈদ ব্লগের সকল সফটওয়্যার ইঞ্জিনিয়ারিং, ক্লাউড আর্কিটেকচার, ডিস্ট্রিবিউটেড সিস্টেম এবং প্রোগ্রামিং টিউটোরিয়াল দেখুন।"
-    : "Browse all technical articles, engineering deep dives, system design guides, and developer tutorials on Syed Blog.";
+    ? "সাঈদ ব্লগের সকল সফটওয়্যার ইঞ্জিনিয়ারিং, ক্লাউড আর্কিটেকচার, ডিস্ট্রিবিউটেড সিস্টেম এবং প্র্যাকটিক্যাল টিউটোরিয়াল পড়ুন।"
+    : "Browse all technical articles, engineering deep dives, system design guides, Next.js tutorials, and developer insights on Syed Blog.";
 
   return {
     title: {
