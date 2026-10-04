@@ -54,6 +54,16 @@ export {
   Badge,
 };
 
+// Security: Prevent XSS and protocol smuggling via unsafe image URLs (javascript:, data:, vbscript:)
+function sanitizeImageUrl(url?: string): string | undefined {
+  if (!url) return undefined;
+  const trimmed = url.trim();
+  if (/^(javascript|data|vbscript):/i.test(trimmed)) {
+    return undefined;
+  }
+  return trimmed;
+}
+
 function isOptimizableImage(src: string): boolean {
   if (src.startsWith("/")) return true;
   try {
@@ -128,22 +138,24 @@ export function Quote({
   role?: string;
   avatar?: string;
 }) {
+  const sanitizedAvatar = sanitizeImageUrl(avatar);
+
   return (
     <div className="not-prose my-6 flex flex-col gap-6 rounded-xl border border-neutral-300 bg-white py-8 pl-8 pr-6 shadow-[0px_1px_2px_-1px_rgba(0,0,0,0.08),0px_2px_8px_0px_rgba(0,0,0,0.06)]">
       <div className="font-rowan text-2xl font-light leading-[1.45] tracking-tight text-neutral-800 [text-indent:-0.45em] before:content-['“'] after:content-['”'] [&_a]:text-neutral-800 [&_a]:decoration-1 [&_a]:underline [&_a]:underline-offset-4 [&_p]:my-0 [&_p]:inline">
         {children}
       </div>
-      {(author || avatar) && (
+      {(author || sanitizedAvatar) && (
         <div className="flex items-center gap-3">
-          {avatar && (
+          {sanitizedAvatar && (
             <div className="relative size-6 shrink-0 rounded-full overflow-hidden">
               <Image
-                src={avatar}
+                src={sanitizedAvatar}
                 alt={author || "Quote author"}
                 width={24}
                 height={24}
                 sizes="24px"
-                unoptimized={!isOptimizableImage(avatar)}
+                unoptimized={!isOptimizableImage(sanitizedAvatar)}
                 className="size-6 rounded-full object-cover"
               />
               <div className="pointer-events-none absolute inset-0 rounded-full shadow-[inset_0_0_0_1px_rgba(0,0,0,0.1)]" />
@@ -322,15 +334,18 @@ export const blogMdxComponents = {
 
   img: ({ src, alt }: React.ImgHTMLAttributes<HTMLImageElement>) => {
     if (!src || typeof src !== "string") return null;
+    const sanitizedSrc = sanitizeImageUrl(src);
+    if (!sanitizedSrc) return null;
+
     return (
       <span className="not-prose group relative my-8 block w-full overflow-hidden rounded-xl border border-neutral-200 bg-neutral-50 shadow-sm">
         <span className="block relative aspect-[16/9] w-full bg-neutral-100">
           <Image
-            src={src}
+            src={sanitizedSrc}
             alt={alt || "Post illustration"}
             fill
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 750px, 800px"
-            unoptimized={!isOptimizableImage(src)}
+            unoptimized={!isOptimizableImage(sanitizedSrc)}
             className="object-cover transition-transform duration-300 group-hover:scale-[1.01]"
           />
         </span>
