@@ -70,15 +70,12 @@ export async function generateMetadata({
   const absoluteOgUrl = new URL(relativeOgUrl, siteConfig.url).toString();
   const canonicalUrl = `${siteConfig.url}/${locale}/blog/${post.slug}`;
   const truncatedSummary = truncateDescription(post.summary, 155);
-  const formattedTitle = decodedTitle.includes("|") || decodedTitle.includes("—")
-    ? decodedTitle
-    : `${decodedTitle} | ${siteConfig.name}`;
   const keywords = Array.from(
     new Set([post.category.name, ...(post.keywords || []), ...(post.tags || [])]),
   );
 
   return {
-    title: formattedTitle,
+    title: decodedTitle,
     description: truncatedSummary,
     keywords,
     alternates: {
@@ -90,7 +87,7 @@ export async function generateMetadata({
       },
     },
     openGraph: {
-      title: formattedTitle,
+      title: decodedTitle,
       description: truncatedSummary,
       url: canonicalUrl,
       siteName: siteConfig.name,
@@ -99,7 +96,7 @@ export async function generateMetadata({
           url: absoluteOgUrl,
           width: 1200,
           height: 630,
-          alt: post.title,
+          alt: decodedTitle,
         },
       ],
       locale: locale === "bn" ? "bn_BD" : "en_US",
@@ -111,7 +108,7 @@ export async function generateMetadata({
     },
     twitter: {
       card: "summary_large_image",
-      title: formattedTitle,
+      title: decodedTitle,
       description: truncatedSummary,
       images: [absoluteOgUrl],
     },
@@ -152,7 +149,13 @@ export default async function BlogPostPage({
   const wordCount = postMdx.content.trim().split(/\s+/).length;
   const readingTimeMinutes = Math.max(1, Math.ceil(wordCount / 200));
   const defaultOgImageAbsolute = new URL(siteConfig.ogImage, siteConfig.url).toString();
-  const articleImages = imageUrl ? [imageUrl, defaultOgImageAbsolute] : [defaultOgImageAbsolute];
+  const rawImageUrls = imageUrl ? [imageUrl, defaultOgImageAbsolute] : [defaultOgImageAbsolute];
+  const schemaImages = rawImageUrls.map((url) => ({
+    "@type": "ImageObject",
+    url,
+    width: 1200,
+    height: 630,
+  }));
 
   const { content: mdxContent } = await compileMDX({
     source: postMdx.content,
@@ -177,7 +180,7 @@ export default async function BlogPostPage({
                 "@type": "BlogPosting",
                 "@id": `${postUrl}#article`,
                 headline: decodeEntities(post.title),
-                description: decodeEntities(post.summary),
+                description: truncateDescription(post.summary, 155),
                 url: postUrl,
                 inLanguage: locale === "bn" ? "bn-BD" : "en-US",
                 articleSection: post.category.name,
@@ -186,21 +189,26 @@ export default async function BlogPostPage({
                 timeRequired: `PT${readingTimeMinutes}M`,
                 datePublished: post.dateIso,
                 dateModified: post.updatedAt || post.dateIso,
-                image: articleImages,
+                image: schemaImages,
                 author: post.authors.map((author) => ({
                   "@type": "Person",
                   name: author.name,
+                  url: siteConfig.url,
+                  jobTitle: author.title || "Engineering & Architecture",
                   ...(author.image
                     ? { image: author.image.startsWith("http") ? author.image : new URL(author.image, siteConfig.url).toString() }
                     : {}),
                 })),
                 publisher: {
                   "@type": "Organization",
+                  "@id": `${siteConfig.url}/#organization`,
                   name: siteConfig.name,
                   url: siteConfig.url,
                   logo: {
                     "@type": "ImageObject",
                     url: defaultOgImageAbsolute,
+                    width: 1200,
+                    height: 630,
                   },
                 },
                 mainEntityOfPage: {

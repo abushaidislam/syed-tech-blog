@@ -137,12 +137,20 @@ export default async function RootLayout({
                 description: siteConfig.description,
                 publisher: {
                   "@type": "Organization",
+                  "@id": `${siteConfig.url}/#organization`,
                   name: siteConfig.name,
                   url: siteConfig.url,
                   logo: {
                     "@type": "ImageObject",
                     url: new URL(siteConfig.ogImage, siteConfig.url).toString(),
+                    width: 1200,
+                    height: 630,
                   },
+                },
+                potentialAction: {
+                  "@type": "SearchAction",
+                  target: `${siteConfig.url}/blog?q={search_term_string}`,
+                  "query-input": "required name=search_term_string",
                 },
               },
               {
@@ -151,7 +159,12 @@ export default async function RootLayout({
                 "@id": `${siteConfig.url}/#organization`,
                 name: siteConfig.name,
                 url: siteConfig.url,
-                logo: new URL(siteConfig.ogImage, siteConfig.url).toString(),
+                logo: {
+                  "@type": "ImageObject",
+                  url: new URL(siteConfig.ogImage, siteConfig.url).toString(),
+                  width: 1200,
+                  height: 630,
+                },
                 sameAs: [
                   siteConfig.links.twitter,
                   siteConfig.links.github,
