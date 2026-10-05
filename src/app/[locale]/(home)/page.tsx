@@ -38,11 +38,12 @@ export async function generateMetadata({
       absolute: title,
     },
     description,
+    // ISO language alternates aligned with sitemap.xml definitions
     alternates: {
       canonical: `${siteConfig.url}/${locale}`,
       languages: {
-        "en-US": `${siteConfig.url}/en`,
-        "bn-BD": `${siteConfig.url}/bn`,
+        en: `${siteConfig.url}/en`,
+        bn: `${siteConfig.url}/bn`,
         "x-default": `${siteConfig.url}/en`,
       },
     },

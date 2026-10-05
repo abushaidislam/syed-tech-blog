@@ -81,11 +81,12 @@ export async function generateMetadata({
     title: formattedTitle,
     description: truncatedSummary,
     keywords,
+    // Standardized ISO language alternates matching XML sitemap and search engine conventions
     alternates: {
       canonical: canonicalUrl,
       languages: {
-        "en-US": `${siteConfig.url}/en/blog/${post.slug}`,
-        "bn-BD": `${siteConfig.url}/bn/blog/${post.slug}`,
+        en: `${siteConfig.url}/en/blog/${post.slug}`,
+        bn: `${siteConfig.url}/bn/blog/${post.slug}`,
         "x-default": `${siteConfig.url}/en/blog/${post.slug}`,
       },
     },
@@ -194,6 +195,7 @@ export default async function BlogPostPage({
                     ? { image: author.image.startsWith("http") ? author.image : new URL(author.image, siteConfig.url).toString() }
                     : {}),
                 })),
+                isAccessibleForFree: true,
                 publisher: {
                   "@type": "Organization",
                   name: siteConfig.name,
@@ -201,6 +203,8 @@ export default async function BlogPostPage({
                   logo: {
                     "@type": "ImageObject",
                     url: defaultOgImageAbsolute,
+                    width: 1200,
+                    height: 630,
                   },
                 },
                 mainEntityOfPage: {

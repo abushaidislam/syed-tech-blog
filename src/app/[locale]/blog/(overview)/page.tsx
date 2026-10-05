@@ -38,11 +38,12 @@ export async function generateMetadata({
       absolute: title,
     },
     description,
+    // ISO language alternates aligned with sitemap.xml definitions
     alternates: {
       canonical: `${siteConfig.url}/${locale}/blog`,
       languages: {
-        "en-US": `${siteConfig.url}/en/blog`,
-        "bn-BD": `${siteConfig.url}/bn/blog`,
+        en: `${siteConfig.url}/en/blog`,
+        bn: `${siteConfig.url}/bn/blog`,
         "x-default": `${siteConfig.url}/en/blog`,
       },
     },
@@ -91,24 +92,41 @@ export default async function BlogOverviewPage({
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "BreadcrumbList",
-              itemListElement: [
-                {
-                  "@type": "ListItem",
-                  position: 1,
-                  name: locale === "bn" ? "হোম" : "Home",
-                  item: `${siteConfig.url}/${locale}`,
+            __html: JSON.stringify([
+              {
+                "@context": "https://schema.org",
+                "@type": "Blog",
+                "@id": `${siteConfig.url}/${locale}/blog#blog`,
+                name: locale === "bn" ? "সাঈদ ব্লগ" : "Syed Blog",
+                description: locale === "bn"
+                  ? "সাঈদ ব্লগের সকল সফটওয়্যার ইঞ্জিনিয়ারিং, ক্লাউড আর্কিটেকচার, ডিস্ট্রিবিউটেড সিস্টেম এবং প্রোগ্রামিং টিউটোরিয়াল দেখুন।"
+                  : "Browse all technical articles, engineering deep dives, system design guides, and developer tutorials on Syed Blog.",
+                url: `${siteConfig.url}/${locale}/blog`,
+                publisher: {
+                  "@type": "Organization",
+                  name: siteConfig.name,
+                  url: siteConfig.url,
                 },
-                {
-                  "@type": "ListItem",
-                  position: 2,
-                  name: locale === "bn" ? "ব্লগ" : "Blog",
-                  item: `${siteConfig.url}/${locale}/blog`,
-                },
-              ],
-            }),
+              },
+              {
+                "@context": "https://schema.org",
+                "@type": "BreadcrumbList",
+                itemListElement: [
+                  {
+                    "@type": "ListItem",
+                    position: 1,
+                    name: locale === "bn" ? "হোম" : "Home",
+                    item: `${siteConfig.url}/${locale}`,
+                  },
+                  {
+                    "@type": "ListItem",
+                    position: 2,
+                    name: locale === "bn" ? "ব্লগ" : "Blog",
+                    item: `${siteConfig.url}/${locale}/blog`,
+                  },
+                ],
+              },
+            ]),
           }}
         />
         <BlogHeader activeCategory="overview" />

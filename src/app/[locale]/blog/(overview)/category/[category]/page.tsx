@@ -59,7 +59,9 @@ export async function generateMetadata({
   const displayName = isBn ? (CATEGORY_BN_NAMES[categorySlug] || category.name) : category.name;
   const displayDesc = isBn
     ? (CATEGORY_BN_DESCS[categorySlug] || category.description)
-    : (category.description || `Articles and engineering insights in ${category.name} from Syed Blog.`);
+    : (category.description && category.description.length >= 120
+        ? category.description
+        : `Explore comprehensive software engineering tutorials, system design guides, and developer insights in the ${category.name} category on Syed Blog.`);
 
   const title = isBn
     ? `${displayName} ক্যাটাগরি | সাঈদ ব্লগ`
@@ -69,11 +71,12 @@ export async function generateMetadata({
   return {
     title: displayName,
     description: displayDesc,
+    // ISO language alternates aligned with sitemap.xml definitions
     alternates: {
       canonical: canonicalUrl,
       languages: {
-        "en-US": `${siteConfig.url}/en/blog/category/${category.slug}`,
-        "bn-BD": `${siteConfig.url}/bn/blog/category/${category.slug}`,
+        en: `${siteConfig.url}/en/blog/category/${category.slug}`,
+        bn: `${siteConfig.url}/bn/blog/category/${category.slug}`,
         "x-default": `${siteConfig.url}/en/blog/category/${category.slug}`,
       },
     },
@@ -133,25 +136,40 @@ export default async function BlogCategoryPage({
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "BreadcrumbList",
-              itemListElement: [
-                {
-                  "@type": "ListItem",
-                  position: 1,
-                  name: locale === "bn" ? "হোম" : "Home",
-                  item: `${siteConfig.url}/${locale}`,
+            __html: JSON.stringify([
+              {
+                "@context": "https://schema.org",
+                "@type": "CollectionPage",
+                "@id": `${categoryUrl}#category`,
+                name: displayName,
+                description: displayDesc,
+                url: categoryUrl,
+                publisher: {
+                  "@type": "Organization",
+                  name: siteConfig.name,
+                  url: siteConfig.url,
                 },
-                {
-                  "@type": "ListItem",
-                  position: 2,
-                  name: locale === "bn" ? "ব্লগ" : "Blog",
-                  item: `${siteConfig.url}/${locale}/blog`,
-                },
-                { "@type": "ListItem", position: 3, name: displayName, item: categoryUrl },
-              ],
-            }),
+              },
+              {
+                "@context": "https://schema.org",
+                "@type": "BreadcrumbList",
+                itemListElement: [
+                  {
+                    "@type": "ListItem",
+                    position: 1,
+                    name: locale === "bn" ? "হোম" : "Home",
+                    item: `${siteConfig.url}/${locale}`,
+                  },
+                  {
+                    "@type": "ListItem",
+                    position: 2,
+                    name: locale === "bn" ? "ব্লগ" : "Blog",
+                    item: `${siteConfig.url}/${locale}/blog`,
+                  },
+                  { "@type": "ListItem", position: 3, name: displayName, item: categoryUrl },
+                ],
+              },
+            ]),
           }}
         />
         <BlogHeader
