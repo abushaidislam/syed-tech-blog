@@ -1,7 +1,8 @@
 export const siteConfig = {
   name: "Syed Blog",
+  // Meta description optimized for SERP snippet length (140-155 characters) and organic CTR
   description:
-    "Engineering insights, high-scale digital architecture, and modern software tutorials by Syed.",
+    "Discover expert software engineering insights, high-scale system architecture patterns, Next.js tutorials, and modern web development guides on Syed Blog.",
   url: process.env.NEXT_PUBLIC_SITE_URL || "https://blog.flinkeo.online",
   ogImage: "/images/blog/default-cover.jpg",
   author: {
