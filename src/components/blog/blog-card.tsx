@@ -52,7 +52,7 @@ export function BlogCard({ post, priority = false }: BlogCardProps) {
           {post.image ? (
             <Image
               src={post.image}
-              alt={decodeEntities(post.title)}
+              alt={decodeEntities(post.title) || "Syed Blog Article"}
               width={1200}
               height={630}
               priority={priority}
@@ -63,7 +63,7 @@ export function BlogCard({ post, priority = false }: BlogCardProps) {
             <div className="relative aspect-[1200/630] flex size-full flex-col items-center justify-center overflow-hidden bg-neutral-900 select-none">
               <Image
                 src="/renderx_background_VECTOR_DOTS_AND_LINES.svg"
-                alt={decodeEntities(post.title)}
+                alt={decodeEntities(post.title) || "Syed Blog Article Cover Graphic"}
                 fill
                 sizes="(max-width: 768px) 100vw, (max-width: 1024px) 33vw, 33vw"
                 className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03]"

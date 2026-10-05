@@ -62,12 +62,14 @@ export async function generateMetadata({
     : (category.description || `Articles and engineering insights in ${category.name} from Syed Blog.`);
 
   const title = isBn
-    ? `${displayName} ক্যাটাগরি | সাঈদ ব্লগ`
-    : `${category.name} Category | ${siteConfig.name}`;
+    ? `${displayName} ক্যাটাগরি | আর্কিটেকচার ও টেক গাইডস — সাঈদ ব্লগ`
+    : `${category.name} Category | System Design & Dev Guides — ${siteConfig.name}`;
   const canonicalUrl = `${siteConfig.url}/${locale}/blog/category/${category.slug}`;
 
   return {
-    title: displayName,
+    title: {
+      absolute: title,
+    },
     description: displayDesc,
     alternates: {
       canonical: canonicalUrl,
