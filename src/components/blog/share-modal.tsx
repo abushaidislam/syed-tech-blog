@@ -26,6 +26,16 @@ function decodeHtmlEntities(text: string): string {
   return doc.documentElement.textContent || text;
 }
 
+// Security: Prevent XSS and protocol smuggling via unsafe URLs (javascript:, data:, vbscript:)
+function sanitizeUrl(rawUrl?: string): string | undefined {
+  if (!rawUrl) return undefined;
+  const trimmed = rawUrl.trim();
+  if (/^(javascript|data|vbscript):/i.test(trimmed)) {
+    return undefined;
+  }
+  return trimmed;
+}
+
 export function ShareModal({
   isOpen,
   onClose,
@@ -52,15 +62,17 @@ export function ShareModal({
 
   const cleanTitle = useMemo(() => decodeHtmlEntities(title), [title]);
   const cleanSummary = useMemo(() => decodeHtmlEntities(summary), [summary]);
+  const sanitizedImage = useMemo(() => sanitizeUrl(image), [image]);
+  const sanitizedUrl = useMemo(() => sanitizeUrl(url) || "", [url]);
 
   // Extract display hostname dynamically from URL
   const hostname = useMemo(() => {
     try {
-      return new URL(url).hostname;
+      return sanitizedUrl ? new URL(sanitizedUrl).hostname : "";
     } catch {
       return "";
     }
-  }, [url]);
+  }, [sanitizedUrl]);
 
   // Handle ESC key and scroll-lock
   useEffect(() => {
@@ -88,12 +100,13 @@ export function ShareModal({
   }, [isOpen, onClose]);
 
   const handleCopyLink = useCallback(async () => {
+    if (!sanitizedUrl) return;
     try {
       if (navigator.clipboard && window.isSecureContext) {
-        await navigator.clipboard.writeText(url);
+        await navigator.clipboard.writeText(sanitizedUrl);
       } else {
         const textArea = document.createElement("textarea");
-        textArea.value = url;
+        textArea.value = sanitizedUrl;
         textArea.style.position = "fixed";
         textArea.style.left = "-999999px";
         document.body.appendChild(textArea);
@@ -108,7 +121,7 @@ export function ShareModal({
     } catch (err) {
       console.error("Failed to copy link:", err);
     }
-  }, [url]);
+  }, [sanitizedUrl]);
 
   const openShareWindow = useCallback((shareUrl: string) => {
     if (typeof window === "undefined") return;
@@ -128,12 +141,12 @@ export function ShareModal({
   }, []);
 
   const handleNativeShare = useCallback(async () => {
-    if (navigator.share) {
+    if (navigator.share && sanitizedUrl) {
       try {
         await navigator.share({
           title: cleanTitle,
           text: cleanSummary || cleanTitle,
-          url,
+          url: sanitizedUrl,
         });
       } catch (err) {
         if ((err as Error).name !== "AbortError") {
@@ -141,15 +154,21 @@ export function ShareModal({
         }
       }
     }
-  }, [cleanTitle, cleanSummary, url]);
+  }, [cleanTitle, cleanSummary, sanitizedUrl]);
 
   const shareUrls = useMemo(
     () => ({
-      x: `https://twitter.com/intent/tweet?text=${encodeURIComponent(cleanTitle)}&url=${encodeURIComponent(url)}`,
-      linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`,
-      whatsapp: `https://api.whatsapp.com/send?text=${encodeURIComponent(`${cleanTitle} ${url}`)}`,
+      x: sanitizedUrl
+        ? `https://twitter.com/intent/tweet?text=${encodeURIComponent(cleanTitle)}&url=${encodeURIComponent(sanitizedUrl)}`
+        : "",
+      linkedin: sanitizedUrl
+        ? `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(sanitizedUrl)}`
+        : "",
+      whatsapp: sanitizedUrl
+        ? `https://api.whatsapp.com/send?text=${encodeURIComponent(`${cleanTitle} ${sanitizedUrl}`)}`
+        : "",
     }),
-    [cleanTitle, url]
+    [cleanTitle, sanitizedUrl]
   );
 
   if (!mounted) return null;
@@ -210,11 +229,11 @@ export function ShareModal({
 
             {/* Article Card Preview */}
             <div className="mt-4 overflow-hidden rounded-xl border border-neutral-200/80 bg-neutral-50/60 shadow-2xs">
-              {image && (
+              {sanitizedImage && (
                 <div className="relative aspect-[1200/630] w-full overflow-hidden bg-neutral-100 border-b border-neutral-200/60">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
-                    src={image}
+                    src={sanitizedImage}
                     alt={cleanTitle}
                     className="size-full object-cover"
                     loading="lazy"
@@ -345,7 +364,7 @@ export function ShareModal({
               <input
                 type="text"
                 readOnly
-                value={url}
+                value={sanitizedUrl}
                 aria-label="Article link"
                 style={{
                   border: "none",
