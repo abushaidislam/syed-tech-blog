@@ -674,11 +674,13 @@ export function LinkCard({
 }: LinkCardProps) {
   const isInsideList = React.useContext(LinkListContext);
 
-  // Security: Block dangerous URI protocols (XSS via javascript:, data:, vbscript:)
+  // Security: Block dangerous URI protocols and ensure protocol-relative URLs (//) are opened securely as external links
   const sanitizedHref = (href || "").trim();
   const isUnsafeProtocol = /^(javascript|data|vbscript):/i.test(sanitizedHref);
   const isExternal =
-    sanitizedHref.startsWith("http://") || sanitizedHref.startsWith("https://");
+    sanitizedHref.startsWith("http://") ||
+    sanitizedHref.startsWith("https://") ||
+    sanitizedHref.startsWith("//");
 
   const hrefLower = sanitizedHref.toLowerCase();
   const badgeLower = badge?.toLowerCase() || "";
