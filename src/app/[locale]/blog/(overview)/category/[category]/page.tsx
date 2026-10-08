@@ -34,10 +34,24 @@ const CATEGORY_BN_NAMES: Record<string, string> = {
 };
 
 const CATEGORY_BN_DESCS: Record<string, string> = {
-  company: "সাঈদ ব্লগ টিমের মাইলফলক, প্রোডাক্ট রিলিজ এবং আপডেট।",
-  education: "আপনার ডিজিটাল দক্ষতা বৃদ্ধির জন্য গাইড, টিউটোরিয়াল এবং প্রযুক্তিগত অন্তর্দৃষ্টি।",
-  engineering: "হাই-স্কেল সফটওয়্যার সিস্টেম, সিস্টেম আর্কিটেকচার এবং ডেভেলপার টুলস নিয়ে বিশ্লেষণ।",
-  customers: "কীভাবে বিভিন্ন স্টার্টআপ এবং এন্টারপ্রাইজ সাঈদ ব্লগের সাথে তৈরি ও স্কেল করছে।",
+  company: "সাঈদ ব্লগ টিমের নতুন মাইলফলক, প্রোডাক্ট রিলিজ, অ্যানাউন্সমেন্ট এবং প্রাতিষ্ঠানিক আপডেট সংকলন।",
+  education: "আপনার ডেভেলপমেন্ট দক্ষতা বৃদ্ধি করতে ইন-ডেপথ গাইড, নেক্সট-জেএস টিউটোরিয়াল এবং প্রযুক্তিগত জ্ঞান।",
+  engineering: "হাই-স্কেল সফটওয়্যার আর্কিটেকচার, ডিস্ট্রিবিউটেড সিস্টেম, পারফরম্যান্স টিউনিং এবং ইঞ্জিনিয়ারিং পোস্ট।",
+  customers: "কীভাবে বিভিন্ন স্টার্টআপ এবং এন্টারপ্রাইজ টিম সাঈদ ব্লগের আর্কিটেকচার দিয়ে সার্ভিস স্কেল করছে।",
+};
+
+const CATEGORY_EN_TITLES: Record<string, string> = {
+  company: "Company News, Product Updates & Milestones | Syed Blog",
+  education: "Software Engineering Guides & Tutorials | Syed Blog",
+  engineering: "System Architecture & Software Engineering | Syed Blog",
+  customers: "Customer Success Stories & Engineering Insights | Syed Blog",
+};
+
+const CATEGORY_BN_TITLES: Record<string, string> = {
+  company: "কোম্পানির আপডেট, নিউজ ও মাইলফলক | সাঈদ ব্লগ",
+  education: "সফটওয়্যার ইঞ্জিনিয়ারিং গাইড ও টিউটোরিয়াল | সাঈদ ব্লগ",
+  engineering: "সিস্টেম আর্কিটেকচার ও ইঞ্জিনিয়ারিং গাইড | সাঈদ ব্লগ",
+  customers: "গ্রাহকদের কেস স্টাডি ও কাস্টমার স্টোরিজ | সাঈদ ব্লগ",
 };
 
 export async function generateMetadata({
@@ -64,12 +78,12 @@ export async function generateMetadata({
         : `Explore comprehensive software engineering tutorials, system design guides, and developer insights in the ${category.name} category on Syed Blog.`);
 
   const title = isBn
-    ? `${displayName} ক্যাটাগরি | সাঈদ ব্লগ`
-    : `${category.name} Category | ${siteConfig.name}`;
+    ? (CATEGORY_BN_TITLES[categorySlug] || `${displayName} ক্যাটাগরি | সাঈদ ব্লগ`)
+    : (CATEGORY_EN_TITLES[categorySlug] || `${category.name} Category | ${siteConfig.name}`);
   const canonicalUrl = `${siteConfig.url}/${locale}/blog/category/${category.slug}`;
 
   return {
-    title: displayName,
+    title: title,
     description: displayDesc,
     // ISO language alternates aligned with sitemap.xml definitions
     alternates: {
