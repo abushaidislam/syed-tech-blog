@@ -72,7 +72,7 @@ export async function generateMetadata({
   const truncatedSummary = truncateDescription(post.summary, 155);
   const formattedTitle = decodedTitle.includes("|") || decodedTitle.includes("—")
     ? decodedTitle
-    : `${decodedTitle} | ${siteConfig.name}`;
+    : decodedTitle;
   const keywords = Array.from(
     new Set([post.category.name, ...(post.keywords || []), ...(post.tags || [])]),
   );
