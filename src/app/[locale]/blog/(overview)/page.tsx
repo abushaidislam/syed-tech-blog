@@ -30,8 +30,8 @@ export async function generateMetadata({
     ? "সকল প্রযুক্তি ও ইঞ্জিনিয়ারিং নিবন্ধ | সাঈদ ব্লগ"
     : "All Engineering & Tech Articles | Syed Blog";
   const description = isBn
-    ? "সাঈদ ব্লগের সকল সফটওয়্যার ইঞ্জিনিয়ারিং, ক্লাউড আর্কিটেকচার, ডিস্ট্রিবিউটেড সিস্টেম এবং প্রোগ্রামিং টিউটোরিয়াল দেখুন।"
-    : "Browse all technical articles, engineering deep dives, system design guides, and developer tutorials on Syed Blog.";
+    ? "সাঈদ ব্লগের সকল সফটওয়্যার ইঞ্জিনিয়ারিং, ক্লাউড আর্কিটেকচার, ডিস্ট্রিবিউটেড সিস্টেম এবং প্রোগ্রামিং টিউটোরিয়াল ও বিস্তারিত গাইড দেখুন।"
+    : "Explore expert software engineering insights, high-scale system architecture patterns, Next.js tutorials, and modern web development guides on Syed Blog.";
 
   return {
     title: {

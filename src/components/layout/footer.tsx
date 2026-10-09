@@ -254,7 +254,7 @@ export function Footer() {
               <div className="grid grid-cols-2 lg:col-span-8 sm:grid-cols-4">
                 {/* Topics */}
                 <div className="border-b border-r border-grid-border bg-white/35 p-6 sm:border-b sm:p-8">
-                  <h3 className={linkHeaderClass}>{dict.footer.topics}</h3>
+                  <div className={linkHeaderClass}>{dict.footer.topics}</div>
                   <ul role="list" className={linkListClass}>
                     {navigation.product.map((item) => {
                       const Icon = item.icon;
@@ -279,7 +279,7 @@ export function Footer() {
 
                 {/* Categories */}
                 <div className="border-b border-grid-border bg-white/35 p-6 sm:border-r sm:p-8">
-                  <h3 className={linkHeaderClass}>{dict.footer.categories}</h3>
+                  <div className={linkHeaderClass}>{dict.footer.categories}</div>
                   <ul role="list" className={linkListClass}>
                     {navigation.categories.map((item) => (
                       <li key={item.name}>
@@ -293,7 +293,7 @@ export function Footer() {
 
                 {/* Resources */}
                 <div className="border-b border-r border-grid-border bg-white/35 p-6 sm:border-b-0 sm:p-8">
-                  <h3 className={linkHeaderClass}>{dict.footer.resources}</h3>
+                  <div className={linkHeaderClass}>{dict.footer.resources}</div>
                   <ul role="list" className={linkListClass}>
                     {navigation.resources.map((item) => (
                       <li key={item.name}>
@@ -315,7 +315,7 @@ export function Footer() {
 
                 {/* Company */}
                 <div className="border-b border-grid-border bg-white/35 p-6 sm:border-b-0 sm:p-8">
-                  <h3 className={linkHeaderClass}>{dict.footer.company}</h3>
+                  <div className={linkHeaderClass}>{dict.footer.company}</div>
                   <ul role="list" className={linkListClass}>
                     {navigation.company.map((item) => (
                       <li key={item.name}>
