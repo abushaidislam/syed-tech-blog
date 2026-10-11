@@ -1,5 +1,6 @@
 export const siteConfig = {
   name: "Syed Blog",
+  title: "Syed Blog — Software Engineering & System Design Guides",
   // Meta description optimized for SERP snippet length (140-155 characters) and organic CTR
   description:
     "Discover expert software engineering insights, high-scale system architecture patterns, Next.js tutorials, and modern web development guides on Syed Blog.",
