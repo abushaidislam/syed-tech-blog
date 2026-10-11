@@ -11,6 +11,7 @@ import { PostLayout } from "@/components/blog/post-layout";
 import { PageTransition } from "@/components/layout/page-transition";
 import { blogMdxComponents } from "@/components/blog/mdx-components";
 import { siteConfig } from "@/config/site";
+import { resolveAuthorDetails } from "@/config/authors";
 import {
   LOCALES,
   type Locale,
@@ -188,13 +189,33 @@ export default async function BlogPostPage({
                 datePublished: post.dateIso,
                 dateModified: post.updatedAt || post.dateIso,
                 image: articleImages,
-                author: post.authors.map((author) => ({
-                  "@type": "Person",
-                  name: author.name,
-                  ...(author.image
-                    ? { image: author.image.startsWith("http") ? author.image : new URL(author.image, siteConfig.url).toString() }
-                    : {}),
-                })),
+                author: post.authors.map((author) => {
+                  const details = resolveAuthorDetails(author, locale);
+                  const image = details.image
+                    ? details.image.startsWith("http")
+                      ? details.image
+                      : new URL(details.image, siteConfig.url).toString()
+                    : undefined;
+                  const sameAs = [
+                    details.twitter,
+                    details.github,
+                    details.linkedin,
+                    details.storyUrl && details.storyUrl.startsWith("http") ? details.storyUrl : undefined,
+                  ].filter((url): url is string => Boolean(url));
+
+                  return {
+                    "@type": "Person",
+                    name: details.name,
+                    jobTitle: details.title,
+                    worksFor: {
+                      "@type": "Organization",
+                      name: details.company || siteConfig.name,
+                    },
+                    ...(image ? { image } : {}),
+                    ...(sameAs.length > 0 ? { sameAs } : {}),
+                    url: `${siteConfig.url}/${locale}/blog`,
+                  };
+                }),
                 isAccessibleForFree: true,
                 publisher: {
                   "@type": "Organization",
