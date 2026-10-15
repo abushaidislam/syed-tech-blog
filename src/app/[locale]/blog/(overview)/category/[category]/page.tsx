@@ -98,6 +98,8 @@ export async function generateMetadata({
     },
     twitter: {
       card: "summary_large_image",
+      site: siteConfig.twitterHandle,
+      creator: siteConfig.twitterHandle,
       title,
       description: displayDesc,
       images: [new URL(siteConfig.ogImage, siteConfig.url).toString()],

@@ -74,6 +74,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
+    site: siteConfig.twitterHandle,
+    creator: siteConfig.twitterHandle,
     title: siteConfig.name,
     description: siteConfig.description,
     images: [new URL(siteConfig.ogImage, siteConfig.url).toString()],
@@ -142,7 +144,17 @@ export default async function RootLayout({
                   logo: {
                     "@type": "ImageObject",
                     url: new URL(siteConfig.ogImage, siteConfig.url).toString(),
+                    width: 1200,
+                    height: 630,
                   },
+                },
+                potentialAction: {
+                  "@type": "SearchAction",
+                  target: {
+                    "@type": "EntryPoint",
+                    urlTemplate: `${siteConfig.url}/en/blog?q={search_term_string}`,
+                  },
+                  "query-input": "required name=search_term_string",
                 },
               },
               {
@@ -175,4 +187,3 @@ export default async function RootLayout({
     </html>
   );
 }
-

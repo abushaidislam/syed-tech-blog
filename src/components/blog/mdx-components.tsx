@@ -336,13 +336,14 @@ export const blogMdxComponents = {
     if (!src || typeof src !== "string") return null;
     const sanitizedSrc = sanitizeImageUrl(src);
     if (!sanitizedSrc) return null;
+    const resolvedAlt = alt && alt.trim() ? alt.trim() : "Technical diagram illustrating article concepts";
 
     return (
       <span className="not-prose group relative my-8 block w-full overflow-hidden rounded-xl border border-neutral-200 bg-neutral-50 shadow-sm">
         <span className="block relative aspect-[16/9] w-full bg-neutral-100">
           <Image
             src={sanitizedSrc}
-            alt={alt || "Post illustration"}
+            alt={resolvedAlt}
             fill
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 750px, 800px"
             unoptimized={!isOptimizableImage(sanitizedSrc)}
