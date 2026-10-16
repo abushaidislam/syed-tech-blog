@@ -94,6 +94,27 @@ export function getBlogPostBySlug(
   slug: string,
   locale: Locale = "en",
 ): BlogPostMdx | null {
+  // Security: Reject empty or path traversal slugs containing directory traversal or path separators
+  if (
+    !slug ||
+    typeof slug !== "string" ||
+    slug.includes("..") ||
+    slug.includes("/") ||
+    slug.includes("\\") ||
+    slug.includes("\0")
+  ) {
+    return null;
+  }
+
+  const resolvedBlogDir = path.resolve(BLOG_DIR);
+  const isWithinBlogDir = (filePath: string) => {
+    const resolvedPath = path.resolve(filePath);
+    return (
+      resolvedPath === resolvedBlogDir ||
+      resolvedPath.startsWith(`${resolvedBlogDir}${path.sep}`)
+    );
+  };
+
   const bnCandidates = [
     path.join(BLOG_DIR, "bn", `${slug}.mdx`),
     path.join(BLOG_DIR, `${slug}.bn.mdx`),
@@ -108,22 +129,22 @@ export function getBlogPostBySlug(
   let actualLocale: Locale = locale;
 
   if (locale === "bn") {
-    targetPath = bnCandidates.find((p) => fs.existsSync(p)) || null;
+    targetPath = bnCandidates.find((p) => isWithinBlogDir(p) && fs.existsSync(p)) || null;
     if (targetPath) {
       actualLocale = "bn";
     } else {
-      targetPath = enCandidates.find((p) => fs.existsSync(p)) || null;
+      targetPath = enCandidates.find((p) => isWithinBlogDir(p) && fs.existsSync(p)) || null;
       if (targetPath) {
         isFallback = true;
         actualLocale = "en";
       }
     }
   } else {
-    targetPath = enCandidates.find((p) => fs.existsSync(p)) || null;
+    targetPath = enCandidates.find((p) => isWithinBlogDir(p) && fs.existsSync(p)) || null;
     if (targetPath) {
       actualLocale = "en";
     } else {
-      targetPath = bnCandidates.find((p) => fs.existsSync(p)) || null;
+      targetPath = bnCandidates.find((p) => isWithinBlogDir(p) && fs.existsSync(p)) || null;
       if (targetPath) {
         isFallback = true;
         actualLocale = "bn";
