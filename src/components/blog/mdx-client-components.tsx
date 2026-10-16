@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { Check, Copy, Link2, FileCode2 } from "lucide-react";
+import { extractNodeText } from "@/lib/blog-utils";
 import { CodeTabsContext } from "./code-context";
 
 /**
@@ -21,18 +22,7 @@ export function CodeBlock({
   const isInCodeTabs = React.useContext(CodeTabsContext);
   const [copied, setCopied] = useState(false);
 
-  // Extract raw text for clipboard
-  const getText = (node: React.ReactNode): string => {
-    if (!node) return "";
-    if (typeof node === "string" || typeof node === "number") return String(node);
-    if (Array.isArray(node)) return node.map(getText).join("");
-    if (React.isValidElement(node) && node.props) {
-      return getText((node.props as { children?: React.ReactNode }).children);
-    }
-    return "";
-  };
-
-  const rawCode = getText(children);
+  const rawCode = extractNodeText(children);
 
   let innerContent: React.ReactNode = children;
   let codeClassName = className;
