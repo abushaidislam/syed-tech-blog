@@ -15,6 +15,11 @@ export { BLOG_CATEGORIES, slugify };
 
 const BLOG_DIR = path.join(process.cwd(), "content", "blog");
 
+// Module-level caches to avoid redundant fs reading and gray-matter parsing
+let cachedSlugs: string[] | null = null;
+const blogPostCache = new Map<string, BlogPostMdx | null>();
+const allBlogPostsCache = new Map<Locale, BlogPostMeta[]>();
+
 export interface BlogPostFrontmatter {
   slug: string;
   title: string;
@@ -63,6 +68,7 @@ export function extractHeadingsFromMdx(content: string): BlogPostHeading[] {
  * Get all base blog post slugs from content/blog/en, content/blog/bn, or root (deduplicated across locales).
  */
 export function getAllBlogPostSlugs(): string[] {
+  if (cachedSlugs) return cachedSlugs;
   if (!fs.existsSync(BLOG_DIR)) return [];
   const slugs = new Set<string>();
 
@@ -84,7 +90,7 @@ export function getAllBlogPostSlugs(): string[] {
   scanDir(path.join(BLOG_DIR, "bn"));
   scanDir(BLOG_DIR);
 
-  return Array.from(slugs);
+  return (cachedSlugs = Array.from(slugs));
 }
 
 /**
@@ -94,6 +100,9 @@ export function getBlogPostBySlug(
   slug: string,
   locale: Locale = "en",
 ): BlogPostMdx | null {
+  const key = `${locale}:${slug}`;
+  if (blogPostCache.has(key)) return blogPostCache.get(key)!;
+
   const bnCandidates = [
     path.join(BLOG_DIR, "bn", `${slug}.mdx`),
     path.join(BLOG_DIR, `${slug}.bn.mdx`),
@@ -131,22 +140,18 @@ export function getBlogPostBySlug(
     }
   }
 
-  if (!targetPath) return null;
+  if (!targetPath) {
+    blogPostCache.set(key, null);
+    return null;
+  }
 
   const raw = fs.readFileSync(targetPath, "utf-8");
   const { data, content } = matter(raw);
   const headings = extractHeadingsFromMdx(content);
 
-  return {
-    frontmatter: {
-      ...(data as BlogPostFrontmatter),
-      slug,
-    },
-    content,
-    headings,
-    isFallback,
-    locale: actualLocale,
-  };
+  const res = { frontmatter: { ...(data as BlogPostFrontmatter), slug }, content, headings, isFallback, locale: actualLocale };
+  blogPostCache.set(key, res);
+  return res;
 }
 
 /**
@@ -198,6 +203,7 @@ export function frontmatterToBlogPostMeta(
  * Get all blog posts metadata sorted by date descending (featured posts prioritized).
  */
 export function getAllBlogPosts(locale: Locale = "en"): BlogPostMeta[] {
+  if (allBlogPostsCache.has(locale)) return allBlogPostsCache.get(locale)!;
   const slugs = getAllBlogPostSlugs();
   const posts = slugs
     .map((slug) => {
@@ -211,11 +217,13 @@ export function getAllBlogPosts(locale: Locale = "en"): BlogPostMeta[] {
     })
     .filter(Boolean) as BlogPostMeta[];
 
-  return posts.sort((a, b) => {
+  const sorted = posts.sort((a, b) => {
     if (a.featured && !b.featured) return -1;
     if (!a.featured && b.featured) return 1;
     return new Date(b.dateIso).getTime() - new Date(a.dateIso).getTime();
   });
+  allBlogPostsCache.set(locale, sorted);
+  return sorted;
 }
 
 /**
