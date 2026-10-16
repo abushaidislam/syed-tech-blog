@@ -7,6 +7,7 @@ import {
   getRelatedPosts,
   frontmatterToBlogPostMeta,
 } from "@/lib/blog";
+import { resolveAuthorDetails } from "@/config/authors";
 import { PostLayout } from "@/components/blog/post-layout";
 import { PageTransition } from "@/components/layout/page-transition";
 import { blogMdxComponents } from "@/components/blog/mdx-components";
@@ -78,7 +79,9 @@ export async function generateMetadata({
   );
 
   return {
-    title: formattedTitle,
+    title: {
+      absolute: formattedTitle,
+    },
     description: truncatedSummary,
     keywords,
     // Standardized ISO language alternates matching XML sitemap and search engine conventions
@@ -112,6 +115,8 @@ export async function generateMetadata({
     },
     twitter: {
       card: "summary_large_image",
+      site: siteConfig.twitterHandle,
+      creator: siteConfig.twitterHandle,
       title: formattedTitle,
       description: truncatedSummary,
       images: [absoluteOgUrl],
@@ -188,13 +193,23 @@ export default async function BlogPostPage({
                 datePublished: post.dateIso,
                 dateModified: post.updatedAt || post.dateIso,
                 image: articleImages,
-                author: post.authors.map((author) => ({
-                  "@type": "Person",
-                  name: author.name,
-                  ...(author.image
-                    ? { image: author.image.startsWith("http") ? author.image : new URL(author.image, siteConfig.url).toString() }
-                    : {}),
-                })),
+                author: post.authors.map((author) => {
+                  const profile = resolveAuthorDetails(author, locale);
+                  const socialLinks = [profile.twitter, profile.github, profile.linkedin].filter(Boolean);
+                  return {
+                    "@type": "Person",
+                    name: profile.name,
+                    jobTitle: profile.title,
+                    worksFor: {
+                      "@type": "Organization",
+                      name: profile.company || siteConfig.name,
+                    },
+                    ...(profile.image
+                      ? { image: profile.image.startsWith("http") ? profile.image : new URL(profile.image, siteConfig.url).toString() }
+                      : {}),
+                    ...(socialLinks.length > 0 ? { sameAs: socialLinks } : {}),
+                  };
+                }),
                 isAccessibleForFree: true,
                 publisher: {
                   "@type": "Organization",
