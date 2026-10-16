@@ -35,9 +35,10 @@ export function LocaleProvider({
   const switchLocale = (newLocale: Locale) => {
     if (newLocale === locale) return;
 
-    // 1. Set cookie for 1 year
+    // 1. Set cookie for 1 year securely
     const maxAge = 60 * 60 * 24 * 365; // 365 days
-    document.cookie = `${LOCALE_COOKIE}=${newLocale}; path=/; max-age=${maxAge}; SameSite=Lax`;
+    const isSecure = typeof window !== "undefined" && window.location.protocol === "https:";
+    document.cookie = `${LOCALE_COOKIE}=${encodeURIComponent(newLocale)}; path=/; max-age=${maxAge}; SameSite=Lax${isSecure ? "; Secure" : ""}`;
 
     // 2. Build target path and route smoothly
     const targetPath = buildLocalizedPath(pathname, newLocale);
