@@ -15,6 +15,24 @@ export { BLOG_CATEGORIES, slugify };
 
 const BLOG_DIR = path.join(process.cwd(), "content", "blog");
 
+// Performance Optimization: In-memory cache for parsed blog posts to prevent N+1 synchronous file reads and YAML frontmatter re-parsing.
+const blogPostCache = new Map<string, BlogPostMdx>();
+
+// Performance Optimization: In-memory cache for file existence checks to eliminate redundant fs.existsSync syscalls.
+const fileExistsCache = new Map<string, boolean>();
+
+// Performance Optimization: In-memory cache for deduplicated blog post slugs across directories.
+let cachedSlugs: string[] | null = null;
+
+function cachedExistsSync(filePath: string): boolean {
+  if (fileExistsCache.has(filePath)) {
+    return fileExistsCache.get(filePath)!;
+  }
+  const exists = fs.existsSync(filePath);
+  fileExistsCache.set(filePath, exists);
+  return exists;
+}
+
 export interface BlogPostFrontmatter {
   slug: string;
   title: string;
@@ -63,11 +81,12 @@ export function extractHeadingsFromMdx(content: string): BlogPostHeading[] {
  * Get all base blog post slugs from content/blog/en, content/blog/bn, or root (deduplicated across locales).
  */
 export function getAllBlogPostSlugs(): string[] {
-  if (!fs.existsSync(BLOG_DIR)) return [];
+  if (cachedSlugs) return cachedSlugs;
+  if (!cachedExistsSync(BLOG_DIR)) return [];
   const slugs = new Set<string>();
 
   const scanDir = (dir: string) => {
-    if (!fs.existsSync(dir)) return;
+    if (!cachedExistsSync(dir)) return;
     const entries = fs.readdirSync(dir, { withFileTypes: true });
     for (const entry of entries) {
       if (entry.isFile() && entry.name.endsWith(".mdx")) {
@@ -84,7 +103,8 @@ export function getAllBlogPostSlugs(): string[] {
   scanDir(path.join(BLOG_DIR, "bn"));
   scanDir(BLOG_DIR);
 
-  return Array.from(slugs);
+  cachedSlugs = Array.from(slugs);
+  return cachedSlugs;
 }
 
 /**
@@ -94,6 +114,11 @@ export function getBlogPostBySlug(
   slug: string,
   locale: Locale = "en",
 ): BlogPostMdx | null {
+  const cacheKey = `${slug}:${locale}`;
+  if (blogPostCache.has(cacheKey)) {
+    return blogPostCache.get(cacheKey)!;
+  }
+
   const bnCandidates = [
     path.join(BLOG_DIR, "bn", `${slug}.mdx`),
     path.join(BLOG_DIR, `${slug}.bn.mdx`),
@@ -108,22 +133,22 @@ export function getBlogPostBySlug(
   let actualLocale: Locale = locale;
 
   if (locale === "bn") {
-    targetPath = bnCandidates.find((p) => fs.existsSync(p)) || null;
+    targetPath = bnCandidates.find((p) => cachedExistsSync(p)) || null;
     if (targetPath) {
       actualLocale = "bn";
     } else {
-      targetPath = enCandidates.find((p) => fs.existsSync(p)) || null;
+      targetPath = enCandidates.find((p) => cachedExistsSync(p)) || null;
       if (targetPath) {
         isFallback = true;
         actualLocale = "en";
       }
     }
   } else {
-    targetPath = enCandidates.find((p) => fs.existsSync(p)) || null;
+    targetPath = enCandidates.find((p) => cachedExistsSync(p)) || null;
     if (targetPath) {
       actualLocale = "en";
     } else {
-      targetPath = bnCandidates.find((p) => fs.existsSync(p)) || null;
+      targetPath = bnCandidates.find((p) => cachedExistsSync(p)) || null;
       if (targetPath) {
         isFallback = true;
         actualLocale = "bn";
@@ -135,18 +160,27 @@ export function getBlogPostBySlug(
 
   const raw = fs.readFileSync(targetPath, "utf-8");
   const { data, content } = matter(raw);
-  const headings = extractHeadingsFromMdx(content);
 
-  return {
+  // Performance Optimization: Lazy-evaluate heading extraction so callers like sitemap generation avoid expensive regex passes.
+  let cachedHeadings: BlogPostHeading[] | undefined;
+  const post: BlogPostMdx = {
     frontmatter: {
       ...(data as BlogPostFrontmatter),
       slug,
     },
     content,
-    headings,
+    get headings() {
+      if (!cachedHeadings) {
+        cachedHeadings = extractHeadingsFromMdx(content);
+      }
+      return cachedHeadings;
+    },
     isFallback,
     locale: actualLocale,
   };
+
+  blogPostCache.set(cacheKey, post);
+  return post;
 }
 
 /**
