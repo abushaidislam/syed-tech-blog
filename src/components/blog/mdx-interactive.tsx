@@ -23,6 +23,7 @@ import {
   Globe,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { extractNodeText } from "@/lib/blog-utils";
 import { CodeTabsContext } from "./code-context";
 
 /* -------------------------------------------------------------------------- */
@@ -128,17 +129,6 @@ export function CodeTabs({ items, children, defaultValue, className }: CodeTabsP
   const [copied, setCopied] = useState(false);
   const layoutId = useId();
 
-  // Extract raw text for copy button
-  const extractCodeText = (node: React.ReactNode): string => {
-    if (!node) return "";
-    if (typeof node === "string") return node;
-    if (Array.isArray(node)) return node.map(extractCodeText).join("");
-    if (React.isValidElement(node) && node.props) {
-      return extractCodeText((node.props as { children?: React.ReactNode }).children);
-    }
-    return "";
-  };
-
   const activeIndex = tabLabels.indexOf(activeTab);
   let activeContent: React.ReactNode = null;
 
@@ -149,7 +139,7 @@ export function CodeTabs({ items, children, defaultValue, className }: CodeTabsP
   }
 
   const handleCopy = async () => {
-    const text = extractCodeText(activeContent);
+    const text = extractNodeText(activeContent);
     if (!text) return;
     try {
       await navigator.clipboard.writeText(text.trim());
