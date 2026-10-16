@@ -196,6 +196,11 @@ export default async function BlogPostPage({
                 author: post.authors.map((author) => {
                   const profile = resolveAuthorDetails(author, locale);
                   const socialLinks = [profile.twitter, profile.github, profile.linkedin].filter(Boolean);
+                  const authorImage = profile.image
+                    ? (profile.image.startsWith("http")
+                        ? profile.image
+                        : new URL(profile.image, siteConfig.url).toString())
+                    : new URL(siteConfig.author.image, siteConfig.url).toString();
                   return {
                     "@type": "Person",
                     name: profile.name,
@@ -204,9 +209,7 @@ export default async function BlogPostPage({
                       "@type": "Organization",
                       name: profile.company || siteConfig.name,
                     },
-                    ...(profile.image
-                      ? { image: profile.image.startsWith("http") ? profile.image : new URL(profile.image, siteConfig.url).toString() }
-                      : {}),
+                    image: authorImage,
                     ...(socialLinks.length > 0 ? { sameAs: socialLinks } : {}),
                   };
                 }),

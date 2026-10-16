@@ -23,7 +23,7 @@ import { LocaleProvider } from "@/components/layout/locale-provider";
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
   title: {
-    default: siteConfig.name,
+    default: `${siteConfig.name} — Engineering Insights & System Architecture`,
     template: `%s | ${siteConfig.name}`,
   },
   description: siteConfig.description,
