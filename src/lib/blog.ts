@@ -1,6 +1,7 @@
 import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
+import { cache } from "react";
 import type {
   BlogPostMeta,
   BlogCategory,
@@ -87,67 +88,82 @@ export function getAllBlogPostSlugs(): string[] {
   return Array.from(slugs);
 }
 
+// In-memory cache stores parsed blog post MDX data and blog lists to avoid redundant disk I/O and MDX frontmatter parsing across calls.
+const blogPostCache = new Map<string, BlogPostMdx | null>();
+const allBlogPostsCache = new Map<Locale, BlogPostMeta[]>();
+
 /**
  * Read and parse a single blog post MDX file by slug and locale with graceful fallback across en and bn folders.
+ * Uses React cache and in-memory Map to eliminate duplicate file reads and MDX parsing.
  */
-export function getBlogPostBySlug(
-  slug: string,
-  locale: Locale = "en",
-): BlogPostMdx | null {
-  const bnCandidates = [
-    path.join(BLOG_DIR, "bn", `${slug}.mdx`),
-    path.join(BLOG_DIR, `${slug}.bn.mdx`),
-  ];
-  const enCandidates = [
-    path.join(BLOG_DIR, "en", `${slug}.mdx`),
-    path.join(BLOG_DIR, `${slug}.mdx`),
-  ];
+export const getBlogPostBySlug = cache(
+  (slug: string, locale: Locale = "en"): BlogPostMdx | null => {
+    const cacheKey = `${locale}:${slug}`;
+    if (blogPostCache.has(cacheKey)) {
+      return blogPostCache.get(cacheKey)!;
+    }
 
-  let targetPath: string | null = null;
-  let isFallback = false;
-  let actualLocale: Locale = locale;
+    const bnCandidates = [
+      path.join(BLOG_DIR, "bn", `${slug}.mdx`),
+      path.join(BLOG_DIR, `${slug}.bn.mdx`),
+    ];
+    const enCandidates = [
+      path.join(BLOG_DIR, "en", `${slug}.mdx`),
+      path.join(BLOG_DIR, `${slug}.mdx`),
+    ];
 
-  if (locale === "bn") {
-    targetPath = bnCandidates.find((p) => fs.existsSync(p)) || null;
-    if (targetPath) {
-      actualLocale = "bn";
+    let targetPath: string | null = null;
+    let isFallback = false;
+    let actualLocale: Locale = locale;
+
+    if (locale === "bn") {
+      targetPath = bnCandidates.find((p) => fs.existsSync(p)) || null;
+      if (targetPath) {
+        actualLocale = "bn";
+      } else {
+        targetPath = enCandidates.find((p) => fs.existsSync(p)) || null;
+        if (targetPath) {
+          isFallback = true;
+          actualLocale = "en";
+        }
+      }
     } else {
       targetPath = enCandidates.find((p) => fs.existsSync(p)) || null;
       if (targetPath) {
-        isFallback = true;
         actualLocale = "en";
+      } else {
+        targetPath = bnCandidates.find((p) => fs.existsSync(p)) || null;
+        if (targetPath) {
+          isFallback = true;
+          actualLocale = "bn";
+        }
       }
     }
-  } else {
-    targetPath = enCandidates.find((p) => fs.existsSync(p)) || null;
-    if (targetPath) {
-      actualLocale = "en";
-    } else {
-      targetPath = bnCandidates.find((p) => fs.existsSync(p)) || null;
-      if (targetPath) {
-        isFallback = true;
-        actualLocale = "bn";
-      }
+
+    if (!targetPath) {
+      blogPostCache.set(cacheKey, null);
+      return null;
     }
-  }
 
-  if (!targetPath) return null;
+    const raw = fs.readFileSync(targetPath, "utf-8");
+    const { data, content } = matter(raw);
+    const headings = extractHeadingsFromMdx(content);
 
-  const raw = fs.readFileSync(targetPath, "utf-8");
-  const { data, content } = matter(raw);
-  const headings = extractHeadingsFromMdx(content);
+    const postMdx: BlogPostMdx = {
+      frontmatter: {
+        ...(data as BlogPostFrontmatter),
+        slug,
+      },
+      content,
+      headings,
+      isFallback,
+      locale: actualLocale,
+    };
 
-  return {
-    frontmatter: {
-      ...(data as BlogPostFrontmatter),
-      slug,
-    },
-    content,
-    headings,
-    isFallback,
-    locale: actualLocale,
-  };
-}
+    blogPostCache.set(cacheKey, postMdx);
+    return postMdx;
+  },
+);
 
 /**
  * Convert frontmatter to BlogPostMeta for list views with localized category names.
@@ -196,27 +212,37 @@ export function frontmatterToBlogPostMeta(
 
 /**
  * Get all blog posts metadata sorted by date descending (featured posts prioritized).
+ * Uses React cache and in-memory Map to avoid repeated disk reads during page rendering and related post lookups.
  */
-export function getAllBlogPosts(locale: Locale = "en"): BlogPostMeta[] {
-  const slugs = getAllBlogPostSlugs();
-  const posts = slugs
-    .map((slug) => {
-      const mdx = getBlogPostBySlug(slug, locale);
-      if (!mdx) return null;
-      return {
-        ...frontmatterToBlogPostMeta(mdx.frontmatter, locale),
-        isFallback: mdx.isFallback,
-        locale: mdx.locale,
-      };
-    })
-    .filter(Boolean) as BlogPostMeta[];
+export const getAllBlogPosts = cache(
+  (locale: Locale = "en"): BlogPostMeta[] => {
+    if (allBlogPostsCache.has(locale)) {
+      return allBlogPostsCache.get(locale)!;
+    }
 
-  return posts.sort((a, b) => {
-    if (a.featured && !b.featured) return -1;
-    if (!a.featured && b.featured) return 1;
-    return new Date(b.dateIso).getTime() - new Date(a.dateIso).getTime();
-  });
-}
+    const slugs = getAllBlogPostSlugs();
+    const posts = slugs
+      .map((slug) => {
+        const mdx = getBlogPostBySlug(slug, locale);
+        if (!mdx) return null;
+        return {
+          ...frontmatterToBlogPostMeta(mdx.frontmatter, locale),
+          isFallback: mdx.isFallback,
+          locale: mdx.locale,
+        };
+      })
+      .filter(Boolean) as BlogPostMeta[];
+
+    const sorted = posts.sort((a, b) => {
+      if (a.featured && !b.featured) return -1;
+      if (!a.featured && b.featured) return 1;
+      return new Date(b.dateIso).getTime() - new Date(a.dateIso).getTime();
+    });
+
+    allBlogPostsCache.set(locale, sorted);
+    return sorted;
+  },
+);
 
 /**
  * Get blog posts by category slug.
