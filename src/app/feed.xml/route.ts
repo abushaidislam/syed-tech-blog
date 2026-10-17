@@ -14,9 +14,12 @@ export async function GET() {
   const posts = getAllBlogPosts("en");
   const buildDate = new Date().toUTCString();
 
+  // Security: Escape all URLs to prevent XML Injection and malformed RSS feeds when URLs contain '&' or special characters
+  const escapedSiteUrl = escapeXml(siteConfig.url);
+
   const itemsXml = posts
     .map((post) => {
-      const postUrl = `${siteConfig.url}/en/blog/${post.slug}`;
+      const postUrl = escapeXml(`${siteConfig.url}/en/blog/${post.slug}`);
       const pubDate = new Date(post.dateIso).toUTCString();
       const author = post.authors[0]?.name || siteConfig.author.name;
       const category = post.category.name;
@@ -37,11 +40,11 @@ export async function GET() {
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>${escapeXml(siteConfig.name)}</title>
-    <link>${siteConfig.url}</link>
+    <link>${escapedSiteUrl}</link>
     <description>${escapeXml(siteConfig.description)}</description>
     <language>en-US</language>
     <lastBuildDate>${buildDate}</lastBuildDate>
-    <atom:link href="${siteConfig.url}/feed.xml" rel="self" type="application/rss+xml"/>
+    <atom:link href="${escapedSiteUrl}/feed.xml" rel="self" type="application/rss+xml"/>
 ${itemsXml}
   </channel>
 </rss>`;
