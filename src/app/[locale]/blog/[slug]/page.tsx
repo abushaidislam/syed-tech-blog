@@ -152,13 +152,13 @@ export default async function BlogPostPage({
   const relatedPosts = getRelatedPosts(slug, 4, locale);
   const postUrl = new URL(`/${locale}/blog/${post.slug}`, siteConfig.url).toString();
   const imageUrl = post.image
-    ? new URL(post.image, siteConfig.url).toString()
-    : undefined;
+    ? (post.image.startsWith("http") ? post.image : new URL(post.image, siteConfig.url).toString())
+    : new URL(`/${locale}/blog/${post.slug}/opengraph-image`, siteConfig.url).toString();
 
   const wordCount = postMdx.content.trim().split(/\s+/).length;
   const readingTimeMinutes = Math.max(1, Math.ceil(wordCount / 200));
   const defaultOgImageAbsolute = new URL(siteConfig.ogImage, siteConfig.url).toString();
-  const articleImages = imageUrl ? [imageUrl, defaultOgImageAbsolute] : [defaultOgImageAbsolute];
+  const articleImages = Array.from(new Set([imageUrl, defaultOgImageAbsolute]));
 
   const { content: mdxContent } = await compileMDX({
     source: postMdx.content,
@@ -187,7 +187,9 @@ export default async function BlogPostPage({
                 url: postUrl,
                 inLanguage: locale === "bn" ? "bn-BD" : "en-US",
                 articleSection: post.category.name,
-                keywords: [post.category.name, ...(post.keywords || []), ...(post.tags || [])].join(", "),
+                keywords: Array.from(
+                  new Set([post.category.name, ...(post.keywords || []), ...(post.tags || [])])
+                ).join(", "),
                 wordCount,
                 timeRequired: `PT${readingTimeMinutes}M`,
                 datePublished: post.dateIso,
