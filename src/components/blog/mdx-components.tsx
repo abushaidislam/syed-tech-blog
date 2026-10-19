@@ -8,7 +8,7 @@ import {
   HelpCircle,
   ArrowUpRight,
 } from "lucide-react";
-import { slugify } from "@/lib/utils";
+import { slugify, sanitizeUrl, isUnsafeUrlScheme } from "@/lib/utils";
 import { CodeBlock, HeadingAnchor } from "./mdx-client-components";
 import {
   Steps,
@@ -56,12 +56,7 @@ export {
 
 // Security: Prevent XSS and protocol smuggling via unsafe image URLs (javascript:, data:, vbscript:)
 function sanitizeImageUrl(url?: string): string | undefined {
-  if (!url) return undefined;
-  const trimmed = url.trim();
-  if (/^(javascript|data|vbscript):/i.test(trimmed)) {
-    return undefined;
-  }
-  return trimmed;
+  return sanitizeUrl(url);
 }
 
 function isOptimizableImage(src: string): boolean {
@@ -368,7 +363,7 @@ export const blogMdxComponents = {
 
     // Security: Block dangerous URI protocols (XSS via javascript:, data:, vbscript:)
     const sanitizedHref = href.trim();
-    const isUnsafeProtocol = /^(javascript|data|vbscript):/i.test(sanitizedHref);
+    const isUnsafeProtocol = isUnsafeUrlScheme(sanitizedHref);
     if (isUnsafeProtocol) {
       return (
         <span className="font-medium text-neutral-800 underline decoration-neutral-300 underline-offset-4">
