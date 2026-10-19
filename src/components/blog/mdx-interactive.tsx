@@ -22,7 +22,7 @@ import {
   BookOpen,
   Globe,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn, isUnsafeUrlScheme } from "@/lib/utils";
 import { CodeTabsContext } from "./code-context";
 
 /* -------------------------------------------------------------------------- */
@@ -676,7 +676,7 @@ export function LinkCard({
 
   // Security: Block dangerous URI protocols (XSS via javascript:, data:, vbscript:)
   const sanitizedHref = (href || "").trim();
-  const isUnsafeProtocol = /^(javascript|data|vbscript):/i.test(sanitizedHref);
+  const isUnsafeProtocol = isUnsafeUrlScheme(sanitizedHref);
   const isExternal =
     sanitizedHref.startsWith("http://") || sanitizedHref.startsWith("https://");
 

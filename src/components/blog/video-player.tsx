@@ -2,6 +2,7 @@
 
 import React, { useRef, useState, useEffect, useCallback } from "react";
 import { Play, Pause, Volume2, VolumeX, Maximize, Minimize } from "lucide-react";
+import { sanitizeUrl } from "@/lib/utils";
 
 export interface VideoPlayerProps extends React.VideoHTMLAttributes<HTMLVideoElement> {
   src?: string;
@@ -24,12 +25,7 @@ function formatTime(seconds: number): string {
 
 // Security: Prevent XSS and protocol smuggling via unsafe media URLs (javascript:, data:, vbscript:)
 function sanitizeMediaUrl(url?: string): string | undefined {
-  if (!url) return undefined;
-  const trimmed = url.trim();
-  if (/^(javascript|data|vbscript):/i.test(trimmed)) {
-    return undefined;
-  }
-  return trimmed;
+  return sanitizeUrl(url);
 }
 
 export function VideoPlayer({
