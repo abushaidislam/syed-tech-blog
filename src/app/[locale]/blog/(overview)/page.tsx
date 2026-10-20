@@ -26,12 +26,14 @@ export async function generateMetadata({
   const locale: Locale = isSupportedLocale(rawLocale) ? rawLocale : DEFAULT_LOCALE;
 
   const isBn = locale === "bn";
+  // Meta title optimized for SERP snippet length (50-60 chars) and primary keyword prominence
   const title = isBn
-    ? "সকল প্রযুক্তি ও ইঞ্জিনিয়ারিং নিবন্ধ | সাঈদ ব্লগ"
-    : "All Engineering & Tech Articles | Syed Blog";
+    ? "সকল সফটওয়্যার ইঞ্জিনিয়ারিং নিবন্ধ | সাঈদ ব্লগ"
+    : "Software Engineering Guides & Articles | Syed Blog";
+  // Meta description optimized for organic CTR (120-160 chars) with action-oriented search intent
   const description = isBn
-    ? "সাঈদ ব্লগের সকল সফটওয়্যার ইঞ্জিনিয়ারিং, ক্লাউড আর্কিটেকচার, ডিস্ট্রিবিউটেড সিস্টেম এবং প্রোগ্রামিং টিউটোরিয়াল দেখুন।"
-    : "Browse all technical articles, engineering deep dives, system design guides, and developer tutorials on Syed Blog.";
+    ? "সাঈদ ব্লগে সফটওয়্যার ইঞ্জিনিয়ারিং, ক্লাউড আর্কিটেকচার, ডিস্ট্রিবিউটেড সিস্টেম এবং প্রোগ্রামিং নিবন্ধ দেখুন।"
+    : "Explore expert software engineering deep dives, system design guides, distributed architecture patterns, and web development tutorials on Syed Blog.";
 
   return {
     title: {
