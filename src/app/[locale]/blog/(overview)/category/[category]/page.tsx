@@ -63,13 +63,16 @@ export async function generateMetadata({
         ? category.description
         : `Explore comprehensive software engineering tutorials, system design guides, and developer insights in the ${category.name} category on Syed Blog.`);
 
+  // Title optimized for SERP snippet length (50-60 chars) and keyword depth
   const title = isBn
-    ? `${displayName} ক্যাটাগরি | সাঈদ ব্লগ`
-    : `${category.name} Category | ${siteConfig.name}`;
+    ? `${displayName} ক্যাটাগরি ও টেক নিবন্ধ | সাঈদ ব্লগ`
+    : `${category.name} Articles & System Design Guides | ${siteConfig.name}`;
   const canonicalUrl = `${siteConfig.url}/${locale}/blog/category/${category.slug}`;
 
   return {
-    title: displayName,
+    title: {
+      absolute: title,
+    },
     description: displayDesc,
     // ISO language alternates aligned with sitemap.xml definitions
     alternates: {
