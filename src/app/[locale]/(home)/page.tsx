@@ -88,9 +88,50 @@ export default async function HomePage({
   const locale = rawLocale as Locale;
   const posts = getAllBlogPosts(locale);
 
+  const pageUrl = `${siteConfig.url}/${locale}`;
+  const pageTitle = locale === "bn"
+    ? "সাঈদ ব্লগ — সফটওয়্যার আর্কিটেকচার ও টেক টিউটোরিয়াল"
+    : "Syed Blog — Engineering Insights & System Architecture";
+  const pageDesc = locale === "bn"
+    ? "সাঈদ ব্লগে সফটওয়্যার ইঞ্জিনিয়ারিং, ক্লাউড আর্কিটেকচার, নেক্সট-জেএস এবং ওয়েব ডেভেলপমেন্ট নিয়ে সেরা টেক নিবন্ধ ও গাইড দেখুন।"
+    : "Explore expert engineering insights, high-scale system architecture patterns, Next.js tutorials, and modern web development practices on Syed Blog.";
+
   return (
     <PageTransition>
       <main className="min-h-screen bg-white">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify([
+              {
+                "@context": "https://schema.org",
+                "@type": "WebPage",
+                "@id": `${pageUrl}#webpage`,
+                name: pageTitle,
+                description: pageDesc,
+                url: pageUrl,
+                inLanguage: locale === "bn" ? "bn-BD" : "en-US",
+                publisher: {
+                  "@type": "Organization",
+                  name: siteConfig.name,
+                  url: siteConfig.url,
+                },
+              },
+              {
+                "@context": "https://schema.org",
+                "@type": "BreadcrumbList",
+                itemListElement: [
+                  {
+                    "@type": "ListItem",
+                    position: 1,
+                    name: locale === "bn" ? "হোম" : "Home",
+                    item: pageUrl,
+                  },
+                ],
+              },
+            ]),
+          }}
+        />
         <BlogHeader activeCategory="overview" />
         <BlogGrid posts={posts} />
         <BlogBottomCTA />

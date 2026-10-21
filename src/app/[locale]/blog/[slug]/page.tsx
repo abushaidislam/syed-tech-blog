@@ -180,7 +180,7 @@ export default async function BlogPostPage({
             __html: JSON.stringify([
               {
                 "@context": "https://schema.org",
-                "@type": "BlogPosting",
+                "@type": ["BlogPosting", "Article"],
                 "@id": `${postUrl}#article`,
                 headline: decodeEntities(post.title),
                 description: decodeEntities(post.summary),
