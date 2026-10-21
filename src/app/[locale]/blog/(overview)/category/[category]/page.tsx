@@ -64,12 +64,14 @@ export async function generateMetadata({
         : `Explore comprehensive software engineering tutorials, system design guides, and developer insights in the ${category.name} category on Syed Blog.`);
 
   const title = isBn
-    ? `${displayName} ক্যাটাগরি | সাঈদ ব্লগ`
-    : `${category.name} Category | ${siteConfig.name}`;
+    ? `${displayName} ক্যাটাগরি — নিবন্ধ ও টিউটোরিয়াল | সাঈদ ব্লগ`
+    : `${category.name} Tutorials & Architecture Guides | ${siteConfig.name}`;
   const canonicalUrl = `${siteConfig.url}/${locale}/blog/category/${category.slug}`;
 
   return {
-    title: displayName,
+    title: {
+      absolute: title,
+    },
     description: displayDesc,
     // ISO language alternates aligned with sitemap.xml definitions
     alternates: {
