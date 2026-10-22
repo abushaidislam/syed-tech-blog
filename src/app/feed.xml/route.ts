@@ -21,10 +21,13 @@ export async function GET() {
       const author = post.authors[0]?.name || siteConfig.author.name;
       const category = post.category.name;
 
+      // Security: Escape URLs to prevent XML injection and syntax corruption from special characters (e.g., &)
+      const sanitizedPostUrl = escapeXml(postUrl);
+
       return `    <item>
       <title>${escapeXml(post.title)}</title>
-      <link>${postUrl}</link>
-      <guid isPermaLink="true">${postUrl}</guid>
+      <link>${sanitizedPostUrl}</link>
+      <guid isPermaLink="true">${sanitizedPostUrl}</guid>
       <description>${escapeXml(post.summary)}</description>
       <pubDate>${pubDate}</pubDate>
       <author>${escapeXml(author)}</author>
@@ -33,15 +36,17 @@ export async function GET() {
     })
     .join("\n");
 
+  const sanitizedSiteUrl = escapeXml(siteConfig.url);
+
   const rssXml = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>${escapeXml(siteConfig.name)}</title>
-    <link>${siteConfig.url}</link>
+    <link>${sanitizedSiteUrl}</link>
     <description>${escapeXml(siteConfig.description)}</description>
     <language>en-US</language>
     <lastBuildDate>${buildDate}</lastBuildDate>
-    <atom:link href="${siteConfig.url}/feed.xml" rel="self" type="application/rss+xml"/>
+    <atom:link href="${sanitizedSiteUrl}/feed.xml" rel="self" type="application/rss+xml"/>
 ${itemsXml}
   </channel>
 </rss>`;
