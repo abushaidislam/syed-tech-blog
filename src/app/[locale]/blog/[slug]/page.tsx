@@ -195,7 +195,9 @@ export default async function BlogPostPage({
                 image: articleImages,
                 author: post.authors.map((author) => {
                   const profile = resolveAuthorDetails(author, locale);
-                  const socialLinks = [profile.twitter, profile.github, profile.linkedin].filter(Boolean);
+                  // Security: Validate and sanitize social profile links to prevent URI scheme injection
+                  const socialLinks = [profile.twitter, profile.github, profile.linkedin]
+                    .filter((url): url is string => typeof url === "string" && url.trim().length > 0 && !/^(javascript|data|vbscript):/i.test(url.trim()));
                   return {
                     "@type": "Person",
                     name: profile.name,
