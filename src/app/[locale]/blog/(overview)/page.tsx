@@ -5,6 +5,7 @@ import { BlogGrid } from "@/components/blog/blog-grid";
 import { BlogBottomCTA } from "@/components/blog/blog-bottom-cta";
 import { PageTransition } from "@/components/layout/page-transition";
 import { getAllBlogPosts } from "@/lib/blog";
+import { serializeJsonLd } from "@/lib/utils";
 import { siteConfig } from "@/config/site";
 import {
   LOCALES,
@@ -94,7 +95,7 @@ export default async function BlogOverviewPage({
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify([
+            __html: serializeJsonLd([
               {
                 "@context": "https://schema.org",
                 "@type": "Blog",

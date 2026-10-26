@@ -10,6 +10,7 @@ import {
   getCategoryBySlug,
   getBlogPostsByCategory,
 } from "@/lib/blog";
+import { serializeJsonLd } from "@/lib/utils";
 import {
   LOCALES,
   type Locale,
@@ -138,7 +139,7 @@ export default async function BlogCategoryPage({
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify([
+            __html: serializeJsonLd([
               {
                 "@context": "https://schema.org",
                 "@type": "CollectionPage",

@@ -1,7 +1,7 @@
 import { geistMono, hindSiliguri, inter, satoshi } from "@/styles/fonts";
 import "@/styles/globals.css";
 import "katex/dist/katex.min.css";
-import { cn } from "@/lib/utils";
+import { cn, serializeJsonLd } from "@/lib/utils";
 import type { Metadata } from "next";
 import { headers, cookies } from "next/headers";
 import { Nav } from "@/components/layout/nav";
@@ -129,7 +129,7 @@ export default async function RootLayout({
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify([
+            __html: serializeJsonLd([
               {
                 "@context": "https://schema.org",
                 "@type": "WebSite",
