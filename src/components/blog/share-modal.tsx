@@ -112,13 +112,17 @@ export function ShareModal({
 
   const openShareWindow = useCallback((shareUrl: string) => {
     if (typeof window === "undefined") return;
+    // Security: Validate shareUrl strictly uses HTTP/HTTPS to prevent URI scheme injection
+    const sanitizedUrl = shareUrl.trim();
+    if (!/^https?:\/\//i.test(sanitizedUrl)) return;
+
     const width = 640;
     const height = 560;
     const left = window.screen.width / 2 - width / 2;
     const top = window.screen.height / 2 - height / 2;
     // Security enhancement: include noopener,noreferrer to prevent window.opener tampering (reverse tabnabbing)
     const win = window.open(
-      shareUrl,
+      sanitizedUrl,
       "_blank",
       `noopener,noreferrer,toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=${width},height=${height},top=${top},left=${left}`
     );
