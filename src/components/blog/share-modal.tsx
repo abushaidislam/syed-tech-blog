@@ -53,6 +53,22 @@ export function ShareModal({
   const cleanTitle = useMemo(() => decodeHtmlEntities(title), [title]);
   const cleanSummary = useMemo(() => decodeHtmlEntities(summary), [summary]);
 
+  // Security: Allowlist safe image protocols (/ relative, http/https, data:image/, blob:) to prevent XSS / protocol smuggling
+  const sanitizedImage = useMemo(() => {
+    if (!image) return undefined;
+    const trimmed = image.trim();
+    if (
+      trimmed.startsWith("/") ||
+      trimmed.startsWith("http://") ||
+      trimmed.startsWith("https://") ||
+      trimmed.startsWith("data:image/") ||
+      trimmed.startsWith("blob:")
+    ) {
+      return trimmed;
+    }
+    return undefined;
+  }, [image]);
+
   // Extract display hostname dynamically from URL
   const hostname = useMemo(() => {
     try {
@@ -210,11 +226,11 @@ export function ShareModal({
 
             {/* Article Card Preview */}
             <div className="mt-4 overflow-hidden rounded-xl border border-neutral-200/80 bg-neutral-50/60 shadow-2xs">
-              {image && (
+              {sanitizedImage && (
                 <div className="relative aspect-[1200/630] w-full overflow-hidden bg-neutral-100 border-b border-neutral-200/60">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
-                    src={image}
+                    src={sanitizedImage}
                     alt={cleanTitle}
                     className="size-full object-cover"
                     loading="lazy"
