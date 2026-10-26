@@ -26,6 +26,16 @@ function decodeHtmlEntities(text: string): string {
   return doc.documentElement.textContent || text;
 }
 
+// Security: Prevent XSS and protocol smuggling via unsafe image URLs (javascript:, data:, vbscript:)
+function sanitizeImageUrl(url?: string): string | undefined {
+  if (!url) return undefined;
+  const trimmed = url.trim();
+  if (/^(javascript|data|vbscript):/i.test(trimmed)) {
+    return undefined;
+  }
+  return trimmed;
+}
+
 export function ShareModal({
   isOpen,
   onClose,
@@ -52,6 +62,7 @@ export function ShareModal({
 
   const cleanTitle = useMemo(() => decodeHtmlEntities(title), [title]);
   const cleanSummary = useMemo(() => decodeHtmlEntities(summary), [summary]);
+  const sanitizedImage = useMemo(() => sanitizeImageUrl(image), [image]);
 
   // Extract display hostname dynamically from URL
   const hostname = useMemo(() => {
@@ -210,11 +221,11 @@ export function ShareModal({
 
             {/* Article Card Preview */}
             <div className="mt-4 overflow-hidden rounded-xl border border-neutral-200/80 bg-neutral-50/60 shadow-2xs">
-              {image && (
+              {sanitizedImage && (
                 <div className="relative aspect-[1200/630] w-full overflow-hidden bg-neutral-100 border-b border-neutral-200/60">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
-                    src={image}
+                    src={sanitizedImage}
                     alt={cleanTitle}
                     className="size-full object-cover"
                     loading="lazy"
