@@ -33,6 +33,16 @@ function decodeEntities(text: string) {
     .replace(/&#39;/g, "'");
 }
 
+// Security: Prevent XSS and protocol smuggling via unsafe image URLs (javascript:, data:, vbscript:)
+function sanitizeImageUrl(url?: string): string | undefined {
+  if (!url) return undefined;
+  const trimmed = url.trim();
+  if (/^(javascript|data|vbscript):/i.test(trimmed)) {
+    return undefined;
+  }
+  return trimmed;
+}
+
 export function PostLayout({ post, relatedPosts, mdxContent, postUrl }: PostLayoutProps) {
   const { locale, dict } = useLocale();
   const primaryAuthor = post.authors[0] || {
@@ -45,7 +55,8 @@ export function PostLayout({ post, relatedPosts, mdxContent, postUrl }: PostLayo
   const canonicalUrl = postUrl || `${siteConfig.url}/${locale}/blog/${post.slug}`;
   const decodedTitle = decodeEntities(post.title);
   const decodedSummary = decodeEntities(post.summary);
-  const previewImage = post.image || `/${locale}/blog/${post.slug}/opengraph-image`;
+  const sanitizedPostImage = sanitizeImageUrl(post.image);
+  const previewImage = sanitizedPostImage || `/${locale}/blog/${post.slug}/opengraph-image`;
 
   return (
     <div>
@@ -93,9 +104,9 @@ export function PostLayout({ post, relatedPosts, mdxContent, postUrl }: PostLayo
             <div className="relative col-span-1 border-grid-border md:col-span-2">
               <div className="bg-white">
                 <div className="relative aspect-[1200/630] w-full overflow-hidden bg-neutral-100">
-                  {post.image ? (
+                  {sanitizedPostImage ? (
                     <Image
-                      src={post.image}
+                      src={sanitizedPostImage}
                       alt={post.title}
                       width={1200}
                       height={630}
@@ -172,16 +183,18 @@ export function PostLayout({ post, relatedPosts, mdxContent, postUrl }: PostLayo
                     {locale === "bn" ? "সম্পর্কিত অন্যান্য প্রবন্ধ" : "Read more"}
                   </p>
                   <ul className="mt-4 flex flex-col gap-y-6">
-                    {relatedPosts.map((related) => (
+                    {relatedPosts.map((related) => {
+                      const sanitizedRelatedImage = sanitizeImageUrl(related.image);
+                      return (
                       <li key={related.slug}>
                         <Link
                           href={`/${locale}/blog/${related.slug}`}
                           className="group flex flex-col items-start gap-4 sm:flex-row"
                         >
                           <div className="relative aspect-video w-full shrink-0 overflow-hidden rounded-lg border border-neutral-200 bg-neutral-100 sm:w-[200px]">
-                            {related.image ? (
+                            {sanitizedRelatedImage ? (
                               <Image
-                                src={related.image}
+                                src={sanitizedRelatedImage}
                                 alt={related.title}
                                 width={200}
                                 height={112}
@@ -207,7 +220,8 @@ export function PostLayout({ post, relatedPosts, mdxContent, postUrl }: PostLayo
                           </div>
                         </Link>
                       </li>
-                    ))}
+                    );
+                    })}
                   </ul>
                 </div>
               )}
