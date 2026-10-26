@@ -1,5 +1,20 @@
 import type { NextConfig } from "next";
 
+const cspHeader = `
+  default-src 'self';
+  script-src 'self' 'unsafe-inline' 'unsafe-eval' https://giscus.app;
+  style-src 'self' 'unsafe-inline';
+  img-src 'self' blob: data: https://assets.dub.co https://images.unsplash.com https://avatar.vercel.sh https://github.com https://avatars.githubusercontent.com;
+  font-src 'self' data:;
+  frame-src 'self' https://giscus.app https://www.youtube.com https://www.youtube-nocookie.com;
+  connect-src 'self' https://giscus.app;
+  object-src 'none';
+  base-uri 'self';
+  form-action 'self';
+  frame-ancestors 'none';
+  upgrade-insecure-requests;
+`.replace(/\s{2,}/g, " ").trim();
+
 const nextConfig: NextConfig = {
   async headers() {
     return [
@@ -7,6 +22,7 @@ const nextConfig: NextConfig = {
         source: "/(.*)",
         headers: [
           // Security headers to enhance defense-in-depth against clickjacking, MIME sniffing, and info leaks
+          { key: "Content-Security-Policy", value: cspHeader },
           { key: "X-DNS-Prefetch-Control", value: "off" },
           { key: "Cross-Origin-Opener-Policy", value: "same-origin" },
           { key: "X-Frame-Options", value: "DENY" },
