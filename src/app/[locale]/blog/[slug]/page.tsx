@@ -158,7 +158,28 @@ export default async function BlogPostPage({
   const wordCount = postMdx.content.trim().split(/\s+/).length;
   const readingTimeMinutes = Math.max(1, Math.ceil(wordCount / 200));
   const defaultOgImageAbsolute = new URL(siteConfig.ogImage, siteConfig.url).toString();
-  const articleImages = imageUrl ? [imageUrl, defaultOgImageAbsolute] : [defaultOgImageAbsolute];
+  const articleImages = [
+    ...(imageUrl
+      ? [
+          {
+            "@type": "ImageObject",
+            url: imageUrl,
+            width: 1200,
+            height: 630,
+            caption: decodeEntities(post.title),
+          },
+          imageUrl,
+        ]
+      : []),
+    {
+      "@type": "ImageObject",
+      url: defaultOgImageAbsolute,
+      width: 1200,
+      height: 630,
+      caption: siteConfig.name,
+    },
+    defaultOgImageAbsolute,
+  ];
 
   const { content: mdxContent } = await compileMDX({
     source: postMdx.content,
