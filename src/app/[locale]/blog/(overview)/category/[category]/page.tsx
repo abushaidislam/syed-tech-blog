@@ -34,10 +34,10 @@ const CATEGORY_BN_NAMES: Record<string, string> = {
 };
 
 const CATEGORY_BN_DESCS: Record<string, string> = {
-  company: "সাঈদ ব্লগ টিমের মাইলফলক, প্রোডাক্ট রিলিজ এবং আপডেট।",
-  education: "আপনার ডিজিটাল দক্ষতা বৃদ্ধির জন্য গাইড, টিউটোরিয়াল এবং প্রযুক্তিগত অন্তর্দৃষ্টি।",
-  engineering: "হাই-স্কেল সফটওয়্যার সিস্টেম, সিস্টেম আর্কিটেকচার এবং ডেভেলপার টুলস নিয়ে বিশ্লেষণ।",
-  customers: "কীভাবে বিভিন্ন স্টার্টআপ এবং এন্টারপ্রাইজ সাঈদ ব্লগের সাথে তৈরি ও স্কেল করছে।",
+  company: "সাঈদ ব্লগ টিমের নতুন মাইলফলক, প্রোডাক্ট রিলিজ, টেক প্ল্যাটফর্ম আপডেট এবং টিম নিউজ নিয়ে প্রকাশিত নিবন্ধ দেখুন।",
+  education: "আপনার ডেভেলপমেন্ট দক্ষতা দ্রুত বৃদ্ধির জন্য টিউটোরিয়াল, গাইডলাইন এবং প্রযুক্তিগত অন্তর্দৃষ্টি সরাসরি পড়ুন।",
+  engineering: "হাই-স্কেল সফটওয়্যার আর্কিটেকচার, ক্লাউড সিস্টেম, পারফরম্যান্স ইমপ্রুভমেন্ট এবং ডেভেলপার টুলস নিয়ে বিশ্লেষণ।",
+  customers: "কীভাবে বিভিন্ন স্টার্টআপ এবং সফল এন্টারপ্রাইজ কোম্পানি সাঈদ ব্লগের টেকনোলজি দিয়ে স্কেল করছে তা জানুন।",
 };
 
 export async function generateMetadata({
@@ -69,7 +69,9 @@ export async function generateMetadata({
   const canonicalUrl = `${siteConfig.url}/${locale}/blog/category/${category.slug}`;
 
   return {
-    title: displayName,
+    title: {
+      absolute: title,
+    },
     description: displayDesc,
     // ISO language alternates aligned with sitemap.xml definitions
     alternates: {
