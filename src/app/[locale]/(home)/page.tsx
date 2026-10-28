@@ -30,7 +30,7 @@ export async function generateMetadata({
     ? "সাঈদ ব্লগ — সফটওয়্যার আর্কিটেকচার ও টেক টিউটোরিয়াল"
     : "Syed Blog — Engineering Insights & System Architecture";
   const description = isBn
-    ? "সাঈদ ব্লগে সফটওয়্যার ইঞ্জিনিয়ারিং, ক্লাউড আর্কিটেকচার, নেক্সট-জেএস এবং ওয়েব ডেভেলপমেন্ট নিয়ে সেরা টেক নিবন্ধ ও গাইড দেখুন।"
+    ? "সাঈদ ব্লগে আধুনিক সফটওয়্যার ইঞ্জিনিয়ারিং, ক্লাউড আর্কিটেকচার, নেক্সট-জেএস এবং ওয়েব ডেভেলপমেন্ট নিয়ে সেরা টেক নিবন্ধ ও গাইড দেখুন।"
     : "Explore expert engineering insights, high-scale system architecture patterns, Next.js tutorials, and modern web development practices on Syed Blog.";
 
   return {
