@@ -47,6 +47,12 @@ export function AuthorSpotlight({
   const profile = resolveAuthorDetails(author, locale);
   const dict = getDictionary(locale);
 
+  // Security: Sanitize author profile image URL to prevent XSS / protocol smuggling (e.g. javascript:, data:, vbscript:)
+  const rawImage = profile.image?.trim() || "";
+  const sanitizedImage = /^(javascript|data|vbscript):/i.test(rawImage)
+    ? "/images/author-avatar.png"
+    : rawImage || "/images/author-avatar.png";
+
   return (
     <div
       aria-label={dict.author?.ariaLabel || "Author Note"}
@@ -56,7 +62,7 @@ export function AuthorSpotlight({
         {/* Large Prominent Author Avatar Image */}
         <div className="relative size-16 sm:size-20 overflow-hidden rounded-full border border-neutral-200/80 shadow-xs bg-neutral-100">
           <Image
-            src={profile.image}
+            src={sanitizedImage}
             alt={profile.name}
             width={80}
             height={80}
