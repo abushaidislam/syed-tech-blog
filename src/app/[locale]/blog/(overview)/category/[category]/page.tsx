@@ -69,7 +69,9 @@ export async function generateMetadata({
   const canonicalUrl = `${siteConfig.url}/${locale}/blog/category/${category.slug}`;
 
   return {
-    title: displayName,
+    title: {
+      absolute: title,
+    },
     description: displayDesc,
     // ISO language alternates aligned with sitemap.xml definitions
     alternates: {
