@@ -15,6 +15,16 @@ interface ShareModalProps {
   image?: string;
 }
 
+// Security: Prevent XSS and protocol smuggling via unsafe share URLs (javascript:, data:, vbscript:)
+function sanitizeShareUrl(url?: string): string {
+  if (!url) return "";
+  const trimmed = url.trim();
+  if (/^(javascript|data|vbscript):/i.test(trimmed)) {
+    return "";
+  }
+  return trimmed;
+}
+
 // Robust HTML entity decoder using browser DOMParser
 function decodeHtmlEntities(text: string): string {
   if (!text) return "";
@@ -50,17 +60,18 @@ export function ShareModal({
     };
   }, []);
 
+  const safeUrl = useMemo(() => sanitizeShareUrl(url), [url]);
   const cleanTitle = useMemo(() => decodeHtmlEntities(title), [title]);
   const cleanSummary = useMemo(() => decodeHtmlEntities(summary), [summary]);
 
   // Extract display hostname dynamically from URL
   const hostname = useMemo(() => {
     try {
-      return new URL(url).hostname;
+      return new URL(safeUrl).hostname;
     } catch {
       return "";
     }
-  }, [url]);
+  }, [safeUrl]);
 
   // Handle ESC key and scroll-lock
   useEffect(() => {
@@ -88,12 +99,13 @@ export function ShareModal({
   }, [isOpen, onClose]);
 
   const handleCopyLink = useCallback(async () => {
+    if (!safeUrl) return;
     try {
       if (navigator.clipboard && window.isSecureContext) {
-        await navigator.clipboard.writeText(url);
+        await navigator.clipboard.writeText(safeUrl);
       } else {
         const textArea = document.createElement("textarea");
-        textArea.value = url;
+        textArea.value = safeUrl;
         textArea.style.position = "fixed";
         textArea.style.left = "-999999px";
         document.body.appendChild(textArea);
@@ -108,7 +120,7 @@ export function ShareModal({
     } catch (err) {
       console.error("Failed to copy link:", err);
     }
-  }, [url]);
+  }, [safeUrl]);
 
   const openShareWindow = useCallback((shareUrl: string) => {
     if (typeof window === "undefined") return;
@@ -128,12 +140,12 @@ export function ShareModal({
   }, []);
 
   const handleNativeShare = useCallback(async () => {
-    if (navigator.share) {
+    if (navigator.share && safeUrl) {
       try {
         await navigator.share({
           title: cleanTitle,
           text: cleanSummary || cleanTitle,
-          url,
+          url: safeUrl,
         });
       } catch (err) {
         if ((err as Error).name !== "AbortError") {
@@ -141,15 +153,15 @@ export function ShareModal({
         }
       }
     }
-  }, [cleanTitle, cleanSummary, url]);
+  }, [cleanTitle, cleanSummary, safeUrl]);
 
   const shareUrls = useMemo(
     () => ({
-      x: `https://twitter.com/intent/tweet?text=${encodeURIComponent(cleanTitle)}&url=${encodeURIComponent(url)}`,
-      linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`,
-      whatsapp: `https://api.whatsapp.com/send?text=${encodeURIComponent(`${cleanTitle} ${url}`)}`,
+      x: `https://twitter.com/intent/tweet?text=${encodeURIComponent(cleanTitle)}&url=${encodeURIComponent(safeUrl)}`,
+      linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(safeUrl)}`,
+      whatsapp: `https://api.whatsapp.com/send?text=${encodeURIComponent(`${cleanTitle} ${safeUrl}`)}`,
     }),
-    [cleanTitle, url]
+    [cleanTitle, safeUrl]
   );
 
   if (!mounted) return null;
@@ -345,7 +357,7 @@ export function ShareModal({
               <input
                 type="text"
                 readOnly
-                value={url}
+                value={safeUrl}
                 aria-label="Article link"
                 style={{
                   border: "none",
