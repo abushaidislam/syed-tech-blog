@@ -158,7 +158,10 @@ export default async function BlogPostPage({
   const wordCount = postMdx.content.trim().split(/\s+/).length;
   const readingTimeMinutes = Math.max(1, Math.ceil(wordCount / 200));
   const defaultOgImageAbsolute = new URL(siteConfig.ogImage, siteConfig.url).toString();
-  const articleImages = imageUrl ? [imageUrl, defaultOgImageAbsolute] : [defaultOgImageAbsolute];
+  const dynamicOgImageAbsolute = new URL(`/${locale}/blog/${post.slug}/opengraph-image`, siteConfig.url).toString();
+  const articleImages = imageUrl
+    ? [imageUrl, dynamicOgImageAbsolute, defaultOgImageAbsolute]
+    : [dynamicOgImageAbsolute, defaultOgImageAbsolute];
 
   const { content: mdxContent } = await compileMDX({
     source: postMdx.content,
