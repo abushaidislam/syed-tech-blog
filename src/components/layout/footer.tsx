@@ -236,11 +236,12 @@ export function Footer() {
                 {/* Social Icons */}
                 <div className="flex items-center gap-2">
                   {socials.map(({ name, icon: Icon, href }) => (
+                    /* Security: explicitly enforce noopener alongside noreferrer to prevent reverse tabnabbing and window.opener access across legacy/mobile browsers */
                     <a
                       key={name}
                       href={href}
                       target="_blank"
-                      rel="noreferrer"
+                      rel="noopener noreferrer"
                       className="group flex size-9 items-center justify-center rounded-lg border border-neutral-200/80 bg-white text-neutral-600 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-neutral-300 hover:bg-neutral-50 hover:text-neutral-900 hover:shadow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900 focus-visible:ring-offset-2"
                       aria-label={name}
                     >
@@ -297,10 +298,11 @@ export function Footer() {
                   <ul role="list" className={linkListClass}>
                     {navigation.resources.map((item) => (
                       <li key={item.name}>
+                        {/* Security: include noopener alongside noreferrer for external blank targets to protect against reverse tabnabbing */}
                         <Link
                           href={toLocaleHref(item.href)}
                           target={item.external ? "_blank" : undefined}
-                          rel={item.external ? "noreferrer" : undefined}
+                          rel={item.external ? "noopener noreferrer" : undefined}
                           className={linkItemClass}
                         >
                           <span>{dict.footer.links[item.translationKey as keyof typeof dict.footer.links]}</span>
