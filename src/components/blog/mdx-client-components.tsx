@@ -159,11 +159,12 @@ export function HeadingAnchor({
   };
 
   const isH2 = as === "h2";
+  const HeadingTag = as;
 
   const sectionTitle = typeof children === "string" ? children : "section";
 
   return (
-    <div
+    <HeadingTag
       id={id}
       className={`group relative scroll-mt-24 ${
         isH2
@@ -182,14 +183,14 @@ export function HeadingAnchor({
         className="group flex items-start gap-x-2 !font-medium !text-neutral-800 no-underline hover:text-neutral-900 focus-visible:ring-2 focus-visible:ring-neutral-950 focus-visible:outline-none rounded-md p-1 -m-1"
       >
         <span>{children}</span>
-        <div className="rounded-lg border border-neutral-200 bg-white p-1.5 opacity-0 transition-all hover:border-neutral-300 hover:shadow group-hover:opacity-100 group-focus-visible:opacity-100">
+        <span className="rounded-lg border border-neutral-200 bg-white p-1.5 opacity-0 transition-all hover:border-neutral-300 hover:shadow group-hover:opacity-100 group-focus-visible:opacity-100">
           {copied ? (
             <Check className="size-4 text-green-600" aria-hidden="true" />
           ) : (
             <Link2 className="size-4 text-neutral-600" aria-hidden="true" />
           )}
-        </div>
+        </span>
       </a>
-    </div>
+    </HeadingTag>
   );
 }

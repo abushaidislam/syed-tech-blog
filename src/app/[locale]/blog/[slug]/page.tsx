@@ -182,6 +182,12 @@ export default async function BlogPostPage({
                 "@context": "https://schema.org",
                 "@type": "BlogPosting",
                 "@id": `${postUrl}#article`,
+                isPartOf: {
+                  "@type": "WebSite",
+                  "@id": `${siteConfig.url}/#website`,
+                  name: siteConfig.name,
+                  url: siteConfig.url,
+                },
                 headline: decodeEntities(post.title),
                 description: decodeEntities(post.summary),
                 url: postUrl,
