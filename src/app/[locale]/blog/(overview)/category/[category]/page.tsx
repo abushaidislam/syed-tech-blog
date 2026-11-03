@@ -69,7 +69,9 @@ export async function generateMetadata({
   const canonicalUrl = `${siteConfig.url}/${locale}/blog/category/${category.slug}`;
 
   return {
-    title: displayName,
+    title: {
+      absolute: title,
+    },
     description: displayDesc,
     // ISO language alternates aligned with sitemap.xml definitions
     alternates: {
@@ -146,10 +148,17 @@ export default async function BlogCategoryPage({
                 name: displayName,
                 description: displayDesc,
                 url: categoryUrl,
+                inLanguage: locale === "bn" ? "bn-BD" : "en-US",
                 publisher: {
                   "@type": "Organization",
                   name: siteConfig.name,
                   url: siteConfig.url,
+                  logo: {
+                    "@type": "ImageObject",
+                    url: new URL(siteConfig.ogImage, siteConfig.url).toString(),
+                    width: 1200,
+                    height: 630,
+                  },
                 },
               },
               {

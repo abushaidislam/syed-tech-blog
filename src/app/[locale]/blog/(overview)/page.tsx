@@ -28,10 +28,10 @@ export async function generateMetadata({
   const isBn = locale === "bn";
   const title = isBn
     ? "সকল প্রযুক্তি ও ইঞ্জিনিয়ারিং নিবন্ধ | সাঈদ ব্লগ"
-    : "All Engineering & Tech Articles | Syed Blog";
+    : "All Engineering & System Architecture Articles | Syed Blog";
   const description = isBn
     ? "সাঈদ ব্লগের সকল সফটওয়্যার ইঞ্জিনিয়ারিং, ক্লাউড আর্কিটেকচার, ডিস্ট্রিবিউটেড সিস্টেম এবং প্রোগ্রামিং টিউটোরিয়াল দেখুন।"
-    : "Browse all technical articles, engineering deep dives, system design guides, and developer tutorials on Syed Blog.";
+    : "Discover all software engineering deep dives, system architecture guides, Next.js tutorials, and modern web development articles on Syed Blog.";
 
   return {
     title: {
@@ -102,12 +102,19 @@ export default async function BlogOverviewPage({
                 name: locale === "bn" ? "সাঈদ ব্লগ" : "Syed Blog",
                 description: locale === "bn"
                   ? "সাঈদ ব্লগের সকল সফটওয়্যার ইঞ্জিনিয়ারিং, ক্লাউড আর্কিটেকচার, ডিস্ট্রিবিউটেড সিস্টেম এবং প্রোগ্রামিং টিউটোরিয়াল দেখুন।"
-                  : "Browse all technical articles, engineering deep dives, system design guides, and developer tutorials on Syed Blog.",
+                  : "Discover all software engineering deep dives, system architecture guides, Next.js tutorials, and modern web development articles on Syed Blog.",
                 url: `${siteConfig.url}/${locale}/blog`,
+                inLanguage: locale === "bn" ? "bn-BD" : "en-US",
                 publisher: {
                   "@type": "Organization",
                   name: siteConfig.name,
                   url: siteConfig.url,
+                  logo: {
+                    "@type": "ImageObject",
+                    url: new URL(siteConfig.ogImage, siteConfig.url).toString(),
+                    width: 1200,
+                    height: 630,
+                  },
                 },
               },
               {
