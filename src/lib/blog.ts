@@ -1,3 +1,4 @@
+import { cache } from "react";
 import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
@@ -217,8 +218,10 @@ export function frontmatterToBlogPostMeta(
 
 /**
  * Get all blog posts metadata sorted by date descending (featured posts prioritized).
+ * Wrapped in React cache to memoize results per server render pass and eliminate
+ * duplicate filesystem reads and frontmatter parsing across components/metadata.
  */
-export function getAllBlogPosts(locale: Locale = "en"): BlogPostMeta[] {
+export const getAllBlogPosts = cache((locale: Locale = "en"): BlogPostMeta[] => {
   const slugs = getAllBlogPostSlugs();
   const posts = slugs
     .map((slug) => {
@@ -237,7 +240,7 @@ export function getAllBlogPosts(locale: Locale = "en"): BlogPostMeta[] {
     if (!a.featured && b.featured) return 1;
     return new Date(b.dateIso).getTime() - new Date(a.dateIso).getTime();
   });
-}
+});
 
 /**
  * Get blog posts by category slug.
