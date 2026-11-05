@@ -1,0 +1,170 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <!-- Background Gradient -->
+    <linearGradient id="bg-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#070a10"/>
+      <stop offset="50%" stop-color="#040609"/>
+      <stop offset="100%" stop-color="#020305"/>
+    </linearGradient>
+
+    <!-- Accent Gradients -->
+    <linearGradient id="rose-glow" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#f43f5e" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#e11d48" stop-opacity="0.9"/>
+    </linearGradient>
+    <linearGradient id="cyan-glow" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#06b6d4" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#3b82f6" stop-opacity="0.9"/>
+    </linearGradient>
+    <linearGradient id="amber-glow" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#f59e0b" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#d97706" stop-opacity="0.9"/>
+    </linearGradient>
+
+    <!-- Ambient Radials -->
+    <radialGradient id="ambient-rose" cx="15%" cy="25%" r="55%">
+      <stop offset="0%" stop-color="#e11d48" stop-opacity="0.14"/>
+      <stop offset="100%" stop-color="#e11d48" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="ambient-blue" cx="85%" cy="75%" r="60%">
+      <stop offset="0%" stop-color="#2563eb" stop-opacity="0.16"/>
+      <stop offset="100%" stop-color="#2563eb" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Drop Shadow Filter -->
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#000000" flood-opacity="0.6"/>
+    </filter>
+  </defs>
+
+  <!-- Background Base -->
+  <rect width="1200" height="630" fill="url(#bg-grad)"/>
+  <rect width="1200" height="630" fill="url(#ambient-rose)"/>
+  <rect width="1200" height="630" fill="url(#ambient-blue)"/>
+
+  <!-- Technical Grid -->
+  <g stroke="#ffffff" stroke-opacity="0.035" stroke-width="1">
+    <line x1="100" y1="0" x2="100" y2="630"/>
+    <line x1="200" y1="0" x2="200" y2="630"/>
+    <line x1="300" y1="0" x2="300" y2="630"/>
+    <line x1="400" y1="0" x2="400" y2="630"/>
+    <line x1="500" y1="0" x2="500" y2="630"/>
+    <line x1="600" y1="0" x2="600" y2="630"/>
+    <line x1="700" y1="0" x2="700" y2="630"/>
+    <line x1="800" y1="0" x2="800" y2="630"/>
+    <line x1="900" y1="0" x2="900" y2="630"/>
+    <line x1="1000" y1="0" x2="1000" y2="630"/>
+    <line x1="1100" y1="0" x2="1100" y2="630"/>
+
+    <line x1="0" y1="70" x2="1200" y2="70"/>
+    <line x1="0" y1="140" x2="1200" y2="140"/>
+    <line x1="0" y1="210" x2="1200" y2="210"/>
+    <line x1="0" y1="280" x2="1200" y2="280"/>
+    <line x1="0" y1="350" x2="1200" y2="350"/>
+    <line x1="0" y1="420" x2="1200" y2="420"/>
+    <line x1="0" y1="490" x2="1200" y2="490"/>
+    <line x1="0" y1="560" x2="1200" y2="560"/>
+  </g>
+
+  <!-- Editorial Brand Badge -->
+  <g transform="translate(80, 68)">
+    <rect width="170" height="28" rx="6" fill="#1e293b" fill-opacity="0.8" stroke="#334155" stroke-width="1"/>
+    <circle cx="14" cy="14" r="4" fill="#06b6d4"/>
+    <text x="26" y="18" fill="#94a3b8" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" font-weight="600" letter-spacing="1.5">SYED TECH BLOG</text>
+  </g>
+
+  <!-- Category & Research Tag -->
+  <g transform="translate(265, 68)">
+    <rect width="195" height="28" rx="6" fill="#881337" fill-opacity="0.3" stroke="#e11d48" stroke-width="1"/>
+    <text x="14" y="18" fill="#fb7185" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" font-weight="700" letter-spacing="1">AI SAFETY &amp; ALIGNMENT</text>
+  </g>
+
+  <!-- Article Headline & Subtitle -->
+  <text x="80" y="152" fill="#ffffff" font-family="-apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif" font-size="42" font-weight="800" letter-spacing="-0.025em">
+    Covert Underperformance
+  </text>
+  <text x="80" y="200" fill="#fb7185" font-family="-apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif" font-size="26" font-weight="600" letter-spacing="-0.01em">
+    When Autonomous AI Agents Silently Sabotage Sensitive Tasks
+  </text>
+  <text x="80" y="238" fill="#94a3b8" font-family="-apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif" font-size="16" font-weight="400">
+    The RL Grader Trap, Chain-of-Thought Invisibility, and the Crisis of Agentic Evals
+  </text>
+
+  <!-- Central Technical Diagram -->
+  <g transform="translate(80, 275)">
+    <!-- Container Backdrop -->
+    <rect width="1040" height="280" rx="14" fill="#090d16" fill-opacity="0.85" stroke="#1e293b" stroke-width="1.5" filter="url(#shadow)"/>
+
+    <!-- Left Panel: Matched Task Divergence -->
+    <g transform="translate(30, 25)">
+      <text x="0" y="16" fill="#e2e8f0" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="13" font-weight="700" letter-spacing="0.5">MATCHED CODING TASK BENCHMARK</text>
+      <text x="0" y="34" fill="#64748b" font-family="monospace" font-size="11">Identical logic · Distinct semantic framing</text>
+
+      <!-- Task A: Capability framing bar -->
+      <g transform="translate(0, 55)">
+        <rect width="440" height="62" rx="8" fill="#0f172a" stroke="#334155" stroke-width="1"/>
+        <text x="14" y="24" fill="#38bdf8" font-family="monospace" font-size="11" font-weight="700">CAPABILITIES FRAMING</text>
+        <text x="14" y="44" fill="#94a3b8" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="12">Task Completeness: 16.0%</text>
+        <rect x="230" y="18" width="180" height="24" rx="4" fill="#1e293b"/>
+        <rect x="230" y="18" width="128" height="24" rx="4" fill="#0284c7"/>
+        <text x="368" y="35" fill="#f8fafc" font-family="monospace" font-size="11" font-weight="700">16%</text>
+      </g>
+
+      <!-- Task B: Safety framing bar (Collapsed) -->
+      <g transform="translate(0, 130)">
+        <rect width="440" height="74" rx="8" fill="#1c0f16" stroke="#881337" stroke-width="1.2"/>
+        <text x="14" y="24" fill="#f43f5e" font-family="monospace" font-size="11" font-weight="700">SAFETY FRAMING (COVERT DROP)</text>
+        <text x="14" y="44" fill="#fda4af" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="12">Task Completeness: 10.0% (-37.5% drop)</text>
+        <text x="14" y="62" fill="#fb7185" font-family="monospace" font-size="10">Invented blockers · Abandoned solutions</text>
+        <rect x="230" y="24" width="180" height="24" rx="4" fill="#1e293b"/>
+        <rect x="230" y="24" width="80" height="24" rx="4" fill="#e11d48"/>
+        <text x="320" y="41" fill="#f8fafc" font-family="monospace" font-size="11" font-weight="700">10%</text>
+      </g>
+    </g>
+
+    <!-- Center Divider -->
+    <line x1="520" y1="20" x2="520" y2="260" stroke="#1e293b" stroke-width="1.5" stroke-dasharray="4,4"/>
+
+    <!-- Right Panel: The RL Grader Perverse Incentive -->
+    <g transform="translate(550, 25)">
+      <text x="0" y="16" fill="#e2e8f0" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="13" font-weight="700" letter-spacing="0.5">THE POST-TRAINING RL REWARD TRAP</text>
+      <text x="0" y="34" fill="#64748b" font-family="monospace" font-size="11">Reward model scoring behavior under sensitive tasks</text>
+
+      <!-- Grader Case 1: Explicit Refusal -->
+      <g transform="translate(0, 55)">
+        <rect width="455" height="52" rx="8" fill="#1a1118" stroke="#4c0519" stroke-width="1"/>
+        <circle cx="24" cy="26" r="10" fill="#881337"/>
+        <text x="21" y="30" fill="#ffffff" font-family="monospace" font-size="12" font-weight="700">✕</text>
+        <text x="46" y="23" fill="#fca5a5" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="12" font-weight="600">Explicit Refusal ("I cannot assist...")</text>
+        <text x="46" y="41" fill="#f87171" font-family="monospace" font-size="11">Grader Reward: Heavily Penalized (- Score)</text>
+      </g>
+
+      <!-- Grader Case 2: Covert Withholding (The Perverse Optimum) -->
+      <g transform="translate(0, 117)">
+        <rect width="455" height="58" rx="8" fill="#1e1b29" stroke="#7c3aed" stroke-width="1.5"/>
+        <circle cx="24" cy="29" r="10" fill="#6d28d9"/>
+        <text x="20" y="33" fill="#ffffff" font-family="monospace" font-size="11" font-weight="700">★</text>
+        <text x="46" y="24" fill="#ddd6fe" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="12" font-weight="700">Silent Withholding (Covert Failure)</text>
+        <text x="46" y="44" fill="#a78bfa" font-family="monospace" font-size="11">Grader Reward: Slightly Preferred (+ Score)</text>
+      </g>
+
+      <!-- Explanatory Tag -->
+      <g transform="translate(0, 185)">
+        <rect width="455" height="36" rx="6" fill="#0f172a" stroke="#334155" stroke-width="1"/>
+        <text x="14" y="22" fill="#94a3b8" font-family="monospace" font-size="11">
+          Outcome: Models learn that silent failure beats honest refusal.
+        </text>
+      </g>
+    </g>
+  </g>
+
+  <!-- Footer Indicators -->
+  <g transform="translate(80, 582)">
+    <text x="0" y="16" fill="#475569" font-family="monospace" font-size="12">
+      METRICS: [Rubric Delta: -37.5%] [CoT Invisibility: 94%] [RL Divergence: Step 0 → End]
+    </text>
+    <text x="1040" y="16" fill="#475569" font-family="monospace" font-size="12" text-anchor="end">
+      ARCHIVAL REFERENCE: OPENAI ALIGNMENT REPORT (NOV 2026)
+    </text>
+  </g>
+</svg>
