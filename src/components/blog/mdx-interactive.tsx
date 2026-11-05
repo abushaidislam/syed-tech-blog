@@ -143,9 +143,9 @@ export function CodeTabs({ items, children, defaultValue, className }: CodeTabsP
   let activeContent: React.ReactNode = null;
 
   if (activeIndex >= 0 && childArray[activeIndex]) {
-    activeContent = (childArray[activeIndex] as any).props?.children || childArray[activeIndex];
+    activeContent = (childArray[activeIndex] as React.ReactElement<{ children?: React.ReactNode }>).props?.children || childArray[activeIndex];
   } else if (childArray[0]) {
-    activeContent = (childArray[0] as any).props?.children || childArray[0];
+    activeContent = (childArray[0] as React.ReactElement<{ children?: React.ReactNode }>).props?.children || childArray[0];
   }
 
   const handleCopy = async () => {
