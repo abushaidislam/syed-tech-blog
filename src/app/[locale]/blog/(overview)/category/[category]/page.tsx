@@ -5,6 +5,7 @@ import { BlogGrid } from "@/components/blog/blog-grid";
 import { BlogBottomCTA } from "@/components/blog/blog-bottom-cta";
 import { PageTransition } from "@/components/layout/page-transition";
 import { siteConfig } from "@/config/site";
+import { safeJsonLd } from "@/lib/utils";
 import {
   BLOG_CATEGORIES,
   getCategoryBySlug,
@@ -138,7 +139,7 @@ export default async function BlogCategoryPage({
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify([
+            __html: safeJsonLd([
               {
                 "@context": "https://schema.org",
                 "@type": "CollectionPage",
