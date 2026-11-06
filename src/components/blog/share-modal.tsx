@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState, useMemo, useCallback, useRef } from "react";
+import Image from "next/image";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "motion/react";
 import { X, Check, Copy, Link2, Share2, Smartphone } from "lucide-react";
@@ -212,12 +213,12 @@ export function ShareModal({
             <div className="mt-4 overflow-hidden rounded-xl border border-neutral-200/80 bg-neutral-50/60 shadow-2xs">
               {image && (
                 <div className="relative aspect-[1200/630] w-full overflow-hidden bg-neutral-100 border-b border-neutral-200/60">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
+                  <Image
                     src={image}
                     alt={cleanTitle}
+                    fill
+                    sizes="(max-width: 460px) 100vw, 460px"
                     className="size-full object-cover"
-                    loading="lazy"
                   />
                 </div>
               )}
