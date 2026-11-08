@@ -47,7 +47,12 @@ function truncateDescription(text: string, maxLength = 155): string {
   if (!text) return "";
   const cleaned = decodeEntities(text).replace(/\s+/g, " ").trim();
   if (cleaned.length <= maxLength) return cleaned;
-  return cleaned.slice(0, maxLength - 3).trim() + "...";
+  const truncated = cleaned.slice(0, maxLength - 3);
+  const lastSpace = truncated.lastIndexOf(" ");
+  if (lastSpace > 100) {
+    return truncated.slice(0, lastSpace).trim() + "...";
+  }
+  return truncated.trim() + "...";
 }
 
 export async function generateMetadata({
