@@ -70,6 +70,16 @@ An end-to-end Technical SEO, Metadata, SERP, and Schema Gap Analysis was perform
 - **Root Cause**: MDX image renderers provided generic alt fallbacks (`"Post illustration"`) when an author omitted alt text.
 - **Resolution**: Replaced with context-aware, keyword-conscious fallbacks (`"Technical diagram illustrating article concepts"`). All rendered images specify explicit aspect ratios (`aspect-[1200/630]`, `aspect-[16/9]`) and responsive `sizes` to eliminate Cumulative Layout Shift (CLS score: 0.00).
 
+### 7. Category Page Localized Brand Template Suffix
+- **Root Cause**: In `src/app/[locale]/blog/(overview)/category/[category]/page.tsx`, `generateMetadata` returned `{ title: displayName }` as a raw string. While Next.js appended `%s | Syed Blog` from root layout, on Bengali localized routes (`/bn/blog/category/*`), this caused an English brand name suffix to be appended (`ইঞ্জিনিয়ারিং | Syed Blog`) instead of the fully localized brand (`ইঞ্জিনিয়ারিং | সাঈদ ব্লগ`).
+- **SERP Impact**: Causes mixed-language titles in regional search result snippets, signaling inconsistent localization and lowering localized organic CTR.
+- **Resolution**: Wrapped the title in `{ title: { absolute: title } }` utilizing localized brand suffixes (`সাঈদ ব্লগ` for `bn`, `Syed Blog` for `en`), ensuring consistent localization and eliminating template overrides.
+
+### 8. HTML Entity Encoding in Frontmatter Summaries
+- **Root Cause**: Several MDX files contained raw HTML entities (`&#x27;`, `&amp;`) in their YAML frontmatter summaries (e.g. `Here&#x27;s what you need to know`).
+- **SERP Impact**: When serialized across RSS feeds, meta descriptions, and JSON-LD schemas, these entities could cause double-encoding or escape leakage in raw search snippets and feed aggregators.
+- **Resolution**: Sanitized all frontmatter summaries across `content/blog/en/` to use natural UTF-8 punctuation (`'` and `&`).
+
 ---
 
 ## 🎯 3. Optimization Recommendations for Continuous Organic Growth
