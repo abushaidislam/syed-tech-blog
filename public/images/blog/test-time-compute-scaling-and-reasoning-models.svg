@@ -1,0 +1,207 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <!-- Background Gradients -->
+    <linearGradient id="bg-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#090d16"/>
+      <stop offset="45%" stop-color="#0b1120"/>
+      <stop offset="100%" stop-color="#030712"/>
+    </linearGradient>
+
+    <!-- Accent Glow Gradients -->
+    <radialGradient id="glow-cyan" cx="25%" cy="30%" r="50%">
+      <stop offset="0%" stop-color="#06b6d4" stop-opacity="0.18"/>
+      <stop offset="100%" stop-color="#06b6d4" stop-opacity="0"/>
+    </radialGradient>
+
+    <radialGradient id="glow-purple" cx="75%" cy="65%" r="60%">
+      <stop offset="0%" stop-color="#8b5cf6" stop-opacity="0.18"/>
+      <stop offset="100%" stop-color="#8b5cf6" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Card Backgrounds -->
+    <linearGradient id="card-grad-1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#0f172a" stop-opacity="0.9"/>
+    </linearGradient>
+
+    <linearGradient id="card-grad-2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e1e38" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#111126" stop-opacity="0.95"/>
+    </linearGradient>
+
+    <!-- Grid Pattern -->
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1e293b" stroke-width="0.8" stroke-opacity="0.4"/>
+    </pattern>
+  </defs>
+
+  <!-- Background Base -->
+  <rect width="1200" height="630" fill="url(#bg-grad)"/>
+  <rect width="1200" height="630" fill="url(#grid)"/>
+
+  <!-- Radial Glow Overlays -->
+  <rect width="1200" height="630" fill="url(#glow-cyan)"/>
+  <rect width="1200" height="630" fill="url(#glow-purple)"/>
+
+  <!-- Top Metadata Header -->
+  <g transform="translate(80, 75)">
+    <!-- Category Badge -->
+    <rect width="124" height="28" rx="6" fill="#0369a1" fill-opacity="0.25" stroke="#0ea5e9" stroke-width="1.2"/>
+    <text x="62" y="18" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" font-weight="700" fill="#38bdf8" text-anchor="middle" letter-spacing="1.5">ENGINEERING</text>
+
+    <!-- Architecture Tag -->
+    <text x="144" y="19" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12" font-weight="600" fill="#94a3b8" letter-spacing="1">SYSTEMS DEEP DIVE</text>
+
+    <!-- Publication / Paradigm Indicator -->
+    <circle cx="1010" cy="14" r="4" fill="#10b981"/>
+    <text x="1025" y="18" font-family="monospace" font-size="12" fill="#6ee7b7">INFERENCE COMPUTE PARADIGM</text>
+  </g>
+
+  <!-- Main Title & Subtitle Block -->
+  <g transform="translate(80, 145)">
+    <text x="0" y="0" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="40" font-weight="800" fill="#f8fafc" letter-spacing="-0.5">
+      Test-Time Compute Scaling
+    </text>
+    <text x="0" y="44" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="24" font-weight="600" fill="#06b6d4">
+      Reasoning Models, Search Trees &amp; Process Reward Models
+    </text>
+    <text x="0" y="74" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="15" fill="#94a3b8">
+      Dissecting the algorithmic transition from pre-training parameter laws to dynamic inference-time compute.
+    </text>
+  </g>
+
+  <!-- Central Technical Architectural Diagram -->
+  <g transform="translate(80, 260)">
+
+    <!-- Panel 1: Traditional Pre-Training Scaling (Fixed Budget) -->
+    <g transform="translate(0, 0)">
+      <rect width="320" height="260" rx="12" fill="url(#card-grad-1)" stroke="#334155" stroke-width="1.2"/>
+      <rect x="20" y="20" width="10" height="10" rx="5" fill="#ef4444"/>
+      <text x="38" y="29" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="14" font-weight="700" fill="#e2e8f0">Pre-Training Scaling Law</text>
+      <text x="20" y="55" font-family="monospace" font-size="11" fill="#64748b">CHINCHILLA BOUNDARY (2020-2024)</text>
+
+      <line x1="20" y1="70" x2="300" y2="70" stroke="#1e293b" stroke-width="1.2"/>
+
+      <!-- Node A: Static Model Weights -->
+      <rect x="20" y="85" width="280" height="42" rx="6" fill="#0f172a" stroke="#475569" stroke-width="1"/>
+      <text x="32" y="105" font-family="monospace" font-size="11" fill="#cbd5e1">Dense Parameters (N) &amp; Tokens (D)</text>
+      <text x="32" y="119" font-family="monospace" font-size="10" fill="#94a3b8">Compute C ≈ 6ND • Fixed Forward Pass</text>
+
+      <!-- Node B: Flat Inference Curve -->
+      <rect x="20" y="140" width="280" height="60" rx="6" fill="#18181b" stroke="#7f1d1d" stroke-width="1"/>
+      <text x="32" y="160" font-family="monospace" font-size="11" font-weight="700" fill="#fca5a5">Inference Limitation: O(1) Reasoning</text>
+      <text x="32" y="177" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="11" fill="#94a3b8">• Immediate greedy token emission</text>
+      <text x="32" y="192" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="11" fill="#94a3b8">• Complex tasks fail on early errors</text>
+
+      <!-- Bottom Tag -->
+      <text x="20" y="235" font-family="monospace" font-size="11" fill="#f87171">Diminishing Data Returns</text>
+    </g>
+
+    <!-- Flow Connector Arrow 1 -> 2 -->
+    <g transform="translate(325, 120)">
+      <line x1="5" y1="10" x2="30" y2="10" stroke="#38bdf8" stroke-width="2" stroke-dasharray="3 3"/>
+      <polygon points="35,10 27,6 27,14" fill="#38bdf8"/>
+    </g>
+
+    <!-- Panel 2: Inference-Time Search (MCTS + Tree of Thoughts) -->
+    <g transform="translate(360, 0)">
+      <rect width="320" height="260" rx="12" fill="url(#card-grad-2)" stroke="#0284c7" stroke-width="1.5"/>
+      <rect x="20" y="20" width="10" height="10" rx="5" fill="#0284c7"/>
+      <text x="38" y="29" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="14" font-weight="700" fill="#e2e8f0">Inference Search Tree</text>
+      <text x="20" y="55" font-family="monospace" font-size="11" fill="#38bdf8">MONTE CARLO EXPANSION &amp; ROLLOUT</text>
+
+      <line x1="20" y1="70" x2="300" y2="70" stroke="#1e293b" stroke-width="1.2"/>
+
+      <!-- Search Tree Visual Graphic -->
+      <g transform="translate(40, 85)">
+        <!-- Root Token Node -->
+        <circle cx="120" cy="12" r="7" fill="#0284c7" stroke="#38bdf8" stroke-width="2"/>
+        <text x="120" y="15" font-family="monospace" font-size="8" fill="#ffffff" text-anchor="middle">S0</text>
+
+        <!-- Branch 1 -->
+        <line x1="115" y1="18" x2="60" y2="48" stroke="#38bdf8" stroke-width="1.5"/>
+        <circle cx="60" cy="50" r="6" fill="#1e293b" stroke="#38bdf8" stroke-width="1.5"/>
+
+        <!-- Branch 2 (Explored & Backtracked) -->
+        <line x1="120" y1="19" x2="120" y2="48" stroke="#ef4444" stroke-width="1.5"/>
+        <circle cx="120" cy="50" r="6" fill="#7f1d1d" stroke="#ef4444" stroke-width="1.5"/>
+        <line x1="116" y1="46" x2="124" y2="54" stroke="#ffffff" stroke-width="1.5"/>
+        <line x1="124" y1="46" x2="116" y2="54" stroke="#ffffff" stroke-width="1.5"/>
+
+        <!-- Branch 3 (Optimal Path) -->
+        <line x1="125" y1="18" x2="180" y2="48" stroke="#10b981" stroke-width="2"/>
+        <circle cx="180" cy="50" r="6" fill="#065f46" stroke="#34d399" stroke-width="2"/>
+
+        <!-- Leaf Sub-branches -->
+        <line x1="60" y1="56" x2="35" y2="85" stroke="#475569" stroke-width="1"/>
+        <circle cx="35" cy="85" r="4" fill="#334155"/>
+
+        <line x1="180" y1="56" x2="155" y2="85" stroke="#10b981" stroke-width="1.5"/>
+        <circle cx="155" cy="85" r="5" fill="#047857" stroke="#34d399" stroke-width="1.5"/>
+
+        <line x1="180" y1="56" x2="205" y2="85" stroke="#10b981" stroke-width="2"/>
+        <circle cx="205" cy="85" r="6" fill="#10b981" stroke="#a7f3d0" stroke-width="2"/>
+      </g>
+
+      <!-- Label block -->
+      <rect x="20" y="185" width="280" height="28" rx="5" fill="#0c4a6e" fill-opacity="0.6" stroke="#0284c7" stroke-width="1"/>
+      <text x="160" y="203" font-family="monospace" font-size="10" font-weight="600" fill="#7dd3fc" text-anchor="middle">Dynamic Search &amp; Backtracking</text>
+
+      <!-- Step Tag -->
+      <text x="20" y="235" font-family="monospace" font-size="11" fill="#38bdf8">Exploration vs Exploitation (UCB)</text>
+    </g>
+
+    <!-- Flow Connector Arrow 2 -> 3 -->
+    <g transform="translate(685, 120)">
+      <line x1="5" y1="10" x2="30" y2="10" stroke="#8b5cf6" stroke-width="2" stroke-dasharray="3 3"/>
+      <polygon points="35,10 27,6 27,14" fill="#8b5cf6"/>
+    </g>
+
+    <!-- Panel 3: Process Reward Models & Verification -->
+    <g transform="translate(720, 0)">
+      <rect width="320" height="260" rx="12" fill="url(#card-grad-1)" stroke="#8b5cf6" stroke-width="1.2"/>
+      <rect x="20" y="20" width="10" height="10" rx="5" fill="#a855f7"/>
+      <text x="38" y="29" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="14" font-weight="700" fill="#e2e8f0">Process Verification (PRM)</text>
+      <text x="20" y="55" font-family="monospace" font-size="11" fill="#c084fc">STEP-LEVEL VALUE ESTIMATION</text>
+
+      <line x1="20" y1="70" x2="300" y2="70" stroke="#1e293b" stroke-width="1.2"/>
+
+      <!-- Step Verification Rows -->
+      <g transform="translate(20, 80)">
+        <!-- Step 1 Score -->
+        <rect width="280" height="30" rx="5" fill="#0f172a" stroke="#334155" stroke-width="1"/>
+        <text x="12" y="19" font-family="monospace" font-size="10" fill="#94a3b8">Step 1: Hypothesis Form</text>
+        <rect x="210" y="7" width="58" height="16" rx="3" fill="#065f46"/>
+        <text x="239" y="19" font-family="monospace" font-size="9" font-weight="700" fill="#34d399" text-anchor="middle">r = +0.94</text>
+
+        <!-- Step 2 Score (Error Flagged) -->
+        <rect y="36" width="280" height="30" rx="5" fill="#0f172a" stroke="#7f1d1d" stroke-width="1"/>
+        <text x="12" y="55" font-family="monospace" font-size="10" fill="#f87171">Step 2: Flawed Lemma</text>
+        <rect x="210" y="43" width="58" height="16" rx="3" fill="#7f1d1d"/>
+        <text x="239" y="55" font-family="monospace" font-size="9" font-weight="700" fill="#fca5a5" text-anchor="middle">r = -0.82</text>
+
+        <!-- Step 3 Self-Correction -->
+        <rect y="72" width="280" height="30" rx="5" fill="#0f172a" stroke="#059669" stroke-width="1"/>
+        <text x="12" y="91" font-family="monospace" font-size="10" fill="#6ee7b7">Step 3: Corrected Proof</text>
+        <rect x="210" y="79" width="58" height="16" rx="3" fill="#065f46"/>
+        <text x="239" y="91" font-family="monospace" font-size="9" font-weight="700" fill="#34d399" text-anchor="middle">r = +0.99</text>
+      </g>
+
+      <!-- Output Result -->
+      <rect x="20" y="195" width="280" height="24" rx="4" fill="#3b0764" stroke="#9333ea" stroke-width="1"/>
+      <text x="160" y="211" font-family="monospace" font-size="10" font-weight="600" fill="#d8b4fe" text-anchor="middle">REINFORCEMENT LEARNING ALIGNMENT</text>
+
+      <!-- Step Tag -->
+      <text x="20" y="240" font-family="monospace" font-size="11" fill="#c084fc">Eliminates Hallucination Cascades</text>
+    </g>
+
+  </g>
+
+  <!-- Bottom Brand Footer -->
+  <g transform="translate(80, 575)">
+    <text x="0" y="0" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="13" font-weight="700" fill="#64748b" letter-spacing="1.5">SYED TECH BLOG</text>
+    <circle cx="140" cy="-4" r="2.5" fill="#475569"/>
+    <text x="155" y="0" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="13" fill="#64748b">AI RESEARCH &amp; ARCHITECTURE JOURNAL</text>
+    <text x="1040" y="0" font-family="monospace" font-size="13" fill="#64748b">1200 × 630</text>
+  </g>
+</svg>
