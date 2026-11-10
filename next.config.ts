@@ -1,6 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Security: Suppress X-Powered-By header to prevent server framework fingerprinting (information disclosure)
+  poweredByHeader: false,
   async headers() {
     return [
       {
@@ -14,6 +16,8 @@ const nextConfig: NextConfig = {
           { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
           { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
           { key: "Strict-Transport-Security", value: "max-age=31536000; includeSubDomains" },
+          // Security: Prevent Flash/PDF cross-domain policy file loading to mitigate cross-domain data leakage
+          { key: "X-Permitted-Cross-Domain-Policies", value: "none" },
         ],
       },
     ];
