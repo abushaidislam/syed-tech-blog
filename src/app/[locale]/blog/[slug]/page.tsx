@@ -8,6 +8,7 @@ import {
   frontmatterToBlogPostMeta,
 } from "@/lib/blog";
 import { resolveAuthorDetails } from "@/config/authors";
+import { safeJsonLd } from "@/lib/utils";
 import { PostLayout } from "@/components/blog/post-layout";
 import { PageTransition } from "@/components/layout/page-transition";
 import { blogMdxComponents } from "@/components/blog/mdx-components";
@@ -182,7 +183,7 @@ export default async function BlogPostPage({
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify([
+            __html: safeJsonLd([
               {
                 "@context": "https://schema.org",
                 "@type": "BlogPosting",
