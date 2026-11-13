@@ -1,6 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Security: Suppress X-Powered-By header to prevent server technology and framework fingerprinting
+  poweredByHeader: false,
   async headers() {
     return [
       {
@@ -14,6 +16,10 @@ const nextConfig: NextConfig = {
           { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
           { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
           { key: "Strict-Transport-Security", value: "max-age=31536000; includeSubDomains" },
+          // Security: Prevent Adobe Flash and Acrobat from loading unauthorized cross-domain policy files
+          { key: "X-Permitted-Cross-Domain-Policies", value: "none" },
+          // Security: Explicitly disable legacy and buggy browser XSS auditor per OWASP recommendation
+          { key: "X-XSS-Protection", value: "0" },
         ],
       },
     ];
