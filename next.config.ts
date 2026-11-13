@@ -2,11 +2,28 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   async headers() {
+    // Content Security Policy (CSP): Defense-in-depth against XSS, clickjacking, and unauthorized resource injection
+    const cspDirectives = [
+      "default-src 'self'",
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://giscus.app",
+      "style-src 'self' 'unsafe-inline'",
+      "img-src 'self' blob: data: https://assets.dub.co https://images.unsplash.com https://avatar.vercel.sh https://github.com https://avatars.githubusercontent.com",
+      "font-src 'self' data: https://fonts.gstatic.com",
+      "frame-src 'self' https://giscus.app",
+      "connect-src 'self' https://api.github.com https://giscus.app",
+      "object-src 'none'",
+      "base-uri 'self'",
+      "form-action 'self'",
+      "frame-ancestors 'none'",
+      "upgrade-insecure-requests",
+    ].join("; ");
+
     return [
       {
         source: "/(.*)",
         headers: [
-          // Security headers to enhance defense-in-depth against clickjacking, MIME sniffing, and info leaks
+          // Security headers to enhance defense-in-depth against XSS, clickjacking, MIME sniffing, and info leaks
+          { key: "Content-Security-Policy", value: cspDirectives },
           { key: "X-DNS-Prefetch-Control", value: "off" },
           { key: "Cross-Origin-Opener-Policy", value: "same-origin" },
           { key: "X-Frame-Options", value: "DENY" },
